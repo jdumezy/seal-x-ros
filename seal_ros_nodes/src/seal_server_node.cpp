@@ -1,7 +1,6 @@
-#include "seal_x_ros/seal_server_node.hpp"
-#include "std_msgs/msg/string.hpp"
-#include "seal_msgs/msg/seal_data.hpp"
+#include "seal_ros_nodes/seal_server_node.hpp"
 #include <memory>
+#include <yaml-cpp/yaml.h>
 
 using namespace std;
 using namespace rclcpp;

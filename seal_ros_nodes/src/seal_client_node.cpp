@@ -1,10 +1,8 @@
-#include "seal_x_ros/seal_client_node.hpp"
-#include "rclcpp/rclcpp.hpp"
-#include "std_msgs/msg/string.hpp"
-#include "seal_msgs/msg/seal_data.hpp"
+#include "seal_ros_nodes/seal_client_node.hpp"
 #include "seal/seal.h"
 #include <iostream>
 #include <sstream>
+#include <yaml-cpp/yaml.h>
 
 using namespace rclcpp;
 using namespace std;
