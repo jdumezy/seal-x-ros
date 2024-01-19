@@ -24,7 +24,7 @@ The SEAL-ROS Bridge project integrates the Microsoft SEAL (Simple Encrypted Arit
 3. Build your ROS workspace.
    ```bash
    cd ~/ros2_ws/
-   colcon build --packages-select seal_ros_bridge seal_msgs
+   colcon build --packages-select seal_ros_nodes seal_msgs
    ```
 
 ## Usage
