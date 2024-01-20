@@ -1,4 +1,6 @@
 #include "seal_ros_nodes/seal_client_node.hpp"
+#include "seal_ros_nodes/seal_encryptor.hpp"
+#include "seal_ros_nodes/seal_decryptor.hpp"
 #include "seal/seal.h"
 #include <iostream>
 #include <sstream>
