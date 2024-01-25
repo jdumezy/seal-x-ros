@@ -16,3 +16,4 @@ seal::Ciphertext EncryptorManager::encrypt_float(float inputFloat) {
     encryptor_.encrypt(encodedPlaintext, encryptedCiphertext);
     return encryptedCiphertext;
 }
+
