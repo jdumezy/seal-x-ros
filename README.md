@@ -30,6 +30,20 @@ The SEAL-ROS Bridge project integrates the Microsoft SEAL (Simple Encrypted Arit
 ## Usage
 Describe how to run and use your ROS packages here. Include any necessary steps to launch nodes, example use cases, or command-line instructions.
 
+## Warning: No Guarantee on Security
+
+This ROS package is a work in progress and is provided for research and experimentation purposes only. It should not be used in production systems or applications where security is a critical concern.
+
+There are no guarantees on the security of this library, and it may contain vulnerabilities, weaknesses, or errors that could compromise the confidentiality or integrity of your data. You are using this library at your own risk, and the developers and maintainers of this library cannot be held responsible for any security breaches or data loss that may occur as a result of its use.
+
+Before using this library, please carefully review the source code, documentation, and any associated warnings or disclaimers. It is strongly recommended that you consult with cryptography experts and conduct thorough security assessments before considering it for any security-sensitive applications.
+
+**DO NOT USE THIS LIBRARY IN PRODUCTION OR MISSION-CRITICAL SYSTEMS.**
+
+By using this library, you acknowledge and accept the risks associated with its use, and you agree to hold the developers and maintainers harmless from any liabilities or damages that may arise from its use. If you have any concerns about the security of this library or encounter any issues, please report them to the project's issue tracker.
+
+Please use this library responsibly and in a controlled, non-critical environment for research and experimentation purposes only.
+
 ## Contributing
 Contributions to the SEAL-ROS Bridge are welcome. Please submit a pull request or open an issue for any features, bugs, or improvements.
 

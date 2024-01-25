@@ -1,6 +1,6 @@
 #include "seal_ros_nodes/seal_server_node.hpp"
+#include "seal/seal.h"
 #include <memory>
-#include <yaml-cpp/yaml.h>
 
 using namespace std;
 using namespace rclcpp;

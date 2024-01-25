@@ -1,16 +1,36 @@
 #include "seal_ros_nodes/seal_client_node.hpp"
 #include "seal_ros_nodes/seal_encryptor.hpp"
-#include "seal_ros_nodes/seal_decryptor.hpp"
+#include "seal_ros_nodes/seal_context.hpp"
+#include "seal_msgs/msg/seal_data.hpp"
 #include "seal/seal.h"
+#include "std_msgs/msg/string.hpp"
 #include <iostream>
 #include <sstream>
-#include <yaml-cpp/yaml.h>
+#include <vector>
 
 using namespace rclcpp;
 using namespace std;
 using namespace seal;
 
 SealClientNode::SealClientNode() : Node("seal_client_node") {
+    std::string config_file;
+    this->declare_parameter<std::string>("config_file", "config/encryption_params_bfv.yaml");
+    this->get_parameter("config_file", config_file);
+
+    ConfigurationManager config_manager(config_file);
+    auto parms = config_manager.get_encryption_parameters(); // Retrieve EncryptionParameters
+
+    // Create SEALContext from EncryptionParameters
+    seal::SEALContext context(parms);
+
+    // Key generation
+    seal::KeyGenerator keygen(context);
+    seal::PublicKey public_key = keygen.public_key();
+    // SecretKey secret_key = keygen.secret_key(); // Use if needed
+
+    // Assuming Encryptor is correctly defined to take these parameters
+    encryptor_ = std::make_unique<Encryptor>(context, public_key);
+
     // Publisher for encrypted data
     encrypted_publisher = this->create_publisher<seal_msgs::msg::SealData>("encrypted_topic", 10);
 
@@ -27,27 +47,11 @@ void SealClientNode::decrypted_callback(const std_msgs::msg::String::SharedPtr m
 }
 
 void SealClientNode::test_seal_function() {
-    // Set up SEAL environment (your original SEAL code)
-    EncryptionParameters parms(scheme_type::bfv);
-    size_t poly_modulus_degree = 4096;
-    parms.set_poly_modulus_degree(poly_modulus_degree);
-    parms.set_coeff_modulus(CoeffModulus::BFVDefault(poly_modulus_degree));
-    parms.set_plain_modulus(1024);
-    SEALContext context(parms);
-
-    // Perform a simple SEAL operation (your original SEAL code)
-    KeyGenerator keygen(context);
-    SecretKey secret_key = keygen.secret_key();
-    PublicKey public_key;
-    keygen.create_public_key(public_key);
-
-    Encryptor encryptor(context, public_key);
-    Evaluator evaluator(context);
-    Decryptor decryptor(context, secret_key);
-
+    // Example plaintext
     Plaintext plain("1x^2 + 2x^1 + 3");
-    Ciphertext encrypted;
-    encryptor.encrypt(plain, encrypted);
+
+    // Encrypt the plaintext
+    Ciphertext encrypted = encryptor_->encrypt(plain);
 
     // Serialize and publish the encrypted data
     std::stringstream ss;
@@ -65,4 +69,5 @@ int main(int argc, char **argv) {
     rclcpp::shutdown();
     return 0;
 }
+
 

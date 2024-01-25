@@ -10,7 +10,7 @@ endif()
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(std_msgs REQUIRED)
-find_package(SEAL REQUIRED)
+find_package(SEAL 4.1 REQUIRED)
 find_package(seal_msgs REQUIRED)
 
 # Specify where to find the header files

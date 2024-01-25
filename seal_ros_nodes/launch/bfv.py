@@ -7,7 +7,7 @@ def generate_launch_description():
             package='seal_ros_nodes',
             executable='seal_client_node',
             name='seal_client_node',
-            parameters=[{'config_file': 'path/to/encryption_params_bfv.yaml'}]
+            parameters=[{'config_file': 'config/encryption_params_bfv.yaml'}]
         )
     ])
 
