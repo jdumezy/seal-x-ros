@@ -19,14 +19,16 @@
 
 class SealClientNode : public rclcpp::Node {
 public:
-    SealClientNode();
+	SealClientNode();
 
 private:
-    void connection_and_send_key();
-    void send_ciphertext();
+	void connection_and_send_key();
+	void send_ciphertext();
+	void response_callback(const std_msgs::msg::String::SharedPtr msg);
 
-    rclcpp::Client<seal_msgs::srv::KeyExchange>::SharedPtr key_exchange_client_;
-    rclcpp::Publisher<std_msgs::msg::String>::SharedPtr ciphertext_pub_;
+	rclcpp::Client<seal_msgs::srv::KeyExchange>::SharedPtr key_exchange_client_;
+	rclcpp::Publisher<std_msgs::msg::String>::SharedPtr ciphertext_pub_;
+	rclcpp::Subscription<std_msgs::msg::String>::SharedPtr response_sub_;
 };
 
 #endif // SEAL_CLIENT_NODE_HPP

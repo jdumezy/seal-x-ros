@@ -7,6 +7,11 @@ SealClientNode::SealClientNode()
 	
 	ciphertext_pub_ = this->create_publisher<std_msgs::msg::String>("seal_ciphertext_topic", 10);
 	
+	response_sub_ = this->create_subscription<std_msgs::msg::String>(
+		"response_topic", 10,
+		std::bind(&SealClientNode::response_callback, this, std::placeholders::_1)
+	);
+	
 	connection_and_send_key();
 }
 
@@ -19,24 +24,28 @@ void SealClientNode::connection_and_send_key() {
 	request->public_key = "YourPublicKeyStringHere";
 	
 	key_exchange_client_->async_send_request(request,
-        [this](rclcpp::Client<seal_msgs::srv::KeyExchange>::SharedFuture future_response) {
-            auto response = future_response.get();
-            if (response->success) {
-                RCLCPP_INFO(this->get_logger(), "Key exchange successful: %s", response->message.c_str());
-                send_ciphertext();
-            } else {
-                RCLCPP_ERROR(this->get_logger(), "Key exchange failed: %s", response->message.c_str());
-            }
-        });
-	
-	RCLCPP_INFO(this->get_logger(), "sent key");
+		[this](rclcpp::Client<seal_msgs::srv::KeyExchange>::SharedFuture future_response) {
+			auto response = future_response.get();
+			if (response->success) {
+				RCLCPP_INFO(this->get_logger(), "Key exchange successful: %s", response->message.c_str());
+				send_ciphertext();
+			}
+			else {
+				RCLCPP_ERROR(this->get_logger(), "Key exchange failed: %s", response->message.c_str());
+			}
+	});
 }
 
 void SealClientNode::send_ciphertext() {
 	std_msgs::msg::String msg;
 	msg.data = "YourCiphertextHere";
 	ciphertext_pub_->publish(msg);
-	RCLCPP_INFO(this->get_logger(), "Ciphertext sent");
+	RCLCPP_DEBUG(this->get_logger(), "Ciphertext sent");
+}
+
+void SealClientNode::response_callback(const std_msgs::msg::String::SharedPtr msg)
+{
+    RCLCPP_INFO(this->get_logger(), "Received response: %s", msg->data.c_str());
 }
 
 int main(int argc, char **argv) {
