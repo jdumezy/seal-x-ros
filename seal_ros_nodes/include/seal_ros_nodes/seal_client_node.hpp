@@ -13,10 +13,6 @@
 #include "seal_msgs/msg/seal_data.hpp"
 #include "seal_msgs/srv/key_exchange.hpp"
 
-#include <iostream>
-#include <sstream>
-#include <vector>
-
 class SealClientNode : public rclcpp::Node {
 public:
 	SealClientNode();
@@ -29,6 +25,11 @@ private:
 	rclcpp::Client<seal_msgs::srv::KeyExchange>::SharedPtr key_exchange_client_;
 	rclcpp::Publisher<std_msgs::msg::String>::SharedPtr ciphertext_pub_;
 	rclcpp::Subscription<std_msgs::msg::String>::SharedPtr response_sub_;
+	
+	std::shared_ptr<seal::SEALContext> context_;
+	seal::PublicKey public_key_;
+	seal::SecretKey secret_key_;
+	double scale_;
 };
 
 #endif // SEAL_CLIENT_NODE_HPP

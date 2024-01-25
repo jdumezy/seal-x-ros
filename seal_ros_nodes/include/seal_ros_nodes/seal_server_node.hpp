@@ -9,8 +9,6 @@
 #include "seal_msgs/msg/seal_data.hpp"
 #include "seal_msgs/srv/key_exchange.hpp"
 
-#include <string>
-
 class SealServerNode : public rclcpp::Node {
 public:
 	SealServerNode();

@@ -11,7 +11,7 @@ float DecryptorManager::decrypt_float(seal::Ciphertext encryptedCiphertext) {
 	seal::Plaintext decodedPlaintext;
 	decryptor_.decrypt(encryptedCiphertext, decodedPlaintext);
 	
-	vector<double> decodedFloat;
+	std::vector<double> decodedFloat;
 	
 	encoder_.decode(decodedPlaintext, decodedFloat);
 	

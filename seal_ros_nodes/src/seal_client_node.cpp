@@ -12,9 +12,17 @@ SealClientNode::SealClientNode()
 		std::bind(&SealClientNode::response_callback, this, std::placeholders::_1)
 	);
 	
+	// Create context and keys
+	ContextManager ctxManager;
+	context_ = ctxManager.get_context();
+	public_key_ = ctxManager.get_public_key();
+	secret_key_ = ctxManager.get_secret_key();
+	scale_ = ctxManager.get_scale();
+	
 	connection_and_send_key();
 }
 
+// Send key and context to server
 void SealClientNode::connection_and_send_key() {
 	while (!key_exchange_client_->wait_for_service(std::chrono::seconds(1))) {
 		RCLCPP_WARN(this->get_logger(), "Waiting for the server to be up...");
