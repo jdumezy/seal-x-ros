@@ -1,9 +1,6 @@
 #include "seal_ros_nodes/seal_decryptor.hpp"
 #include "seal/seal.h"
 
-using namespace std;
-using namespace seal;
-
 //Decryptor::Decryptor(const std::shared_ptr<seal::SEALContext>& context, const seal::SecretKey& secret_key)
 //    : context_(context), secret_key_(secret_key), decryptor_(context, secret_key) {
 //}
@@ -14,3 +11,6 @@ using namespace seal;
 //    return plaintext;
 //}
 
+
+	ContextManager ctxManager;
+	seal::Decryptor decryptor(context, secret_key);

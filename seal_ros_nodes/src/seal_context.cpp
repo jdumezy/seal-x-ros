@@ -12,7 +12,7 @@ void ContextManager::create_context() {
 	parms.set_poly_modulus_degree(poly_modulus_degree);
 	parms.set_coeff_modulus(seal::CoeffModulus::Create(poly_modulus_degree, { 60, 40, 40, 60 }));
 	
-	double scale = std::pow(2.0, 40);
+	scale_ = std::pow(2.0, 40);
 	
 	context_ = std::make_shared<seal::SEALContext>(parms);
 }
@@ -35,6 +35,10 @@ std::shared_ptr<seal::SEALContext> ContextManager::get_context() const {
 	return context_;
 }
 
+double ContextManager::get_scale() const {
+	return scale_;
+}
+
 seal::SecretKey ContextManager::get_secret_key() const {
 	return secret_key_;
 }
@@ -50,3 +54,4 @@ seal::RelinKeys ContextManager::get_relin_keys() const {
 seal::GaloisKeys ContextManager::get_galois_keys() const {
 	return galois_keys_;
 }
+

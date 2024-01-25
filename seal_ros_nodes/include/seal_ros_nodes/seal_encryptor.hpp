@@ -3,15 +3,19 @@
 
 #include "seal/seal.h"
 
-class Encryptor {
+class EncryptorManager {
 public:
-    Encryptor(const std::shared_ptr<seal::SEALContext>& context, const seal::PublicKey& public_key);
-    seal::Ciphertext encrypt(const seal::Plaintext& plaintext) const;
+	EncryptorManager(std::shared_ptr<seal::SEALContext> context, 
+					 const seal::PublicKey &public_key, 
+					 double scale);
+
+	seal::Ciphertext encrypt_float(float inputFloat);
 
 private:
-    std::shared_ptr<seal::SEALContext> context_;
-    seal::PublicKey public_key_;
-    seal::Encryptor encryptor_;
+	std::shared_ptr<seal::SEALContext> context_;
+	seal::Encryptor encryptor_;
+	seal::CKKSEncoder encoder_;
+	double scale_;
 };
 
 #endif // SEAL_ENCRYPTOR_HPP

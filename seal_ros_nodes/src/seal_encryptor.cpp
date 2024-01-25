@@ -1,16 +1,18 @@
 #include "seal_ros_nodes/seal_encryptor.hpp"
-#include "seal/seal.h"
 
-using namespace std;
-using namespace seal;
+EncryptorManager::EncryptorManager(std::shared_ptr<seal::SEALContext> context, 
+								   const seal::PublicKey &public_key, 
+								   double scale)
+	: context_(std::move(context)),
+	  encryptor_(*context_, public_key), 
+	  encoder_(*context_), scale_(scale) {
+}
 
-//Encryptor::Encryptor(const std::shared_ptr<seal::SEALContext>& context, const seal::PublicKey& public_key)
-//    : context_(context), public_key_(public_key), encryptor_(context, public_key) {
-//}
-
-//seal::Ciphertext Encryptor::encrypt(const seal::Plaintext& plaintext) const {
-//    seal::Ciphertext ciphertext;
-//    encryptor_.encrypt(plaintext, ciphertext);
-//    return ciphertext;
-//}
-
+seal::Ciphertext EncryptorManager::encrypt_float(float inputFloat) {
+    seal::Plaintext encodedPlaintext;
+    encoder_.encode(inputFloat, scale_, encodedPlaintext);
+    
+    seal::Ciphertext encryptedCiphertext;
+    encryptor_.encrypt(encodedPlaintext, encryptedCiphertext);
+    return encryptedCiphertext;
+}
