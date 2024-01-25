@@ -14,7 +14,7 @@ find_package(SEAL 4.1 REQUIRED)
 find_package(seal_msgs REQUIRED)
 
 # Specify where to find the header files
-include_directories(include /usr/local/include/SEAL-4.1)
+include_directories(include)
 
 # Define executables for the nodes
 add_executable(seal_client_node src/seal_client_node.cpp)

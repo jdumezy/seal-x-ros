@@ -1,32 +1,36 @@
 #include "seal_ros_nodes/seal_server_node.hpp"
-#include "seal/seal.h"
-#include <memory>
 
-using namespace std;
-using namespace rclcpp;
+SealServerNode::SealServerNode() : Node("seal_server_node")
+{
+    key_exchange_service_ = this->create_service<seal_msgs::srv::KeyExchange>(
+        "key_exchange_service",
+        std::bind(&SealServerNode::handle_key_exchange, this, std::placeholders::_1, std::placeholders::_2));
 
-SealServerNode::SealServerNode() : Node("seal_server_node") {
-    // Subscriber for encrypted data
-    encrypted_subscriber = this->create_subscription<seal_msgs::msg::SealData>(
-        "encrypted_topic", 10, bind(&SealServerNode::encrypted_callback, this, placeholders::_1));
-
-    // Publisher for decrypted or processed data
-    decrypted_publisher = this->create_publisher<std_msgs::msg::String>("decrypted_topic", 10);
+    ciphertext_sub_ = this->create_subscription<std_msgs::msg::String>(
+        "seal_ciphertext_topic",
+        10,
+        std::bind(&SealServerNode::ciphertext_callback, this, std::placeholders::_1));
 }
 
-void SealServerNode::encrypted_callback(const seal_msgs::msg::SealData::SharedPtr /*msg*/) {
-    // Example processing: Log received message
-    RCLCPP_INFO(this->get_logger(), "Received encrypted data");
+void SealServerNode::handle_key_exchange(const std::shared_ptr<seal_msgs::srv::KeyExchange::Request> request,
+                                         std::shared_ptr<seal_msgs::srv::KeyExchange::Response> response)
+{
+    public_key_ = request->public_key;
+    RCLCPP_INFO(this->get_logger(), "Received public key: %s", public_key_.c_str());
 
-    // Process and publish a response (for simplicity, just a text message here)
-    auto response = std_msgs::msg::String();
-    response.data = "Processed data";
-    decrypted_publisher->publish(response);
+    
+    response->success = true;
+    response->message = "Public key received successfully";
+}
+
+void SealServerNode::ciphertext_callback(const std_msgs::msg::String::SharedPtr msg)
+{
+    RCLCPP_INFO(this->get_logger(), "Received ciphertext: %s", msg->data.c_str());
 }
 
 int main(int argc, char **argv) {
     rclcpp::init(argc, argv);
-    auto node = make_shared<SealServerNode>();
+    auto node = std::make_shared<SealServerNode>();
     rclcpp::spin(node);
     rclcpp::shutdown();
     return 0;

@@ -9,11 +9,11 @@ EncryptorManager::EncryptorManager(std::shared_ptr<seal::SEALContext> context,
 }
 
 seal::Ciphertext EncryptorManager::encrypt_float(float inputFloat) {
-    seal::Plaintext encodedPlaintext;
-    encoder_.encode(inputFloat, scale_, encodedPlaintext);
-    
-    seal::Ciphertext encryptedCiphertext;
-    encryptor_.encrypt(encodedPlaintext, encryptedCiphertext);
-    return encryptedCiphertext;
+	seal::Plaintext encodedPlaintext;
+	encoder_.encode(inputFloat, scale_, encodedPlaintext);
+	
+	seal::Ciphertext encryptedCiphertext;
+	encryptor_.encrypt(encodedPlaintext, encryptedCiphertext);
+	return encryptedCiphertext;
 }
 
