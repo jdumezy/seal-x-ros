@@ -1,0 +1,12 @@
+// generated from rosidl_adapter/resource/msg.idl.em
+// with input from seal_msgs/msg/SealData.msg
+// generated code does not contain a copyright notice
+
+
+module seal_msgs {
+  module msg {
+    struct SealData {
+      sequence<uint8> data;
+    };
+  };
+};

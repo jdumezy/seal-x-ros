@@ -1,8 +1,8 @@
 #include "seal_ros_nodes/seal_decryptor.hpp"
 
-DecryptorManager::DecryptorManager(std::shared_ptr<seal::SEALContext> context, 
+DecryptorManager::DecryptorManager(std::vector<uint8_t> serialized_parms,
 								   const seal::SecretKey &secret_key)
-	: context_(std::move(context)),
+	: context_(CreateSEALContextFromParameters(serialized_parms)),
 	  decryptor_(*context_, secret_key), 
 	  encoder_(*context_) {
 }

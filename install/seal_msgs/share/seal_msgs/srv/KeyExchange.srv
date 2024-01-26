@@ -1,0 +1,7 @@
+# Request
+string public_key
+
+---
+# Response
+bool success
+string message

@@ -17,9 +17,10 @@ find_package(seal_msgs REQUIRED)
 include_directories(include)
 
 # Define library targets
-add_library(seal_context src/seal_context.cpp)
+add_library(seal_parms_and_keys src/seal_parms_and_keys.cpp)
 add_library(seal_encryptor src/seal_encryptor.cpp)
 add_library(seal_decryptor src/seal_decryptor.cpp)
+add_library(sxr_lib src/sxr_lib.cpp)
 
 # Define executables for the nodes
 add_executable(seal_client_node src/seal_client_node.cpp)
@@ -39,13 +40,13 @@ ament_target_dependencies(seal_server_node
 	seal_msgs
 )
 
-target_link_libraries(seal_context SEAL::seal)
-target_link_libraries(seal_encryptor SEAL::seal)
-target_link_libraries(seal_decryptor SEAL::seal)
+target_link_libraries(seal_parms_and_keys SEAL::seal)
+target_link_libraries(seal_encryptor SEAL::seal sxr_lib)
+target_link_libraries(seal_decryptor SEAL::seal sxr_lib)
+target_link_libraries(sxr_lib SEAL::seal)
 
 target_link_libraries(seal_client_node
-	seal_context
-	seal_encryptor
+	seal_parms_and_keys
 	seal_encryptor
 	seal_decryptor
 	SEAL::seal

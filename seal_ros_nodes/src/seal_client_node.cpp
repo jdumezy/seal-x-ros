@@ -13,11 +13,11 @@ SealClientNode::SealClientNode()
 	);
 	
 	// Create context and keys
-	ContextManager ctxManager;
-	context_ = ctxManager.get_context();
-	public_key_ = ctxManager.get_public_key();
-	secret_key_ = ctxManager.get_secret_key();
-	scale_ = ctxManager.get_scale();
+	ParmsAndKeysManager pAndKManager;
+	parms_ = pAndKManager.get_serialized_parms();
+	public_key_ = pAndKManager.get_serialized_pk();
+	secret_key_ = pAndKManager.get_secret_key();
+	scale_ = pAndKManager.get_scale();
 	
 	connection_and_send_key();
 }

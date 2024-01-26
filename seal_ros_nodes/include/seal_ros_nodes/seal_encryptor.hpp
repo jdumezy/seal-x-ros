@@ -2,10 +2,14 @@
 #define SEAL_ENCRYPTOR_HPP
 
 #include "seal/seal.h"
+#include "seal_ros_nodes/sxr_lib.hpp"
+
+#include <vector>
+#include <memory>
 
 class EncryptorManager {
 public:
-	EncryptorManager(std::shared_ptr<seal::SEALContext> context, 
+	EncryptorManager(std::vector<uint8_t> serialized_parms, 
 					 const seal::PublicKey &public_key, 
 					 double scale);
 

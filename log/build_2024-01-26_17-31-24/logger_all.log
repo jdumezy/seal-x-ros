@@ -1,0 +1,120 @@
+[0.379s] DEBUG:colcon:Command line arguments: ['/usr/bin/colcon', 'build']
+[0.379s] DEBUG:colcon:Parsed command line arguments: Namespace(log_base=None, log_level=None, verb_name='build', build_base='build', install_base='install', merge_install=False, symlink_install=False, test_result_base=None, continue_on_error=False, executor='parallel', parallel_workers=32, event_handlers=None, ignore_user_meta=False, metas=['./colcon.meta'], base_paths=['.'], packages_ignore=None, packages_ignore_regex=None, paths=None, packages_up_to=None, packages_up_to_regex=None, packages_above=None, packages_above_and_dependencies=None, packages_above_depth=None, packages_select_by_dep=None, packages_skip_by_dep=None, packages_skip_up_to=None, packages_select_build_failed=False, packages_skip_build_finished=False, packages_select_test_failures=False, packages_skip_test_passed=False, packages_select=None, packages_skip=None, packages_select_regex=None, packages_skip_regex=None, packages_start=None, packages_end=None, allow_overriding=[], cmake_args=None, cmake_target=None, cmake_target_skip_unavailable=False, cmake_clean_cache=False, cmake_clean_first=False, cmake_force_configure=False, ament_cmake_args=None, catkin_cmake_args=None, catkin_skip_building_tests=False, verb_parser=<colcon_defaults.argument_parser.defaults.DefaultArgumentsDecorator object at 0x7fc805ae84c0>, verb_extension=<colcon_core.verb.build.BuildVerb object at 0x7fc805ae9180>, main=<bound method BuildVerb.main of <colcon_core.verb.build.BuildVerb object at 0x7fc805ae9180>>)
+[0.404s] Level 1:colcon.colcon_core.package_discovery:discover_packages(colcon_meta) check parameters
+[0.405s] Level 1:colcon.colcon_core.package_discovery:discover_packages(recursive) check parameters
+[0.405s] Level 1:colcon.colcon_core.package_discovery:discover_packages(ignore) check parameters
+[0.405s] Level 1:colcon.colcon_core.package_discovery:discover_packages(path) check parameters
+[0.405s] Level 1:colcon.colcon_core.package_discovery:discover_packages(colcon_meta) discover
+[0.405s] Level 1:colcon.colcon_core.package_discovery:discover_packages(recursive) discover
+[0.405s] INFO:colcon.colcon_core.package_discovery:Crawling recursively for packages in '/home/jd/Documents/projet_integration/lib/seal-ros-bridge'
+[0.405s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['ignore', 'ignore_ament_install']
+[0.405s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'ignore'
+[0.405s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'ignore_ament_install'
+[0.405s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['colcon_pkg']
+[0.405s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'colcon_pkg'
+[0.405s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['colcon_meta']
+[0.405s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'colcon_meta'
+[0.405s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['ros']
+[0.405s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'ros'
+[0.412s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['cmake', 'python']
+[0.412s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'cmake'
+[0.412s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'python'
+[0.412s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['python_setup_py']
+[0.412s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'python_setup_py'
+[0.412s] Level 1:colcon.colcon_core.package_identification:_identify(build) by extensions ['ignore', 'ignore_ament_install']
+[0.412s] Level 1:colcon.colcon_core.package_identification:_identify(build) by extension 'ignore'
+[0.412s] Level 1:colcon.colcon_core.package_identification:_identify(build) ignored
+[0.412s] Level 1:colcon.colcon_core.package_identification:_identify(install) by extensions ['ignore', 'ignore_ament_install']
+[0.412s] Level 1:colcon.colcon_core.package_identification:_identify(install) by extension 'ignore'
+[0.412s] Level 1:colcon.colcon_core.package_identification:_identify(install) ignored
+[0.412s] Level 1:colcon.colcon_core.package_identification:_identify(log) by extensions ['ignore', 'ignore_ament_install']
+[0.412s] Level 1:colcon.colcon_core.package_identification:_identify(log) by extension 'ignore'
+[0.412s] Level 1:colcon.colcon_core.package_identification:_identify(log) ignored
+[0.412s] Level 1:colcon.colcon_core.package_identification:_identify(seal_msgs) by extensions ['ignore', 'ignore_ament_install']
+[0.412s] Level 1:colcon.colcon_core.package_identification:_identify(seal_msgs) by extension 'ignore'
+[0.412s] Level 1:colcon.colcon_core.package_identification:_identify(seal_msgs) by extension 'ignore_ament_install'
+[0.412s] Level 1:colcon.colcon_core.package_identification:_identify(seal_msgs) by extensions ['colcon_pkg']
+[0.412s] Level 1:colcon.colcon_core.package_identification:_identify(seal_msgs) by extension 'colcon_pkg'
+[0.412s] Level 1:colcon.colcon_core.package_identification:_identify(seal_msgs) by extensions ['colcon_meta']
+[0.412s] Level 1:colcon.colcon_core.package_identification:_identify(seal_msgs) by extension 'colcon_meta'
+[0.412s] Level 1:colcon.colcon_core.package_identification:_identify(seal_msgs) by extensions ['ros']
+[0.412s] Level 1:colcon.colcon_core.package_identification:_identify(seal_msgs) by extension 'ros'
+[0.414s] DEBUG:colcon.colcon_core.package_identification:Package 'seal_msgs' with type 'ros.ament_cmake' and name 'seal_msgs'
+[0.415s] Level 1:colcon.colcon_core.package_identification:_identify(seal_ros_nodes) by extensions ['ignore', 'ignore_ament_install']
+[0.415s] Level 1:colcon.colcon_core.package_identification:_identify(seal_ros_nodes) by extension 'ignore'
+[0.415s] Level 1:colcon.colcon_core.package_identification:_identify(seal_ros_nodes) by extension 'ignore_ament_install'
+[0.415s] Level 1:colcon.colcon_core.package_identification:_identify(seal_ros_nodes) by extensions ['colcon_pkg']
+[0.415s] Level 1:colcon.colcon_core.package_identification:_identify(seal_ros_nodes) by extension 'colcon_pkg'
+[0.415s] Level 1:colcon.colcon_core.package_identification:_identify(seal_ros_nodes) by extensions ['colcon_meta']
+[0.415s] Level 1:colcon.colcon_core.package_identification:_identify(seal_ros_nodes) by extension 'colcon_meta'
+[0.415s] Level 1:colcon.colcon_core.package_identification:_identify(seal_ros_nodes) by extensions ['ros']
+[0.415s] Level 1:colcon.colcon_core.package_identification:_identify(seal_ros_nodes) by extension 'ros'
+[0.415s] DEBUG:colcon.colcon_core.package_identification:Package 'seal_ros_nodes' with type 'ros.ament_cmake' and name 'seal_ros_nodes'
+[0.415s] Level 1:colcon.colcon_core.package_discovery:discover_packages(recursive) using defaults
+[0.415s] Level 1:colcon.colcon_core.package_discovery:discover_packages(ignore) discover
+[0.415s] Level 1:colcon.colcon_core.package_discovery:discover_packages(ignore) using defaults
+[0.415s] Level 1:colcon.colcon_core.package_discovery:discover_packages(path) discover
+[0.415s] Level 1:colcon.colcon_core.package_discovery:discover_packages(path) using defaults
+[0.447s] Level 1:colcon.colcon_core.package_discovery:discover_packages(prefix_path) check parameters
+[0.447s] Level 1:colcon.colcon_core.package_discovery:discover_packages(prefix_path) discover
+[0.452s] Level 1:colcon.colcon_core.package_discovery:discover_packages(prefix_path) using defaults
+[0.460s] Level 5:colcon.colcon_core.verb:set package 'seal_msgs' build argument 'cmake_args' from command line to 'None'
+[0.460s] Level 5:colcon.colcon_core.verb:set package 'seal_msgs' build argument 'cmake_target' from command line to 'None'
+[0.460s] Level 5:colcon.colcon_core.verb:set package 'seal_msgs' build argument 'cmake_target_skip_unavailable' from command line to 'False'
+[0.460s] Level 5:colcon.colcon_core.verb:set package 'seal_msgs' build argument 'cmake_clean_cache' from command line to 'False'
+[0.460s] Level 5:colcon.colcon_core.verb:set package 'seal_msgs' build argument 'cmake_clean_first' from command line to 'False'
+[0.460s] Level 5:colcon.colcon_core.verb:set package 'seal_msgs' build argument 'cmake_force_configure' from command line to 'False'
+[0.460s] Level 5:colcon.colcon_core.verb:set package 'seal_msgs' build argument 'ament_cmake_args' from command line to 'None'
+[0.460s] Level 5:colcon.colcon_core.verb:set package 'seal_msgs' build argument 'catkin_cmake_args' from command line to 'None'
+[0.460s] Level 5:colcon.colcon_core.verb:set package 'seal_msgs' build argument 'catkin_skip_building_tests' from command line to 'False'
+[0.460s] DEBUG:colcon.colcon_core.verb:Building package 'seal_msgs' with the following arguments: {'ament_cmake_args': None, 'build_base': '/home/jd/Documents/projet_integration/lib/seal-ros-bridge/build/seal_msgs', 'catkin_cmake_args': None, 'catkin_skip_building_tests': False, 'cmake_args': None, 'cmake_clean_cache': False, 'cmake_clean_first': False, 'cmake_force_configure': False, 'cmake_target': None, 'cmake_target_skip_unavailable': False, 'install_base': '/home/jd/Documents/projet_integration/lib/seal-ros-bridge/install/seal_msgs', 'merge_install': False, 'path': '/home/jd/Documents/projet_integration/lib/seal-ros-bridge/seal_msgs', 'symlink_install': False, 'test_result_base': None}
+[0.463s] Level 5:colcon.colcon_core.verb:set package 'seal_ros_nodes' build argument 'cmake_args' from command line to 'None'
+[0.463s] Level 5:colcon.colcon_core.verb:set package 'seal_ros_nodes' build argument 'cmake_target' from command line to 'None'
+[0.463s] Level 5:colcon.colcon_core.verb:set package 'seal_ros_nodes' build argument 'cmake_target_skip_unavailable' from command line to 'False'
+[0.463s] Level 5:colcon.colcon_core.verb:set package 'seal_ros_nodes' build argument 'cmake_clean_cache' from command line to 'False'
+[0.463s] Level 5:colcon.colcon_core.verb:set package 'seal_ros_nodes' build argument 'cmake_clean_first' from command line to 'False'
+[0.463s] Level 5:colcon.colcon_core.verb:set package 'seal_ros_nodes' build argument 'cmake_force_configure' from command line to 'False'
+[0.463s] Level 5:colcon.colcon_core.verb:set package 'seal_ros_nodes' build argument 'ament_cmake_args' from command line to 'None'
+[0.463s] Level 5:colcon.colcon_core.verb:set package 'seal_ros_nodes' build argument 'catkin_cmake_args' from command line to 'None'
+[0.463s] Level 5:colcon.colcon_core.verb:set package 'seal_ros_nodes' build argument 'catkin_skip_building_tests' from command line to 'False'
+[0.463s] DEBUG:colcon.colcon_core.verb:Building package 'seal_ros_nodes' with the following arguments: {'ament_cmake_args': None, 'build_base': '/home/jd/Documents/projet_integration/lib/seal-ros-bridge/build/seal_ros_nodes', 'catkin_cmake_args': None, 'catkin_skip_building_tests': False, 'cmake_args': None, 'cmake_clean_cache': False, 'cmake_clean_first': False, 'cmake_force_configure': False, 'cmake_target': None, 'cmake_target_skip_unavailable': False, 'install_base': '/home/jd/Documents/projet_integration/lib/seal-ros-bridge/install/seal_ros_nodes', 'merge_install': False, 'path': '/home/jd/Documents/projet_integration/lib/seal-ros-bridge/seal_ros_nodes', 'symlink_install': False, 'test_result_base': None}
+[0.467s] INFO:colcon.colcon_core.executor:Executing jobs using 'parallel' executor
+[0.471s] DEBUG:colcon.colcon_parallel_executor.executor.parallel:run_until_complete
+[0.472s] INFO:colcon.colcon_ros.task.ament_cmake.build:Building ROS package in '/home/jd/Documents/projet_integration/lib/seal-ros-bridge/seal_msgs' with build type 'ament_cmake'
+[0.472s] INFO:colcon.colcon_cmake.task.cmake.build:Building CMake package in '/home/jd/Documents/projet_integration/lib/seal-ros-bridge/seal_msgs'
+[0.477s] INFO:colcon.colcon_core.plugin_system:Skipping extension 'colcon_core.shell.bat': Not used on non-Windows systems
+[0.477s] INFO:colcon.colcon_core.shell:Skip shell extension 'powershell' for command environment: Not usable outside of PowerShell
+[0.477s] DEBUG:colcon.colcon_core.shell:Skip shell extension 'dsv' for command environment
+[0.484s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoking command in '/home/jd/Documents/projet_integration/lib/seal-ros-bridge/build/seal_msgs': /usr/bin/cmake /home/jd/Documents/projet_integration/lib/seal-ros-bridge/seal_msgs -DCMAKE_INSTALL_PREFIX=/home/jd/Documents/projet_integration/lib/seal-ros-bridge/install/seal_msgs
+[0.701s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoked command in '/home/jd/Documents/projet_integration/lib/seal-ros-bridge/build/seal_msgs' returned '1': /usr/bin/cmake /home/jd/Documents/projet_integration/lib/seal-ros-bridge/seal_msgs -DCMAKE_INSTALL_PREFIX=/home/jd/Documents/projet_integration/lib/seal-ros-bridge/install/seal_msgs
+[0.708s] Level 1:colcon.colcon_core.environment:create_environment_scripts_only(seal_msgs)
+[0.718s] Level 1:colcon.colcon_core.environment:checking '/home/jd/Documents/projet_integration/lib/seal-ros-bridge/install/seal_msgs' for CMake module files
+[0.718s] Level 1:colcon.colcon_core.environment:checking '/home/jd/Documents/projet_integration/lib/seal-ros-bridge/install/seal_msgs' for CMake config files
+[0.719s] Level 1:colcon.colcon_core.environment:checking '/home/jd/Documents/projet_integration/lib/seal-ros-bridge/install/seal_msgs/bin'
+[0.719s] Level 1:colcon.colcon_core.environment:checking '/home/jd/Documents/projet_integration/lib/seal-ros-bridge/install/seal_msgs/lib/pkgconfig/seal_msgs.pc'
+[0.720s] Level 1:colcon.colcon_core.environment:checking '/home/jd/Documents/projet_integration/lib/seal-ros-bridge/install/seal_msgs/lib/python3.10/site-packages'
+[0.721s] Level 1:colcon.colcon_core.environment:checking '/home/jd/Documents/projet_integration/lib/seal-ros-bridge/install/seal_msgs/bin'
+[0.729s] INFO:colcon.colcon_core.shell:Creating package script '/home/jd/Documents/projet_integration/lib/seal-ros-bridge/install/seal_msgs/share/seal_msgs/package.ps1'
+[0.730s] INFO:colcon.colcon_core.shell:Creating package descriptor '/home/jd/Documents/projet_integration/lib/seal-ros-bridge/install/seal_msgs/share/seal_msgs/package.dsv'
+[0.731s] INFO:colcon.colcon_core.shell:Creating package script '/home/jd/Documents/projet_integration/lib/seal-ros-bridge/install/seal_msgs/share/seal_msgs/package.sh'
+[0.731s] INFO:colcon.colcon_core.shell:Creating package script '/home/jd/Documents/projet_integration/lib/seal-ros-bridge/install/seal_msgs/share/seal_msgs/package.bash'
+[0.732s] INFO:colcon.colcon_core.shell:Creating package script '/home/jd/Documents/projet_integration/lib/seal-ros-bridge/install/seal_msgs/share/seal_msgs/package.zsh'
+[0.732s] Level 1:colcon.colcon_core.environment:create_file_with_runtime_dependencies(/home/jd/Documents/projet_integration/lib/seal-ros-bridge/install/seal_msgs/share/colcon-core/packages/seal_msgs)
+[0.742s] DEBUG:colcon.colcon_parallel_executor.executor.parallel:closing loop
+[0.743s] DEBUG:colcon.colcon_parallel_executor.executor.parallel:loop closed
+[0.743s] DEBUG:colcon.colcon_parallel_executor.executor.parallel:run_until_complete finished with '1'
+[0.743s] DEBUG:colcon.colcon_core.event_reactor:joining thread
+[0.759s] INFO:colcon.colcon_core.plugin_system:Skipping extension 'colcon_notification.desktop_notification.terminal_notifier': Not used on non-Darwin systems
+[0.759s] INFO:colcon.colcon_core.plugin_system:Skipping extension 'colcon_notification.desktop_notification.win32': Not used on non-Windows systems
+[0.759s] INFO:colcon.colcon_notification.desktop_notification:Sending desktop notification using 'notify2'
+[0.777s] DEBUG:colcon.colcon_core.event_reactor:joined thread
+[0.785s] INFO:colcon.colcon_core.shell:Creating prefix script '/home/jd/Documents/projet_integration/lib/seal-ros-bridge/install/local_setup.ps1'
+[0.786s] INFO:colcon.colcon_core.shell:Creating prefix util module '/home/jd/Documents/projet_integration/lib/seal-ros-bridge/install/_local_setup_util_ps1.py'
+[0.787s] INFO:colcon.colcon_core.shell:Creating prefix chain script '/home/jd/Documents/projet_integration/lib/seal-ros-bridge/install/setup.ps1'
+[0.791s] INFO:colcon.colcon_core.shell:Creating prefix script '/home/jd/Documents/projet_integration/lib/seal-ros-bridge/install/local_setup.sh'
+[0.791s] INFO:colcon.colcon_core.shell:Creating prefix util module '/home/jd/Documents/projet_integration/lib/seal-ros-bridge/install/_local_setup_util_sh.py'
+[0.792s] INFO:colcon.colcon_core.shell:Creating prefix chain script '/home/jd/Documents/projet_integration/lib/seal-ros-bridge/install/setup.sh'
+[0.796s] INFO:colcon.colcon_core.shell:Creating prefix script '/home/jd/Documents/projet_integration/lib/seal-ros-bridge/install/local_setup.bash'
+[0.796s] INFO:colcon.colcon_core.shell:Creating prefix chain script '/home/jd/Documents/projet_integration/lib/seal-ros-bridge/install/setup.bash'
+[0.800s] INFO:colcon.colcon_core.shell:Creating prefix script '/home/jd/Documents/projet_integration/lib/seal-ros-bridge/install/local_setup.zsh'
+[0.800s] INFO:colcon.colcon_core.shell:Creating prefix chain script '/home/jd/Documents/projet_integration/lib/seal-ros-bridge/install/setup.zsh'

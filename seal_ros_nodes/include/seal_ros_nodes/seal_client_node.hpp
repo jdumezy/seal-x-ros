@@ -3,7 +3,7 @@
 
 #include "rclcpp/rclcpp.hpp"
 
-#include "seal_ros_nodes/seal_context.hpp"
+#include "seal_ros_nodes/seal_parms_and_keys.hpp"
 #include "seal_ros_nodes/seal_encryptor.hpp"
 #include "seal_ros_nodes/seal_decryptor.hpp"
 
@@ -12,6 +12,9 @@
 #include "std_msgs/msg/string.hpp"
 #include "seal_msgs/msg/seal_data.hpp"
 #include "seal_msgs/srv/key_exchange.hpp"
+
+#include <vector>
+#include <memory>
 
 class SealClientNode : public rclcpp::Node {
 public:
@@ -26,8 +29,8 @@ private:
 	rclcpp::Publisher<std_msgs::msg::String>::SharedPtr ciphertext_pub_;
 	rclcpp::Subscription<std_msgs::msg::String>::SharedPtr response_sub_;
 	
-	std::shared_ptr<seal::SEALContext> context_;
-	seal::PublicKey public_key_;
+	std::vector<uint8_t> parms_;
+	std::vector<uint8_t> public_key_;
 	seal::SecretKey secret_key_;
 	double scale_;
 };
