@@ -1,6 +1,0 @@
-msg/SealData.idl
-msg/SealData.msg
-srv/KeyExchange.idl
-srv/KeyExchange.srv
-srv/KeyExchange_Request.msg
-srv/KeyExchange_Response.msg

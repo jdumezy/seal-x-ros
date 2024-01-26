@@ -1,8 +1,0 @@
-source;share/seal_ros_nodes/hook/cmake_prefix_path.ps1
-source;share/seal_ros_nodes/hook/cmake_prefix_path.dsv
-source;share/seal_ros_nodes/hook/cmake_prefix_path.sh
-source;share/seal_ros_nodes/local_setup.bash
-source;share/seal_ros_nodes/local_setup.dsv
-source;share/seal_ros_nodes/local_setup.ps1
-source;share/seal_ros_nodes/local_setup.sh
-source;share/seal_ros_nodes/local_setup.zsh
