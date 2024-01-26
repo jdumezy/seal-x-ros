@@ -40,7 +40,7 @@ ament_target_dependencies(seal_server_node
 	seal_msgs
 )
 
-target_link_libraries(seal_parms_and_keys SEAL::seal)
+target_link_libraries(seal_parms_and_keys SEAL::seal sxr_lib)
 target_link_libraries(seal_encryptor SEAL::seal sxr_lib)
 target_link_libraries(seal_decryptor SEAL::seal sxr_lib)
 target_link_libraries(sxr_lib SEAL::seal)

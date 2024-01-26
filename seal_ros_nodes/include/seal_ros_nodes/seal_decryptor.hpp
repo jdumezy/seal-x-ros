@@ -6,13 +6,14 @@
 
 #include <vector>
 #include <memory>
+#include <cstdint>
 
 class DecryptorManager {
 public:
 	DecryptorManager(std::vector<uint8_t> serialized_parms,
 					 const seal::SecretKey &secret_key);
 
-	float decrypt_float(seal::Ciphertext encryptedCiphertext);
+	float decrypt_float(std::vector<uint8_t> encryptedCiphertext);
 
 private:
 	std::shared_ptr<seal::SEALContext> context_;

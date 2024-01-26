@@ -6,6 +6,7 @@
 
 #include <vector>
 #include <memory>
+#include <cstdint>
 
 class EncryptorManager {
 public:
@@ -13,7 +14,7 @@ public:
 					 const seal::PublicKey &public_key, 
 					 double scale);
 
-	seal::Ciphertext encrypt_float(float inputFloat);
+	std::vector<uint8_t> encrypt_float(float inputFloat);
 
 private:
 	std::shared_ptr<seal::SEALContext> context_;

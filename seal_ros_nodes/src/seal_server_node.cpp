@@ -19,7 +19,11 @@ SealServerNode::SealServerNode()
 
 void SealServerNode::handle_key_exchange(const std::shared_ptr<seal_msgs::srv::KeyExchange::Request> request,
 	std::shared_ptr<seal_msgs::srv::KeyExchange::Response> response) {
+	
+	parms_ = request->parms;
 	public_key_ = request->public_key;
+	relin_keys_ = request->relin_keys;
+	
 	RCLCPP_INFO(this->get_logger(), "Received public key");
 	
 	response->success = true;

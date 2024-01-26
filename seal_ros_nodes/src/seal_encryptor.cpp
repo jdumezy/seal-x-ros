@@ -8,12 +8,15 @@ EncryptorManager::EncryptorManager(std::vector<uint8_t> serialized_parms,
 	  encoder_(*context_), scale_(scale) {
 }
 
-seal::Ciphertext EncryptorManager::encrypt_float(float inputFloat) {
+std::vector<uint8_t> EncryptorManager::encrypt_float(float inputFloat) {
 	seal::Plaintext encodedPlaintext;
 	encoder_.encode(inputFloat, scale_, encodedPlaintext);
 	
 	seal::Ciphertext encryptedCiphertext;
 	encryptor_.encrypt(encodedPlaintext, encryptedCiphertext);
-	return encryptedCiphertext;
+	
+	std::vector<uint8_t> serializedCiphertext = serialize_seal_object(encryptedCiphertext);
+	
+	return serializedCiphertext;
 }
 

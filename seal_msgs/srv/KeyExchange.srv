@@ -1,6 +1,7 @@
 # Request
-string public_key
-
+uint8[] parms
+uint8[] public_key
+uint8[] relin_keys
 ---
 # Response
 bool success

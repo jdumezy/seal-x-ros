@@ -7,8 +7,11 @@ DecryptorManager::DecryptorManager(std::vector<uint8_t> serialized_parms,
 	  encoder_(*context_) {
 }
 
-float DecryptorManager::decrypt_float(seal::Ciphertext encryptedCiphertext) {
+float DecryptorManager::decrypt_float(std::vector<uint8_t> serializedCiphertext) {
 	seal::Plaintext decodedPlaintext;
+	
+	seal::Ciphertext encryptedCiphertext = deserialize_to_ct(serializedCiphertext, context_);
+	
 	decryptor_.decrypt(encryptedCiphertext, decodedPlaintext);
 	
 	std::vector<double> decodedFloat;

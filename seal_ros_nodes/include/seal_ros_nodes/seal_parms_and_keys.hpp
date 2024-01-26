@@ -2,9 +2,11 @@
 #define SEAL_PARMS_AND_KEYS_HPP
 
 #include "seal/seal.h"
+#include "seal_ros_nodes/sxr_lib.hpp"
 
 #include <vector>
 #include <memory>
+#include <cstdint>
 
 class ParmsAndKeysManager {
 public:

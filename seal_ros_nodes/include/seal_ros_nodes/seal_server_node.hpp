@@ -23,7 +23,10 @@ private:
 	rclcpp::Service<seal_msgs::srv::KeyExchange>::SharedPtr key_exchange_service_;
 	rclcpp::Subscription<std_msgs::msg::String>::SharedPtr ciphertext_sub_;
 	rclcpp::Publisher<std_msgs::msg::String>::SharedPtr response_pub_;
-	std::string public_key_;
+	
+	std::vector<uint8_t> parms_;
+	std::vector<uint8_t> public_key_;
+	std::vector<uint8_t> relin_keys_;
 };
 
 #endif // SEAL_SERVER_NODE_HPP

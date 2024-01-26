@@ -12,8 +12,7 @@ void ParmsAndKeysManager::create_parms() {
 	parms.set_poly_modulus_degree(poly_modulus_degree);
 	parms.set_coeff_modulus(seal::CoeffModulus::Create(poly_modulus_degree, { 60, 40, 40, 60 }));
 	
-	serialized_parms_.resize(parms.save_size());
-	parms.save(reinterpret_cast<seal::seal_byte*>(serialized_parms_.data()), serialized_parms_.size());
+	serialized_parms_ = serialize_seal_object(parms);
 	
 	context_ = std::make_shared<seal::SEALContext>(parms);
 	scale_ = std::pow(2.0, 40);
@@ -26,11 +25,8 @@ void ParmsAndKeysManager::create_keys() {
 	keygen.create_public_key(public_key_);
 	keygen.create_relin_keys(relin_keys_);
 	
-	serialized_pk_.resize(public_key_.save_size());
-	serialized_rlk_.resize(relin_keys_.save_size());
-	
-	public_key_.save(reinterpret_cast<seal::seal_byte*>(serialized_pk_.data()), serialized_pk_.size());
-	relin_keys_.save(reinterpret_cast<seal::seal_byte*>(serialized_rlk_.data()), serialized_rlk_.size());	
+	serialized_pk_ = serialize_seal_object(public_key_);
+	serialized_rlk_ = serialize_seal_object(relin_keys_);	
 }
 
 double ParmsAndKeysManager::get_scale() const {

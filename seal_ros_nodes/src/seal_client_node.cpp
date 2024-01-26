@@ -3,21 +3,29 @@
 SealClientNode::SealClientNode()
 	: rclcpp::Node("seal_client_node") {
 	
-	key_exchange_client_ = this->create_client<seal_msgs::srv::KeyExchange>("key_exchange_service");
-	
-	ciphertext_pub_ = this->create_publisher<std_msgs::msg::String>("seal_ciphertext_topic", 10);
-	
+	// Create client, publisher and subscriber
+	key_exchange_client_ = this->create_client<seal_msgs::srv::KeyExchange>(
+		"key_exchange_service"
+	);
+	ciphertext_pub_ = this->create_publisher<std_msgs::msg::String>(
+		"seal_ciphertext_topic", 10
+	);
 	response_sub_ = this->create_subscription<std_msgs::msg::String>(
 		"response_topic", 10,
 		std::bind(&SealClientNode::response_callback, this, std::placeholders::_1)
 	);
 	
 	// Create context and keys
-	ParmsAndKeysManager pAndKManager;
-	parms_ = pAndKManager.get_serialized_parms();
-	public_key_ = pAndKManager.get_serialized_pk();
-	secret_key_ = pAndKManager.get_secret_key();
-	scale_ = pAndKManager.get_scale();
+	ParmsAndKeysManager parmsAndKeys;
+	parms_ = parmsAndKeys.get_serialized_parms();
+	public_key_ = parmsAndKeys.get_serialized_pk();
+	relin_keys_ = parmsAndKeys.get_serialized_rlk();
+	secret_key_ = parmsAndKeys.get_secret_key();
+	scale_ = parmsAndKeys.get_scale();
+	
+	// Create encryptor and decryptor
+//	EncryptorManager encryptor_(parms_, public_key_, scale_);
+//	DecryptorManager decryptor_(parms_, secret_key_);
 	
 	connection_and_send_key();
 }
@@ -29,17 +37,19 @@ void SealClientNode::connection_and_send_key() {
 	}
 	
 	auto request = std::make_shared<seal_msgs::srv::KeyExchange::Request>();
-	request->public_key = "YourPublicKeyStringHere";
+	request->parms = parms_;
+	request->public_key = public_key_;
+	request->relin_keys = relin_keys_;
 	
 	key_exchange_client_->async_send_request(request,
 		[this](rclcpp::Client<seal_msgs::srv::KeyExchange>::SharedFuture future_response) {
 			auto response = future_response.get();
 			if (response->success) {
-				RCLCPP_INFO(this->get_logger(), "Key exchange successful: %s", response->message.c_str());
+				RCLCPP_INFO(this->get_logger(), "Key exchange successful");
 				send_ciphertext();
 			}
 			else {
-				RCLCPP_ERROR(this->get_logger(), "Key exchange failed: %s", response->message.c_str());
+				RCLCPP_ERROR(this->get_logger(), "Key exchange failed");
 			}
 	});
 }
@@ -51,9 +61,8 @@ void SealClientNode::send_ciphertext() {
 	RCLCPP_DEBUG(this->get_logger(), "Ciphertext sent");
 }
 
-void SealClientNode::response_callback(const std_msgs::msg::String::SharedPtr msg)
-{
-    RCLCPP_INFO(this->get_logger(), "Received response: %s", msg->data.c_str());
+void SealClientNode::response_callback(const std_msgs::msg::String::SharedPtr msg) {
+    RCLCPP_INFO(this->get_logger(), "Received response");
 }
 
 int main(int argc, char **argv) {
