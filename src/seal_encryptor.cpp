@@ -1,4 +1,4 @@
-#include "seal_ros_nodes/seal_encryptor.hpp"
+#include "seal_x_ros/seal_encryptor.hpp"
 
 EncryptorManager::EncryptorManager(std::vector<uint8_t> serialized_parms, 
 								   std::vector<uint8_t> serialized_pk, 

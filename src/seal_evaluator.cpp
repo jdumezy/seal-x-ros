@@ -1,4 +1,4 @@
-#include "seal_ros_nodes/seal_evaluator.hpp"
+#include "seal_x_ros/seal_evaluator.hpp"
 
 EvaluatorManager::EvaluatorManager(std::vector<uint8_t> serialized_parms, 
 								   std::vector<uint8_t> serialized_pk,

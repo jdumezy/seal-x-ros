@@ -1,4 +1,4 @@
-#include "seal_ros_nodes/sxr_lib.hpp"
+#include "seal_x_ros/sxr_lib.hpp"
 
 std::shared_ptr<seal::SEALContext> CreateSEALContextFromParameters(const std::vector<uint8_t>& serialized_parms) {
 	seal::EncryptionParameters parms = deserialize_to_parms(serialized_parms);

@@ -2,7 +2,7 @@
 #define SEAL_ENCRYPTOR_HPP
 
 #include "seal/seal.h"
-#include "seal_ros_nodes/sxr_lib.hpp"
+#include "seal_x_ros/sxr_lib.hpp"
 
 #include <vector>
 #include <memory>

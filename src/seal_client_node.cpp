@@ -1,4 +1,4 @@
-#include "seal_ros_nodes/seal_client_node.hpp"
+#include "seal_x_ros/seal_client_node.hpp"
 
 SealClientNode::SealClientNode()
 	: rclcpp::Node("seal_client_node"),
@@ -7,10 +7,10 @@ SealClientNode::SealClientNode()
 	  decryptor_(parmsAndKeys_.get_serialized_parms(), parmsAndKeys_.get_secret_key()) {
 	
 	// Create client, publisher and subscriber
-	key_exchange_client_ = this->create_client<seal_ros_nodes::srv::KeyExchange>(
+	key_exchange_client_ = this->create_client<seal_x_ros::srv::KeyExchange>(
 		"key_exchange_service"
 	);
-	operation_request_client_ = this->create_client<seal_ros_nodes::srv::OperationRequest>(
+	operation_request_client_ = this->create_client<seal_x_ros::srv::OperationRequest>(
 		"operation_request_service"
 	);
 	
@@ -30,7 +30,7 @@ void SealClientNode::connection_and_send_key() {
 		RCLCPP_WARN(this->get_logger(), "Waiting for the server to be up...");
 	}
 	
-	auto request = std::make_shared<seal_ros_nodes::srv::KeyExchange::Request>();
+	auto request = std::make_shared<seal_x_ros::srv::KeyExchange::Request>();
 	request->serialized_parms = serialized_parms_;
 	request->serialized_pk = serialized_pk_;
 	request->serialized_rlk = serialized_rlk_;
@@ -38,7 +38,7 @@ void SealClientNode::connection_and_send_key() {
 	request->scale = scale_;
 	
 	key_exchange_client_->async_send_request(request,
-		[this](rclcpp::Client<seal_ros_nodes::srv::KeyExchange>::SharedFuture future_response) {
+		[this](rclcpp::Client<seal_x_ros::srv::KeyExchange>::SharedFuture future_response) {
 			auto response = future_response.get();
 			if (response->success) {
 				RCLCPP_INFO(this->get_logger(), "Key exchange successful");
@@ -56,11 +56,11 @@ void SealClientNode::send_ciphertext() {
 	
 	RCLCPP_DEBUG(this->get_logger(), "Sending ciphertext: %f", f);
 	
-	auto request = std::make_shared<seal_ros_nodes::srv::OperationRequest::Request>();
+	auto request = std::make_shared<seal_x_ros::srv::OperationRequest::Request>();
 	request->serialized_ct = serialized_ct;
 	
 	operation_request_client_->async_send_request(request,
-		[this](rclcpp::Client<seal_ros_nodes::srv::OperationRequest>::SharedFuture future_response) {
+		[this](rclcpp::Client<seal_x_ros::srv::OperationRequest>::SharedFuture future_response) {
 			
 			auto response = future_response.get();
 			if (response->success) {

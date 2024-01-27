@@ -1,22 +1,22 @@
-#include "seal_ros_nodes/seal_server_node.hpp"
+#include "seal_x_ros/seal_server_node.hpp"
 
 SealServerNode::SealServerNode()
 	: Node("seal_server_node") {
 	
-	key_exchange_service_ = this->create_service<seal_ros_nodes::srv::KeyExchange>("key_exchange_service",
+	key_exchange_service_ = this->create_service<seal_x_ros::srv::KeyExchange>("key_exchange_service",
 		std::bind(&SealServerNode::handle_key_exchange, this,
 			std::placeholders::_1, std::placeholders::_2)
 	);
 	
-	operation_request_service_ = this->create_service<seal_ros_nodes::srv::OperationRequest>(
+	operation_request_service_ = this->create_service<seal_x_ros::srv::OperationRequest>(
 		"operation_request_service",
 		std::bind(&SealServerNode::handle_operation_request, this,
 			std::placeholders::_1, std::placeholders::_2)
 	);
 }
 
-void SealServerNode::handle_key_exchange(const std::shared_ptr<seal_ros_nodes::srv::KeyExchange::Request> request,
-	std::shared_ptr<seal_ros_nodes::srv::KeyExchange::Response> response) {
+void SealServerNode::handle_key_exchange(const std::shared_ptr<seal_x_ros::srv::KeyExchange::Request> request,
+	std::shared_ptr<seal_x_ros::srv::KeyExchange::Response> response) {
 	
 	serialized_parms_ = request->serialized_parms;
 	serialized_pk_ = request->serialized_pk;
@@ -32,8 +32,8 @@ void SealServerNode::handle_key_exchange(const std::shared_ptr<seal_ros_nodes::s
 	evaluator_.emplace(serialized_parms_, serialized_pk_, serialized_rlk_, serialized_galk_, scale_);
 }
 
-void SealServerNode::handle_operation_request(const std::shared_ptr<seal_ros_nodes::srv::OperationRequest::Request> request,
-	std::shared_ptr<seal_ros_nodes::srv::OperationRequest::Response> response) {
+void SealServerNode::handle_operation_request(const std::shared_ptr<seal_x_ros::srv::OperationRequest::Request> request,
+	std::shared_ptr<seal_x_ros::srv::OperationRequest::Response> response) {
 	
 	RCLCPP_DEBUG(this->get_logger(), "Received ciphertext");
 	

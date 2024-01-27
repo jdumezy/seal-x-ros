@@ -1,4 +1,4 @@
-#include "seal_ros_nodes/seal_decryptor.hpp"
+#include "seal_x_ros/seal_decryptor.hpp"
 
 DecryptorManager::DecryptorManager(std::vector<uint8_t> serialized_parms,
 								   const seal::SecretKey &secret_key)
