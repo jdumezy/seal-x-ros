@@ -1,6 +1,0 @@
-encryption:
-  scheme: "bfv"
-  poly_modulus_degree: 4096
-  plain_modulus: 1024
-  # Add other parameters as needed
-
