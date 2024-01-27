@@ -47,7 +47,7 @@ seal::RelinKeys ParmsAndKeysManager::get_relin_keys() const {
 	return relin_keys_;
 }
 
-seal::RelinKeys ParmsAndKeysManager::get_galois_keys() const {
+seal::GaloisKeys ParmsAndKeysManager::get_galois_keys() const {
 	return galois_keys_;
 }
 
