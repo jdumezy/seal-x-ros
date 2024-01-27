@@ -1,10 +1,10 @@
 #include "seal_ros_nodes/seal_encryptor.hpp"
 
 EncryptorManager::EncryptorManager(std::vector<uint8_t> serialized_parms, 
-								   const seal::PublicKey &public_key, 
+								   std::vector<uint8_t> serialized_pk, 
 								   double scale)
 	: context_(CreateSEALContextFromParameters(serialized_parms)),
-	  encryptor_(*context_, public_key), 
+	  encryptor_(*context_, deserialize_to_pk(serialized_pk, context_)), 
 	  encoder_(*context_), scale_(scale) {
 }
 

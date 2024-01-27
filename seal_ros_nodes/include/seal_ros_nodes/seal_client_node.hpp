@@ -29,14 +29,15 @@ private:
 	rclcpp::Publisher<std_msgs::msg::String>::SharedPtr ciphertext_pub_;
 	rclcpp::Subscription<std_msgs::msg::String>::SharedPtr response_sub_;
 	
+	ParmsAndKeysManager parmsAndKeys_;
 	std::vector<uint8_t> parms_;
 	std::vector<uint8_t> public_key_;
 	std::vector<uint8_t> relin_keys_;
 	seal::SecretKey secret_key_;
 	double scale_;
 	
-//	EncryptorManager encryptor_;
-//	DecryptorManager decryptor_;
+	EncryptorManager encryptor_;
+	DecryptorManager decryptor_;
 };
 
 #endif // SEAL_CLIENT_NODE_HPP

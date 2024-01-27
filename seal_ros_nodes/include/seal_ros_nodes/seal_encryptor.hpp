@@ -11,7 +11,7 @@
 class EncryptorManager {
 public:
 	EncryptorManager(std::vector<uint8_t> serialized_parms, 
-					 const seal::PublicKey &public_key, 
+					 std::vector<uint8_t> serialized_pk, 
 					 double scale);
 
 	std::vector<uint8_t> encrypt_float(float inputFloat);

@@ -1,7 +1,10 @@
 #include "seal_ros_nodes/seal_client_node.hpp"
 
 SealClientNode::SealClientNode()
-	: rclcpp::Node("seal_client_node") {
+	: rclcpp::Node("seal_client_node"),
+	  parmsAndKeys_(), 
+	  encryptor_(parmsAndKeys_.get_serialized_parms(), parmsAndKeys_.get_serialized_pk(), parmsAndKeys_.get_scale()),
+	  decryptor_(parmsAndKeys_.get_serialized_parms(), parmsAndKeys_.get_secret_key()) {
 	
 	// Create client, publisher and subscriber
 	key_exchange_client_ = this->create_client<seal_msgs::srv::KeyExchange>(
@@ -15,17 +18,11 @@ SealClientNode::SealClientNode()
 		std::bind(&SealClientNode::response_callback, this, std::placeholders::_1)
 	);
 	
-	// Create context and keys
-	ParmsAndKeysManager parmsAndKeys;
-	parms_ = parmsAndKeys.get_serialized_parms();
-	public_key_ = parmsAndKeys.get_serialized_pk();
-	relin_keys_ = parmsAndKeys.get_serialized_rlk();
-	secret_key_ = parmsAndKeys.get_secret_key();
-	scale_ = parmsAndKeys.get_scale();
-	
-	// Create encryptor and decryptor
-//	EncryptorManager encryptor_(parms_, public_key_, scale_);
-//	DecryptorManager decryptor_(parms_, secret_key_);
+	parms_ = parmsAndKeys_.get_serialized_parms();
+	public_key_ = parmsAndKeys_.get_serialized_pk();
+	relin_keys_ = parmsAndKeys_.get_serialized_rlk();
+	secret_key_ = parmsAndKeys_.get_secret_key();
+	scale_ = parmsAndKeys_.get_scale();
 	
 	connection_and_send_key();
 }
@@ -62,7 +59,8 @@ void SealClientNode::send_ciphertext() {
 }
 
 void SealClientNode::response_callback(const std_msgs::msg::String::SharedPtr msg) {
-    RCLCPP_INFO(this->get_logger(), "Received response");
+	RCLCPP_INFO(this->get_logger(), "Received response");
+	const std_msgs::msg::String::SharedPtr m = msg;
 }
 
 int main(int argc, char **argv) {

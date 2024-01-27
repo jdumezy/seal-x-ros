@@ -33,6 +33,8 @@ void SealServerNode::handle_key_exchange(const std::shared_ptr<seal_msgs::srv::K
 void SealServerNode::ciphertext_callback(const std_msgs::msg::String::SharedPtr msg) {
 	RCLCPP_DEBUG(this->get_logger(), "Received ciphertext");
 	
+	const std_msgs::msg::String::SharedPtr m = msg;
+	
 	std_msgs::msg::String response_msg;
 	response_msg.data = "Response to received ciphertext";
 	response_pub_->publish(response_msg);
