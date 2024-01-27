@@ -33,7 +33,8 @@ source install/setup.zsh
 Finally, launch a client and a server node, one in each terminal:
 ```bash
 ros2 run seal_x_ros sxr_client_node
-
+```
+```bash
 ros2 run seal_x_ros sxr_server_node
 ```
 
