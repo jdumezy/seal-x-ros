@@ -13,13 +13,13 @@ The package is build to share data between a client node (encryption and decrypt
 ## Installation
 1. Install Microsoft SEAL following the instructions at [SEAL GitHub](https://github.com/microsoft/SEAL).
 2. Clone this repository into your ROS workspace (e.g., `ros2_ws/src/`).
-```bash
-git clone https://github.com/jdumezy/seal-x-ros.git
-```
+   ```bash
+   git clone https://github.com/jdumezy/seal-x-ros.git
+   ```
 3. Build your ROS workspace.
-```bash
-colcon build --packages-select seal_x_ros
-```
+   ```bash
+   colcon build --packages-select seal_x_ros
+   ```
 
 ## Usage
 Open two terminals in your ROS2 workspace and source ROS2:
