@@ -16,49 +16,49 @@ find_package(SEAL 4.1 REQUIRED)
 include_directories(include)
 
 # Define library targets
-add_library(seal_parms_and_keys src/seal_parms_and_keys.cpp)
-add_library(seal_encryptor src/seal_encryptor.cpp)
-add_library(seal_decryptor src/seal_decryptor.cpp)
-add_library(seal_evaluator src/seal_evaluator.cpp)
+add_library(sxr_parms_and_keys src/sxr_parms_and_keys.cpp)
+add_library(sxr_encryptor src/sxr_encryptor.cpp)
+add_library(sxr_decryptor src/sxr_decryptor.cpp)
+add_library(sxr_evaluator src/sxr_evaluator.cpp)
 add_library(sxr_lib src/sxr_lib.cpp)
 
 # Define executables for the nodes
-add_executable(seal_client_node src/seal_client_node.cpp)
-add_executable(seal_server_node src/seal_server_node.cpp)
+add_executable(sxr_client_node src/sxr_client_node.cpp)
+add_executable(sxr_server_node src/sxr_server_node.cpp)
 
 rosidl_generate_interfaces(${PROJECT_NAME}
   "srv/KeyExchange.srv"
   "srv/OperationRequest.srv"
 )
 
-ament_target_dependencies(seal_client_node
+ament_target_dependencies(sxr_client_node
 	rclcpp
 	SEAL
 )
 
-ament_target_dependencies(seal_server_node
+ament_target_dependencies(sxr_server_node
 	rclcpp
 	SEAL
 )
 
 rosidl_get_typesupport_target(cpp_typesupport_target "${PROJECT_NAME}" "rosidl_typesupport_cpp")
 
-target_link_libraries(seal_parms_and_keys SEAL::seal sxr_lib)
-target_link_libraries(seal_encryptor SEAL::seal sxr_lib)
-target_link_libraries(seal_decryptor SEAL::seal sxr_lib)
-target_link_libraries(seal_evaluator SEAL::seal sxr_lib)
+target_link_libraries(sxr_parms_and_keys SEAL::seal sxr_lib)
+target_link_libraries(sxr_encryptor SEAL::seal sxr_lib)
+target_link_libraries(sxr_decryptor SEAL::seal sxr_lib)
+target_link_libraries(sxr_evaluator SEAL::seal sxr_lib)
 target_link_libraries(sxr_lib SEAL::seal)
 
-target_link_libraries(seal_client_node
-	seal_parms_and_keys
-	seal_encryptor
-	seal_decryptor
+target_link_libraries(sxr_client_node
+	sxr_parms_and_keys
+	sxr_encryptor
+	sxr_decryptor
 	SEAL::seal
 	"${cpp_typesupport_target}"
 )
 
-target_link_libraries(seal_server_node
-	seal_evaluator
+target_link_libraries(sxr_server_node
+	sxr_evaluator
 	sxr_lib
 	SEAL::seal
 	"${cpp_typesupport_target}"
@@ -66,8 +66,8 @@ target_link_libraries(seal_server_node
 
 # Install targets
 install(TARGETS
-  seal_client_node
-  seal_server_node
+  sxr_client_node
+  sxr_server_node
   DESTINATION lib/${PROJECT_NAME}
 )
 

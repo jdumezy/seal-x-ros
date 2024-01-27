@@ -1,16 +1,17 @@
-#ifndef SEAL_EVALUATOR_HPP
-#define SEAL_EVALUATOR_HPP
+#ifndef SXR_EVALUATOR_HPP
+#define SXR_EVALUATOR_HPP
 
 #include "seal/seal.h"
+
 #include "seal_x_ros/sxr_lib.hpp"
 
 #include <vector>
 #include <memory>
 #include <cstdint>
 
-class EvaluatorManager {
+class SXREvaluator {
 public:
-	EvaluatorManager(std::vector<uint8_t> serialized_parms, 
+	SXREvaluator(std::vector<uint8_t> serialized_parms, 
 					 std::vector<uint8_t> serialized_pk, 
 					 std::vector<uint8_t> serialized_rlk,
 					 std::vector<uint8_t> serialized_galk,
@@ -28,5 +29,5 @@ private:
 	double scale_;
 };
 
-#endif // SEAL_EVALUATOR_HPP
+#endif // SXR_EVALUATOR_HPP
 

@@ -1,21 +1,21 @@
-#include "seal_x_ros/seal_server_node.hpp"
+#include "seal_x_ros/sxr_server_node.hpp"
 
-SealServerNode::SealServerNode()
-	: Node("seal_server_node") {
+SXRServerNode::SXRServerNode()
+	: Node("sxr_server_node") {
 	
 	key_exchange_service_ = this->create_service<seal_x_ros::srv::KeyExchange>("key_exchange_service",
-		std::bind(&SealServerNode::handle_key_exchange, this,
+		std::bind(&SXRServerNode::handle_key_exchange, this,
 			std::placeholders::_1, std::placeholders::_2)
 	);
 	
 	operation_request_service_ = this->create_service<seal_x_ros::srv::OperationRequest>(
 		"operation_request_service",
-		std::bind(&SealServerNode::handle_operation_request, this,
+		std::bind(&SXRServerNode::handle_operation_request, this,
 			std::placeholders::_1, std::placeholders::_2)
 	);
 }
 
-void SealServerNode::handle_key_exchange(const std::shared_ptr<seal_x_ros::srv::KeyExchange::Request> request,
+void SXRServerNode::handle_key_exchange(const std::shared_ptr<seal_x_ros::srv::KeyExchange::Request> request,
 	std::shared_ptr<seal_x_ros::srv::KeyExchange::Response> response) {
 	
 	serialized_parms_ = request->serialized_parms;
@@ -32,7 +32,7 @@ void SealServerNode::handle_key_exchange(const std::shared_ptr<seal_x_ros::srv::
 	evaluator_.emplace(serialized_parms_, serialized_pk_, serialized_rlk_, serialized_galk_, scale_);
 }
 
-void SealServerNode::handle_operation_request(const std::shared_ptr<seal_x_ros::srv::OperationRequest::Request> request,
+void SXRServerNode::handle_operation_request(const std::shared_ptr<seal_x_ros::srv::OperationRequest::Request> request,
 	std::shared_ptr<seal_x_ros::srv::OperationRequest::Response> response) {
 	
 	RCLCPP_DEBUG(this->get_logger(), "Received ciphertext");
@@ -53,7 +53,7 @@ void SealServerNode::handle_operation_request(const std::shared_ptr<seal_x_ros::
 
 int main(int argc, char **argv) {
 	rclcpp::init(argc, argv);
-	auto node = std::make_shared<SealServerNode>();
+	auto node = std::make_shared<SXRServerNode>();
 	rclcpp::spin(node);
 	rclcpp::shutdown();
 	return 0;

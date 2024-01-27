@@ -1,4 +1,4 @@
-#include "seal_x_ros/seal_parms_and_keys.hpp"
+#include "seal_x_ros/sxr_parms_and_keys.hpp"
 
 ParmsAndKeysManager::ParmsAndKeysManager() {
 	create_parms();

@@ -1,7 +1,8 @@
-#ifndef SEAL_PARMS_AND_KEYS_HPP
-#define SEAL_PARMS_AND_KEYS_HPP
+#ifndef SXR_PARMS_AND_KEYS_HPP
+#define SXR_PARMS_AND_KEYS_HPP
 
 #include "seal/seal.h"
+
 #include "seal_x_ros/sxr_lib.hpp"
 
 #include <vector>
@@ -42,5 +43,5 @@ private:
 	std::vector<uint8_t> serialized_galk_;
 };
 
-#endif // SEAL_PARMS_AND_KEYS_HPP
+#endif // SXR_PARMS_AND_KEYS_HPP
 

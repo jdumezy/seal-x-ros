@@ -1,14 +1,14 @@
-#ifndef SEAL_CLIENT_NODE_HPP
-#define SEAL_CLIENT_NODE_HPP
+#ifndef SXR_CLIENT_NODE_HPP
+#define SXR_CLIENT_NODE_HPP
 
 #include "rclcpp/rclcpp.hpp"
 
-#include "seal_x_ros/seal_parms_and_keys.hpp"
-#include "seal_x_ros/seal_encryptor.hpp"
-#include "seal_x_ros/seal_decryptor.hpp"
-#include "seal_x_ros/sxr_lib.hpp"
-
 #include "seal/seal.h"
+
+#include "seal_x_ros/sxr_parms_and_keys.hpp"
+#include "seal_x_ros/sxr_encryptor.hpp"
+#include "seal_x_ros/sxr_decryptor.hpp"
+#include "seal_x_ros/sxr_lib.hpp"
 
 #include "seal_x_ros/srv/key_exchange.hpp"
 #include "seal_x_ros/srv/operation_request.hpp"
@@ -17,9 +17,9 @@
 #include <memory>
 #include <cstdint>
 
-class SealClientNode : public rclcpp::Node {
+class SXRClientNode : public rclcpp::Node {
 public:
-	SealClientNode();
+	SXRClientNode();
 
 private:
 	void connection_and_send_key();
@@ -36,9 +36,9 @@ private:
 	seal::SecretKey secret_key_;
 	double scale_;
 	
-	EncryptorManager encryptor_;
-	DecryptorManager decryptor_;
+	SXREncryptor encryptor_;
+	SXRDecryptor decryptor_;
 };
 
-#endif // SEAL_CLIENT_NODE_HPP
+#endif // SXR_CLIENT_NODE_HPP
 

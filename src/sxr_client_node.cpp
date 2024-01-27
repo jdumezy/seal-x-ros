@@ -1,12 +1,11 @@
-#include "seal_x_ros/seal_client_node.hpp"
+#include "seal_x_ros/sxr_client_node.hpp"
 
-SealClientNode::SealClientNode()
-	: rclcpp::Node("seal_client_node"),
+SXRClientNode::SXRClientNode()
+	: rclcpp::Node("sxr_client_node"),
 	  parmsAndKeys_(), 
 	  encryptor_(parmsAndKeys_.get_serialized_parms(), parmsAndKeys_.get_serialized_pk(), parmsAndKeys_.get_scale()),
 	  decryptor_(parmsAndKeys_.get_serialized_parms(), parmsAndKeys_.get_secret_key()) {
 	
-	// Create client, publisher and subscriber
 	key_exchange_client_ = this->create_client<seal_x_ros::srv::KeyExchange>(
 		"key_exchange_service"
 	);
@@ -24,8 +23,7 @@ SealClientNode::SealClientNode()
 	connection_and_send_key();
 }
 
-// Send key and context to server
-void SealClientNode::connection_and_send_key() {
+void SXRClientNode::connection_and_send_key() {
 	while (!key_exchange_client_->wait_for_service(std::chrono::seconds(1))) {
 		RCLCPP_WARN(this->get_logger(), "Waiting for the server to be up...");
 	}
@@ -50,7 +48,7 @@ void SealClientNode::connection_and_send_key() {
 	});
 }
 
-void SealClientNode::send_ciphertext() {
+void SXRClientNode::send_ciphertext() {
 	float f = 3.1415f;
 	std::vector<uint8_t> serialized_ct = encryptor_.encrypt_float(f);
 	
@@ -77,7 +75,7 @@ void SealClientNode::send_ciphertext() {
 
 int main(int argc, char **argv) {
 	rclcpp::init(argc, argv);
-	auto node = std::make_shared<SealClientNode>();
+	auto node = std::make_shared<SXRClientNode>();
 	rclcpp::spin(node);
 	rclcpp::shutdown();
 	return 0;
