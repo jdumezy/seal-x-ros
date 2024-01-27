@@ -9,8 +9,8 @@ endif()
 # Find dependencies
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
+find_package(rosidl_default_generators REQUIRED)
 find_package(SEAL 4.1 REQUIRED)
-find_package(seal_msgs REQUIRED)
 
 # Specify where to find the header files
 include_directories(include)
@@ -26,19 +26,22 @@ add_library(sxr_lib src/sxr_lib.cpp)
 add_executable(seal_client_node src/seal_client_node.cpp)
 add_executable(seal_server_node src/seal_server_node.cpp)
 
+rosidl_generate_interfaces(${PROJECT_NAME}
+  "srv/KeyExchange.srv"
+  "srv/OperationRequest.srv"
+)
+
 ament_target_dependencies(seal_client_node
 	rclcpp
 	SEAL
-	std_msgs
-	seal_msgs
 )
 
 ament_target_dependencies(seal_server_node
 	rclcpp
 	SEAL
-	std_msgs
-	seal_msgs
 )
+
+rosidl_get_typesupport_target(cpp_typesupport_target "${PROJECT_NAME}" "rosidl_typesupport_cpp")
 
 target_link_libraries(seal_parms_and_keys SEAL::seal sxr_lib)
 target_link_libraries(seal_encryptor SEAL::seal sxr_lib)
@@ -51,12 +54,14 @@ target_link_libraries(seal_client_node
 	seal_encryptor
 	seal_decryptor
 	SEAL::seal
+	"${cpp_typesupport_target}"
 )
 
 target_link_libraries(seal_server_node
 	seal_evaluator
 	sxr_lib
 	SEAL::seal
+	"${cpp_typesupport_target}"
 )
 
 # Install targets

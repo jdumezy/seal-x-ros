@@ -8,10 +8,8 @@
 
 #include "seal/seal.h"
 
-#include "seal_msgs/srv/key_exchange.hpp"
-#include "seal_msgs/srv/operation_request.hpp"
-//#include "seal_ros_nodes/srv/key_exchange.hpp"
-//#include "seal_ros_nodes/srv/operation_request.hpp"
+#include "seal_ros_nodes/srv/key_exchange.hpp"
+#include "seal_ros_nodes/srv/operation_request.hpp"
 
 #include <vector>
 #include <memory>
@@ -22,11 +20,11 @@ public:
 	SealServerNode();
 
 private:
-	void handle_key_exchange(const std::shared_ptr<seal_msgs::srv::KeyExchange::Request> request, std::shared_ptr<seal_msgs::srv::KeyExchange::Response> response);
-	void handle_operation_request(const std::shared_ptr<seal_msgs::srv::OperationRequest::Request> request, std::shared_ptr<seal_msgs::srv::OperationRequest::Response> response);
+	void handle_key_exchange(const std::shared_ptr<seal_ros_nodes::srv::KeyExchange::Request> request, std::shared_ptr<seal_ros_nodes::srv::KeyExchange::Response> response);
+	void handle_operation_request(const std::shared_ptr<seal_ros_nodes::srv::OperationRequest::Request> request, std::shared_ptr<seal_ros_nodes::srv::OperationRequest::Response> response);
 
-	rclcpp::Service<seal_msgs::srv::KeyExchange>::SharedPtr key_exchange_service_;
-	rclcpp::Service<seal_msgs::srv::OperationRequest>::SharedPtr operation_request_service_;
+	rclcpp::Service<seal_ros_nodes::srv::KeyExchange>::SharedPtr key_exchange_service_;
+	rclcpp::Service<seal_ros_nodes::srv::OperationRequest>::SharedPtr operation_request_service_;
 	
 	std::vector<uint8_t> serialized_parms_;
 	std::vector<uint8_t> serialized_pk_;

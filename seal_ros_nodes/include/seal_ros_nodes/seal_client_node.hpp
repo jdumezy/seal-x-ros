@@ -10,10 +10,8 @@
 
 #include "seal/seal.h"
 
-#include "seal_msgs/srv/key_exchange.hpp"
-#include "seal_msgs/srv/operation_request.hpp"
-//#include "seal_ros_nodes/srv/key_exchange.hpp"
-//#include "seal_ros_nodes/srv/operation_request.hpp"
+#include "seal_ros_nodes/srv/key_exchange.hpp"
+#include "seal_ros_nodes/srv/operation_request.hpp"
 
 #include <vector>
 #include <memory>
@@ -27,8 +25,8 @@ private:
 	void connection_and_send_key();
 	void send_ciphertext();
 
-	rclcpp::Client<seal_msgs::srv::KeyExchange>::SharedPtr key_exchange_client_;
-	rclcpp::Client<seal_msgs::srv::OperationRequest>::SharedPtr operation_request_client_;
+	rclcpp::Client<seal_ros_nodes::srv::KeyExchange>::SharedPtr key_exchange_client_;
+	rclcpp::Client<seal_ros_nodes::srv::OperationRequest>::SharedPtr operation_request_client_;
 	
 	ParmsAndKeysManager parmsAndKeys_;
 	std::vector<uint8_t> serialized_parms_;
