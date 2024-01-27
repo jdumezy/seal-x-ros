@@ -12,6 +12,7 @@ std::shared_ptr<seal::SEALContext> CreateSEALContextFromParameters(const std::ve
 seal::EncryptionParameters deserialize_to_parms(std::vector<uint8_t> serialized_parms);
 seal::PublicKey deserialize_to_pk(std::vector<uint8_t> serialized_pk, std::shared_ptr<seal::SEALContext> context);
 seal::RelinKeys deserialize_to_rlk(std::vector<uint8_t> serialized_rlk, std::shared_ptr<seal::SEALContext> context);
+seal::GaloisKeys deserialize_to_galk(std::vector<uint8_t> serialized_galk, std::shared_ptr<seal::SEALContext> context);
 seal::Ciphertext deserialize_to_ct(std::vector<uint8_t> serialized_ct, std::shared_ptr<seal::SEALContext> context);
 
 template<typename T>

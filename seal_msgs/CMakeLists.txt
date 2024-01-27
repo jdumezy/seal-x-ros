@@ -13,6 +13,7 @@ find_package(std_msgs REQUIRED)
 rosidl_generate_interfaces(${PROJECT_NAME}
   "msg/SealData.msg"
   "srv/KeyExchange.srv"
+  "srv/OperationRequest.srv"
 )
 
 if(BUILD_TESTING)

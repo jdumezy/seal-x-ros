@@ -20,6 +20,7 @@ include_directories(include)
 add_library(seal_parms_and_keys src/seal_parms_and_keys.cpp)
 add_library(seal_encryptor src/seal_encryptor.cpp)
 add_library(seal_decryptor src/seal_decryptor.cpp)
+add_library(seal_evaluator src/seal_evaluator.cpp)
 add_library(sxr_lib src/sxr_lib.cpp)
 
 # Define executables for the nodes
@@ -43,6 +44,7 @@ ament_target_dependencies(seal_server_node
 target_link_libraries(seal_parms_and_keys SEAL::seal sxr_lib)
 target_link_libraries(seal_encryptor SEAL::seal sxr_lib)
 target_link_libraries(seal_decryptor SEAL::seal sxr_lib)
+target_link_libraries(seal_evaluator SEAL::seal sxr_lib)
 target_link_libraries(sxr_lib SEAL::seal)
 
 target_link_libraries(seal_client_node
@@ -52,7 +54,11 @@ target_link_libraries(seal_client_node
 	SEAL::seal
 )
 
-target_link_libraries(seal_server_node SEAL::seal)
+target_link_libraries(seal_server_node
+	seal_evaluator
+	sxr_lib
+	SEAL::seal
+)
 
 # Install targets
 install(TARGETS
@@ -61,11 +67,11 @@ install(TARGETS
   DESTINATION lib/${PROJECT_NAME}
 )
 
-# Add python
-install(
-  DIRECTORY launch config
-  DESTINATION share/${PROJECT_NAME}
-)
+## Add python
+#install(
+#  DIRECTORY launch config
+#  DESTINATION share/${PROJECT_NAME}
+#)
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)

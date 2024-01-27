@@ -6,15 +6,16 @@
 #include "seal_ros_nodes/seal_parms_and_keys.hpp"
 #include "seal_ros_nodes/seal_encryptor.hpp"
 #include "seal_ros_nodes/seal_decryptor.hpp"
+#include "seal_ros_nodes/sxr_lib.hpp"
 
 #include "seal/seal.h"
 
-#include "std_msgs/msg/string.hpp"
-#include "seal_msgs/msg/seal_data.hpp"
 #include "seal_msgs/srv/key_exchange.hpp"
+#include "seal_msgs/srv/operation_request.hpp"
 
 #include <vector>
 #include <memory>
+#include <cstdint>
 
 class SealClientNode : public rclcpp::Node {
 public:
@@ -23,16 +24,15 @@ public:
 private:
 	void connection_and_send_key();
 	void send_ciphertext();
-	void response_callback(const std_msgs::msg::String::SharedPtr msg);
 
 	rclcpp::Client<seal_msgs::srv::KeyExchange>::SharedPtr key_exchange_client_;
-	rclcpp::Publisher<std_msgs::msg::String>::SharedPtr ciphertext_pub_;
-	rclcpp::Subscription<std_msgs::msg::String>::SharedPtr response_sub_;
+	rclcpp::Client<seal_msgs::srv::OperationRequest>::SharedPtr operation_request_client_;
 	
 	ParmsAndKeysManager parmsAndKeys_;
-	std::vector<uint8_t> parms_;
-	std::vector<uint8_t> public_key_;
-	std::vector<uint8_t> relin_keys_;
+	std::vector<uint8_t> serialized_parms_;
+	std::vector<uint8_t> serialized_pk_;
+	std::vector<uint8_t> serialized_rlk_;
+	std::vector<uint8_t> serialized_galk_;
 	seal::SecretKey secret_key_;
 	double scale_;
 	

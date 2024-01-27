@@ -1,0 +1,6 @@
+# Request
+uint8[] serialized_ct
+---
+# Response
+bool success
+uint8[] serialized_ct_res

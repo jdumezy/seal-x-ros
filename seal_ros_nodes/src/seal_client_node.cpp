@@ -10,17 +10,14 @@ SealClientNode::SealClientNode()
 	key_exchange_client_ = this->create_client<seal_msgs::srv::KeyExchange>(
 		"key_exchange_service"
 	);
-	ciphertext_pub_ = this->create_publisher<std_msgs::msg::String>(
-		"seal_ciphertext_topic", 10
-	);
-	response_sub_ = this->create_subscription<std_msgs::msg::String>(
-		"response_topic", 10,
-		std::bind(&SealClientNode::response_callback, this, std::placeholders::_1)
+	operation_request_client_ = this->create_client<seal_msgs::srv::OperationRequest>(
+		"operation_request_service"
 	);
 	
-	parms_ = parmsAndKeys_.get_serialized_parms();
-	public_key_ = parmsAndKeys_.get_serialized_pk();
-	relin_keys_ = parmsAndKeys_.get_serialized_rlk();
+	serialized_parms_ = parmsAndKeys_.get_serialized_parms();
+	serialized_pk_ = parmsAndKeys_.get_serialized_pk();
+	serialized_rlk_ = parmsAndKeys_.get_serialized_rlk();
+	serialized_galk_ = parmsAndKeys_.get_serialized_galk();
 	secret_key_ = parmsAndKeys_.get_secret_key();
 	scale_ = parmsAndKeys_.get_scale();
 	
@@ -34,9 +31,11 @@ void SealClientNode::connection_and_send_key() {
 	}
 	
 	auto request = std::make_shared<seal_msgs::srv::KeyExchange::Request>();
-	request->parms = parms_;
-	request->public_key = public_key_;
-	request->relin_keys = relin_keys_;
+	request->serialized_parms = serialized_parms_;
+	request->serialized_pk = serialized_pk_;
+	request->serialized_rlk = serialized_rlk_;
+	request->serialized_galk = serialized_galk_;
+	request->scale = scale_;
 	
 	key_exchange_client_->async_send_request(request,
 		[this](rclcpp::Client<seal_msgs::srv::KeyExchange>::SharedFuture future_response) {
@@ -52,15 +51,28 @@ void SealClientNode::connection_and_send_key() {
 }
 
 void SealClientNode::send_ciphertext() {
-	std_msgs::msg::String msg;
-	msg.data = "YourCiphertextHere";
-	ciphertext_pub_->publish(msg);
-	RCLCPP_DEBUG(this->get_logger(), "Ciphertext sent");
-}
-
-void SealClientNode::response_callback(const std_msgs::msg::String::SharedPtr msg) {
-	RCLCPP_INFO(this->get_logger(), "Received response");
-	const std_msgs::msg::String::SharedPtr m = msg;
+	float f = 3.1415f;
+	std::vector<uint8_t> serialized_ct = encryptor_.encrypt_float(f);
+	
+	RCLCPP_DEBUG(this->get_logger(), "Sending ciphertext: %f", f);
+	
+	auto request = std::make_shared<seal_msgs::srv::OperationRequest::Request>();
+	request->serialized_ct = serialized_ct;
+	
+	operation_request_client_->async_send_request(request,
+		[this](rclcpp::Client<seal_msgs::srv::OperationRequest>::SharedFuture future_response) {
+			
+			auto response = future_response.get();
+			if (response->success) {
+				RCLCPP_DEBUG(this->get_logger(), "Ciphertext received");
+				std::vector<uint8_t> serialized_ct_res = response->serialized_ct_res;
+				float result = decryptor_.decrypt_float(serialized_ct_res);
+				RCLCPP_INFO(this->get_logger(), "Received response: %f", result);
+			}
+			else {
+				RCLCPP_ERROR(this->get_logger(), "Failed to send ciphertext");
+			}
+	});
 }
 
 int main(int argc, char **argv) {

@@ -5,12 +5,14 @@
 
 #include "seal/seal.h"
 
-#include "std_msgs/msg/string.hpp"
-#include "seal_msgs/msg/seal_data.hpp"
 #include "seal_msgs/srv/key_exchange.hpp"
+#include "seal_msgs/srv/operation_request.hpp"
+#include "seal_ros_nodes/seal_evaluator.hpp"
+#include "seal_ros_nodes/sxr_lib.hpp"
 
 #include <vector>
 #include <memory>
+#include <cstdint>
 
 class SealServerNode : public rclcpp::Node {
 public:
@@ -18,15 +20,18 @@ public:
 
 private:
 	void handle_key_exchange(const std::shared_ptr<seal_msgs::srv::KeyExchange::Request> request, std::shared_ptr<seal_msgs::srv::KeyExchange::Response> response);
-	void ciphertext_callback(const std_msgs::msg::String::SharedPtr msg);
+	void handle_operation_request(const std::shared_ptr<seal_msgs::srv::OperationRequest::Request> request, std::shared_ptr<seal_msgs::srv::OperationRequest::Response> response);
 
 	rclcpp::Service<seal_msgs::srv::KeyExchange>::SharedPtr key_exchange_service_;
-	rclcpp::Subscription<std_msgs::msg::String>::SharedPtr ciphertext_sub_;
-	rclcpp::Publisher<std_msgs::msg::String>::SharedPtr response_pub_;
+	rclcpp::Service<seal_msgs::srv::OperationRequest>::SharedPtr operation_request_service_;
 	
-	std::vector<uint8_t> parms_;
-	std::vector<uint8_t> public_key_;
-	std::vector<uint8_t> relin_keys_;
+	std::vector<uint8_t> serialized_parms_;
+	std::vector<uint8_t> serialized_pk_;
+	std::vector<uint8_t> serialized_rlk_;
+	std::vector<uint8_t> serialized_galk_;
+	double scale_;
+	
+	std::optional<EvaluatorManager> evaluator_;
 };
 
 #endif // SEAL_SERVER_NODE_HPP
