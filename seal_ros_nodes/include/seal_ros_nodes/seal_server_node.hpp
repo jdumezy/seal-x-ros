@@ -3,12 +3,15 @@
 
 #include "rclcpp/rclcpp.hpp"
 
+#include "seal_ros_nodes/seal_evaluator.hpp"
+#include "seal_ros_nodes/sxr_lib.hpp"
+
 #include "seal/seal.h"
 
 #include "seal_msgs/srv/key_exchange.hpp"
 #include "seal_msgs/srv/operation_request.hpp"
-#include "seal_ros_nodes/seal_evaluator.hpp"
-#include "seal_ros_nodes/sxr_lib.hpp"
+//#include "seal_ros_nodes/srv/key_exchange.hpp"
+//#include "seal_ros_nodes/srv/operation_request.hpp"
 
 #include <vector>
 #include <memory>

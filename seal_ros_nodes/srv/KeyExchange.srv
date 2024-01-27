@@ -1,0 +1,10 @@
+# Request
+uint8[] serialized_parms
+uint8[] serialized_pk
+uint8[] serialized_rlk
+uint8[] serialized_galk
+float64 scale
+---
+# Response
+bool success
+string message

@@ -9,7 +9,6 @@ endif()
 # Find dependencies
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
-find_package(std_msgs REQUIRED)
 find_package(SEAL 4.1 REQUIRED)
 find_package(seal_msgs REQUIRED)
 
@@ -66,12 +65,6 @@ install(TARGETS
   seal_server_node
   DESTINATION lib/${PROJECT_NAME}
 )
-
-## Add python
-#install(
-#  DIRECTORY launch config
-#  DESTINATION share/${PROJECT_NAME}
-#)
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
