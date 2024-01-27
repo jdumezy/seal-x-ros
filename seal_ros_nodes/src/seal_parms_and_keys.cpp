@@ -24,9 +24,11 @@ void ParmsAndKeysManager::create_keys() {
 	
 	keygen.create_public_key(public_key_);
 	keygen.create_relin_keys(relin_keys_);
+	keygen.create_galois_keys(galois_keys_);
 	
 	serialized_pk_ = serialize_seal_object(public_key_);
-	serialized_rlk_ = serialize_seal_object(relin_keys_);	
+	serialized_rlk_ = serialize_seal_object(relin_keys_);
+	serialized_galk_ = serialize_seal_object(galois_keys_);
 }
 
 double ParmsAndKeysManager::get_scale() const {
@@ -45,6 +47,10 @@ seal::RelinKeys ParmsAndKeysManager::get_relin_keys() const {
 	return relin_keys_;
 }
 
+seal::RelinKeys ParmsAndKeysManager::get_galois_keys() const {
+	return galois_keys_;
+}
+
 std::vector<uint8_t> ParmsAndKeysManager::get_serialized_parms() const {
 	return serialized_parms_;
 }
@@ -55,5 +61,9 @@ std::vector<uint8_t> ParmsAndKeysManager::get_serialized_pk() const {
 
 std::vector<uint8_t> ParmsAndKeysManager::get_serialized_rlk() const {
 	return serialized_rlk_;
+}
+
+std::vector<uint8_t> ParmsAndKeysManager::get_serialized_galk() const {
+	return serialized_galk_;
 }
 
