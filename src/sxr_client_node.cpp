@@ -23,6 +23,13 @@ SXRClientNode::SXRClientNode()
 	connection_and_send_key();
 }
 
+/**
+ * @brief Establishes connection with the server and sends encryption keys.
+ * 
+ * This function waits for the server to become available, and then sends the 
+ * serialized encryption parameters and keys to the server. On successful 
+ * key exchange, it initiates sending the ciphertext.
+ */
 void SXRClientNode::connection_and_send_key() {
 	while (!key_exchange_client_->wait_for_service(std::chrono::seconds(1))) {
 		RCLCPP_WARN(this->get_logger(), "Waiting for the server to be up...");
@@ -48,6 +55,13 @@ void SXRClientNode::connection_and_send_key() {
 	});
 }
 
+/**
+ * @brief Sends an encrypted ciphertext to the server for processing.
+ * 
+ * Encrypts a predefined float value, then sends the resulting ciphertext
+ * to the server for processing. Upon receiving the processed ciphertext
+ * back from the server, it decrypts and logs the result.
+ */
 void SXRClientNode::send_ciphertext() {
 	float f = 3.1415f;
 	std::vector<uint8_t> serialized_ct = encryptor_.encrypt_float(f);
@@ -73,6 +87,16 @@ void SXRClientNode::send_ciphertext() {
 	});
 }
 
+/**
+ * @brief The main function for the SXRClientNode.
+ * 
+ * Initializes the ROS 2 node and spins it to start processing service requests
+ * for key exchange and sending encrypted data to the server.
+ * 
+ * @param argc The number of command-line arguments.
+ * @param argv The array of command-line arguments.
+ * @return Integer representing the status at the end of execution.
+ */
 int main(int argc, char **argv) {
 	rclcpp::init(argc, argv);
 	auto node = std::make_shared<SXRClientNode>();

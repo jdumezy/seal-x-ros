@@ -9,8 +9,22 @@
 #include <memory>
 #include <cstdint>
 
+/**
+ * @class ParmsAndKeysManager
+ * @brief Manager for encryption parameters and keys in SEAL-based operations.
+ *
+ * This class is responsible for generating, storing, and providing access to encryption
+ * parameters and keys used in SEAL operations.
+ * It ensures that all components in the system use consistent and properly 
+ * configured encryption settings.
+ */
 class ParmsAndKeysManager {
 public:
+	 /**
+	 * @brief Constructs a new ParmsAndKeysManager object.
+	 *
+	 * Sets up the SEAL environment and generates the necessary encryption parameters and keys.
+	 */
 	ParmsAndKeysManager();
 
 	double get_scale() const;

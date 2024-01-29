@@ -17,8 +17,22 @@
 #include <memory>
 #include <cstdint>
 
+/**
+ * @class SXRClientNode
+ * @brief ROS 2 Node for SEAL client-side operations in encrypted data processing.
+ *
+ * This class represents a ROS 2 Node handling the client-side functionalities in an encrypted
+ * data processing system. It manages key exchanges, sends, and receives encrypted data
+ * with a corresponding server node for processing requests.
+ */
 class SXRClientNode : public rclcpp::Node {
 public:
+	/**
+	 * @brief Constructs a new SXRClientNode object.
+	 *
+	 * Initializes the ROS 2 client node along with necessary service clients for key exchange and
+	 * operation requests. It also sets up the encryption and decryption environment.
+	 */
 	SXRClientNode();
 
 private:

@@ -15,8 +15,22 @@
 #include <memory>
 #include <cstdint>
 
+/**
+ * @class SXRServerNode
+ * @brief ROS 2 Node for SEAL server-side operations in encrypted data processing.
+ *
+ * This class encapsulates the server-side functionalities for processing encrypted data.
+ * It provides services for key exchange and handling encrypted operation requests, facilitating
+ * secure and private computations on encrypted data.
+ */
 class SXRServerNode : public rclcpp::Node {
 public:
+	/**
+	 * @brief Constructs a new SXRServerNode object.
+	 *
+	 * Initializes the ROS 2 server node along with necessary services for key exchange and 
+	 * operation requests. It prepares the environment for performing encrypted operations.
+	 */
 	SXRServerNode();
 
 private:
