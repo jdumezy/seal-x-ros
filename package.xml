@@ -6,8 +6,8 @@
   <maintainer email="contact@jdumezy.com">jdumezy</maintainer>
   <license>MIT</license>
   
-<!--  <depend>launch</depend>-->
-<!--  <depend>launch_ros</depend>-->
+  <depend>launch</depend>
+  <depend>launch_ros</depend>
   
   <buildtool_depend>ament_cmake</buildtool_depend>
   <depend>rclcpp</depend>

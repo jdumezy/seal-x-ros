@@ -35,11 +35,13 @@ rosidl_generate_interfaces(${PROJECT_NAME}
 
 ament_target_dependencies(sxr_client_node
 	rclcpp
+	std_msgs
 	SEAL
 )
 
 ament_target_dependencies(sxr_server_node
 	rclcpp
+	std_msgs
 	SEAL
 )
 
@@ -73,9 +75,9 @@ install(TARGETS
   DESTINATION lib/${PROJECT_NAME}
 )
 
-#install(DIRECTORY launch
-#  DESTINATION share/${PROJECT_NAME}/
-#)
+install(DIRECTORY launch
+  DESTINATION share/${PROJECT_NAME}/
+)
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
