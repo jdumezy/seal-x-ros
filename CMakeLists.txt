@@ -9,6 +9,7 @@ endif()
 # Find dependencies
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
+find_package(std_msgs REQUIRED)
 find_package(rosidl_default_generators REQUIRED)
 find_package(SEAL 4.1 REQUIRED)
 
@@ -29,6 +30,7 @@ add_executable(sxr_server_node src/sxr_server_node.cpp)
 rosidl_generate_interfaces(${PROJECT_NAME}
   "srv/KeyExchange.srv"
   "srv/OperationRequest.srv"
+  "srv/ServerMessage.srv"
 )
 
 ament_target_dependencies(sxr_client_node
@@ -70,6 +72,10 @@ install(TARGETS
   sxr_server_node
   DESTINATION lib/${PROJECT_NAME}
 )
+
+#install(DIRECTORY launch
+#  DESTINATION share/${PROJECT_NAME}/
+#)
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)

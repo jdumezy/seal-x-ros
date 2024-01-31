@@ -6,6 +6,9 @@
 #include <vector>
 #include <memory>
 #include <cstdint>
+#include <chrono>
+#include <sstream>
+#include <functional>
 
 /**
  * @brief Create a SEALContext from serialized parameters.

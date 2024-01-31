@@ -37,7 +37,6 @@ void SXRServerNode::handle_key_exchange(const std::shared_ptr<seal_x_ros::srv::K
 	RCLCPP_INFO(this->get_logger(), "Received public key");
 	
 	response->success = true;
-	response->message = "Public key received successfully";
 	
 	evaluator_.emplace(serialized_parms_, serialized_pk_, serialized_rlk_, serialized_galk_, scale_);
 }

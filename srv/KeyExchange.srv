@@ -7,4 +7,3 @@ float64 scale
 ---
 # Response
 bool success
-string message
