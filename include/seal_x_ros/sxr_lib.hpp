@@ -7,6 +7,9 @@
 #include <memory>
 #include <cstdint>
 
+std::vector<double> convert_float_array_to_double(const std::vector<float>& float_array);
+std::vector<float> convert_double_array_to_float(const std::vector<double>& double_array);
+
 /**
  * @brief Create a SEALContext from serialized parameters.
  * 

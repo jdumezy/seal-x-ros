@@ -1,5 +1,27 @@
 #include "seal_x_ros/sxr_lib.hpp"
 
+std::vector<double> convert_float_array_to_double(const std::vector<float>& float_array) {
+	std::vector<double> double_array;
+	double_array.reserve(float_array.size());
+	
+	for (float value : float_array) {
+		double_array.push_back(static_cast<double>(value));
+	}
+	
+	return double_array;
+}
+
+std::vector<float> convert_double_array_to_float(const std::vector<double>& double_array) {
+	std::vector<float> float_array;
+	float_array.reserve(double_array.size());
+	
+	for (double value : double_array) {
+		float_array.push_back(static_cast<float>(value));
+	}
+	
+	return float_array;
+}
+
 std::shared_ptr<seal::SEALContext> context_from_parms(const std::vector<uint8_t>& serialized_parms) {
 	seal::EncryptionParameters parms = deserialize_to_parms(serialized_parms);
 	std::shared_ptr<seal::SEALContext> context = std::make_shared<seal::SEALContext>(parms);
