@@ -8,7 +8,6 @@
 #include <vector>
 #include <memory>
 #include <cstdint>
-#include <complex>
 
 /**
  * @class SXREncryptor
@@ -46,7 +45,6 @@ public:
 	 * @return Serialized ciphertext of the encrypted floating-point number.
 	 */
 	std::vector<uint8_t> encrypt_float(float input_float);
-	std::vector<uint8_t> encrypt_complex(const std::complex<float>& input_complex);
 	std::vector<uint8_t> encrypt_float_array(const std::vector<float>& input_float_array);
 
 private:
