@@ -24,13 +24,6 @@ std::vector<uint8_t> SXREncryptor::encrypt_float(float input_float) {
 	return encrypt(encoded_pt);
 }
 
-std::vector<uint8_t> SXREncryptor::encrypt_complex(const std::complex<float>& input_complex) {
-	seal::Plaintext encoded_pt;
-	encoder_.encode(input_complex, scale_, encoded_pt);
-	
-	return encrypt(encoded_pt);
-}
-
 std::vector<uint8_t> SXREncryptor::encrypt_float_array(const std::vector<float>& input_float_array) {
 	std::vector<double> double_array = convert_float_array_to_double(input_float_array);
 	
