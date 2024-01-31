@@ -3,7 +3,8 @@
 SXRServerNode::SXRServerNode()
 	: Node("sxr_server_node") {
 	
-	key_exchange_service_ = this->create_service<seal_x_ros::srv::KeyExchange>("key_exchange_service",
+	key_exchange_service_ = this->create_service<seal_x_ros::srv::KeyExchange>(
+		"key_exchange_service",
 		std::bind(&SXRServerNode::handle_key_exchange, this,
 			std::placeholders::_1, std::placeholders::_2)
 	);
@@ -13,18 +14,37 @@ SXRServerNode::SXRServerNode()
 		std::bind(&SXRServerNode::handle_operation_request, this,
 			std::placeholders::_1, std::placeholders::_2)
 	);
+	server_message_client_ = this->create_client<seal_x_ros::srv::ServerMessage>(
+		"server_message_service"
+	);
 }
 
-/**
- * @brief Handles the key exchange request from the client.
- * 
- * This function processes the key exchange request by storing the received serialized
- * encryption parameters and keys. It sets up the necessary environment for the evaluator
- * and sends a response back to the client confirming the receipt of the public key.
- * 
- * @param request The request object containing serialized encryption parameters and keys.
- * @param response The response object to be sent back to the client.
- */
+void SXRServerNode::send_message() {	
+	auto request = std::make_shared<seal_x_ros::srv::ServerMessage::Request>();
+	
+	float f = 3.1415f;
+	std::vector<uint8_t> serialized_ct = encryptor_->encrypt_float(f);
+	
+	if (encryptor_) {
+		request->serialized_ct = serialized_ct;
+		
+		server_message_client_->async_send_request(request,
+			[this](rclcpp::Client<seal_x_ros::srv::ServerMessage>::SharedFuture future_response) {
+				auto response = future_response.get();
+				if (response->success) {
+					RCLCPP_INFO(this->get_logger(), "Message sent successfully");
+				}
+				else {
+					RCLCPP_ERROR(this->get_logger(), "Message sending failed");
+				}
+		});
+	}
+	else {
+		RCLCPP_ERROR(this->get_logger(), "Encryptor is not initialized");
+	}
+	
+}
+
 void SXRServerNode::handle_key_exchange(const std::shared_ptr<seal_x_ros::srv::KeyExchange::Request> request,
 	std::shared_ptr<seal_x_ros::srv::KeyExchange::Response> response) {
 	
@@ -38,19 +58,10 @@ void SXRServerNode::handle_key_exchange(const std::shared_ptr<seal_x_ros::srv::K
 	
 	response->success = true;
 	
+	encryptor_.emplace(serialized_parms_, serialized_pk_, scale_);
 	evaluator_.emplace(serialized_parms_, serialized_pk_, serialized_rlk_, serialized_galk_, scale_);
 }
 
-/**
- * @brief Handles an operation request on encrypted data from the client.
- * 
- * This function takes the encrypted data from the request, performs the specified
- * operation using the evaluator, and then sends back the result as encrypted data.
- * If the evaluator is not initialized, it logs an error and sets the response to indicate failure.
- * 
- * @param request The request object containing the serialized ciphertext.
- * @param response The response object containing the result or error message.
- */
 void SXRServerNode::handle_operation_request(const std::shared_ptr<seal_x_ros::srv::OperationRequest::Request> request,
 	std::shared_ptr<seal_x_ros::srv::OperationRequest::Response> response) {
 	

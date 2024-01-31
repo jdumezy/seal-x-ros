@@ -12,6 +12,11 @@ SXRClientNode::SXRClientNode()
 	operation_request_client_ = this->create_client<seal_x_ros::srv::OperationRequest>(
 		"operation_request_service"
 	);
+	server_message_service_ = this->create_service<seal_x_ros::srv::ServerMessage>(
+		"server_message_service",
+		std::bind(&SXRClientNode::handle_server_message, this,
+			std::placeholders::_1, std::placeholders::_2)
+	);
 	
 	serialized_parms_ = parmsAndKeys_.get_serialized_parms();
 	serialized_pk_ = parmsAndKeys_.get_serialized_pk();
@@ -23,13 +28,6 @@ SXRClientNode::SXRClientNode()
 	connection_and_send_key();
 }
 
-/**
- * @brief Establishes connection with the server and sends encryption keys.
- * 
- * This function waits for the server to become available, and then sends the 
- * serialized encryption parameters and keys to the server. On successful 
- * key exchange, it initiates sending the ciphertext.
- */
 void SXRClientNode::connection_and_send_key() {
 	while (!key_exchange_client_->wait_for_service(std::chrono::seconds(1))) {
 		RCLCPP_WARN(this->get_logger(), "Waiting for the server to be up...");
@@ -55,13 +53,6 @@ void SXRClientNode::connection_and_send_key() {
 	});
 }
 
-/**
- * @brief Sends an encrypted ciphertext to the server for processing.
- * 
- * Encrypts a predefined float value, then sends the resulting ciphertext
- * to the server for processing. Upon receiving the processed ciphertext
- * back from the server, it decrypts and logs the result.
- */
 void SXRClientNode::send_ciphertext() {
 	float f = 3.1415f;
 	std::vector<uint8_t> serialized_ct = encryptor_.encrypt_float(f);
@@ -85,6 +76,19 @@ void SXRClientNode::send_ciphertext() {
 				RCLCPP_ERROR(this->get_logger(), "Failed to send ciphertext");
 			}
 	});
+}
+
+void SXRClientNode::handle_server_message(const std::shared_ptr<seal_x_ros::srv::ServerMessage::Request> request,
+	std::shared_ptr<seal_x_ros::srv::ServerMessage::Response> response) {
+	
+	std::vector<uint8_t> serialized_ct = request->serialized_ct;
+	
+	RCLCPP_INFO(this->get_logger(), "Received message from server");
+	
+	response->success = true;
+	
+	float message = decryptor_.decrypt_float(serialized_ct);
+	message++;
 }
 
 /**

@@ -54,14 +54,15 @@ target_link_libraries(sxr_evaluator SEAL::seal sxr_lib)
 target_link_libraries(sxr_lib SEAL::seal)
 
 target_link_libraries(sxr_client_node
-	sxr_parms_and_keys
-	sxr_encryptor
 	sxr_decryptor
+	sxr_encryptor
+	sxr_parms_and_keys
 	SEAL::seal
 	"${cpp_typesupport_target}"
 )
 
 target_link_libraries(sxr_server_node
+	sxr_encryptor
 	sxr_evaluator
 	sxr_lib
 	SEAL::seal
