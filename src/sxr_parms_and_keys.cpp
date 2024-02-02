@@ -8,9 +8,9 @@ ParmsAndKeysManager::ParmsAndKeysManager() {
 void ParmsAndKeysManager::create_parms() {
 	seal::EncryptionParameters parms(seal::scheme_type::ckks);
 	
-	size_t poly_modulus_degree = 8192;
+	size_t poly_modulus_degree = 16384;
 	parms.set_poly_modulus_degree(poly_modulus_degree);
-	parms.set_coeff_modulus(seal::CoeffModulus::Create(poly_modulus_degree, { 60, 40, 40, 60 }));
+	parms.set_coeff_modulus(seal::CoeffModulus::Create(poly_modulus_degree, { 60, 40, 40, 40, 40, 60 }));
 	
 	serialized_parms_ = serialize_seal_object(parms);
 	

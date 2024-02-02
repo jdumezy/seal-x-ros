@@ -1,5 +1,27 @@
 #include "seal_x_ros/sxr_lib.hpp"
 
+double calculate_scale(int depth, double scale, std::vector<double> cm_prime_array) {
+	double new_scale = scale;
+	size_t max_depth = cm_prime_array.size();
+	
+	if (depth == 0) {
+		return new_scale;
+	}
+	else if (depth < 0) {
+		throw std::invalid_argument("Depth must be positive");
+	}
+	else if (depth > max_depth) {
+		throw std::invalid_argument("Depth is too deep for coeff modulus");
+	}
+	else {
+		for (int i = 0; i < depth; i++) {
+			new_scale *= pow(scale, pow(2, (depth - i - 1))) / pow(cm_prime_array[i], pow(2, (depth - i - 1)));
+		}
+		//new_scale = pow(scale, pow(2, 1))/cm_prime_array[0];
+		return new_scale;
+	}
+}
+
 std::vector<double> convert_float_array_to_double(const std::vector<float>& float_array) {
 	std::vector<double> double_array;
 	double_array.reserve(float_array.size());

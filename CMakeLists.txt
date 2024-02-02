@@ -21,6 +21,7 @@ add_library(sxr_parms_and_keys src/sxr_parms_and_keys.cpp)
 add_library(sxr_encryptor src/sxr_encryptor.cpp)
 add_library(sxr_decryptor src/sxr_decryptor.cpp)
 add_library(sxr_evaluator src/sxr_evaluator.cpp)
+add_library(sxr_ciphertext src/sxr_ciphertext.cpp)
 add_library(sxr_lib src/sxr_lib.cpp)
 
 # Define executables for the nodes
@@ -51,6 +52,7 @@ target_link_libraries(sxr_parms_and_keys SEAL::seal sxr_lib)
 target_link_libraries(sxr_encryptor SEAL::seal sxr_lib)
 target_link_libraries(sxr_decryptor SEAL::seal sxr_lib)
 target_link_libraries(sxr_evaluator SEAL::seal sxr_lib)
+target_link_libraries(sxr_ciphertext SEAL::seal sxr_lib)
 target_link_libraries(sxr_lib SEAL::seal)
 
 target_link_libraries(sxr_client_node
