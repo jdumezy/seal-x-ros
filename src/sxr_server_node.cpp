@@ -79,62 +79,6 @@ void SXRServerNode::handle_operation_request(const std::shared_ptr<seal_x_ros::s
 		
 		RCLCPP_DEBUG(this->get_logger(), "Sending result ciphertext...");
 		
-		/*-------------------------------------------------------------------------------*/
-		
-		seal::EncryptionParameters parms = deserialize_to_parms(serialized_parms_);
-		std::shared_ptr<seal::SEALContext> context = std::make_shared<seal::SEALContext>(parms);
-		
-		seal::Encryptor encryptor(*context, deserialize_to_pk(serialized_pk_, context));
-		seal::Evaluator evaluator(*context);
-		seal::CKKSEncoder encoder(*context);
-		
-		float a = 2.0f;
-		
-		seal::Plaintext e_a;
-		encoder.encode(a, scale_, e_a);
-		seal::Ciphertext c_a;
-		encryptor.encrypt(e_a, c_a);
-		
-		auto& context_data = *context->key_context_data(); // Get the first (key) context data
-		auto coeff_modulus = context_data.parms().coeff_modulus();
-		
-		size_t n = coeff_modulus.size();
-		
-		std::vector<double> cm_prime_array;
-		
-		for (int i = n - 2; i >= 1; i--) {
-			cm_prime_array.push_back(static_cast<double>(coeff_modulus[i].value()));
-		}
-		
-		seal::Ciphertext r_a;
-		evaluator.square(c_a, r_a);
-		evaluator.relinearize_inplace(r_a, deserialize_to_rlk(serialized_rlk_, context));
-		evaluator.rescale_to_next_inplace(r_a);
-		
-		seal::Plaintext zz_a;
-		encoder.encode(a, r_a.scale(), zz_a);
-		seal::Ciphertext zzz_a;
-		encryptor.encrypt(zz_a, zzz_a);
-		
-		seal::Ciphertext r2_a;
-		evaluator.multiply(r_a, zzz_a, r2_a);
-		evaluator.relinearize_inplace(r2_a, deserialize_to_rlk(serialized_rlk_, context));
-		evaluator.rescale_to_next_inplace(r2_a);
-		
-//		double s0 = c_a.scale();
-//		double s1 = r_a.scale();
-//		double s2 = r2_a.scale();
-//		
-//		double es0 = calculate_scale(0, scale_, cm_prime_array);
-//		double es1 = calculate_scale(1, scale_, cm_prime_array);
-//		double es2 = calculate_scale(2, scale_, cm_prime_array);
-//		
-//		RCLCPP_INFO(this->get_logger(), "s0-es0: %f", s0-es0);
-//		RCLCPP_INFO(this->get_logger(), "s1-es1: %f", s1-es1);
-//		RCLCPP_INFO(this->get_logger(), "s2-es2: %f", s2-es2);
-		
-		/*-------------------------------------------------------------------------------*/
-		
 		response->success = true;
 		response->serialized_ct_res = result;
 	}
