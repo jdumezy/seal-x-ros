@@ -26,13 +26,13 @@ public:
 
 private:
 	std::shared_ptr<seal::SEALContext> context_;
-	seal::Ciphertext ciphertext_;
 	seal::Encryptor encryptor_;
 	seal::CKKSEncoder encoder_;
 	seal::Evaluator evaluator_;
+	seal::Ciphertext ciphertext_;
 	seal::RelinKeys relin_keys_;
-	int depth_;
 	double scale_;
+	int depth_;
 	std::vector<double> cm_prime_array_;
 };
 

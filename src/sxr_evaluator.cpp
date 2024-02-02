@@ -7,10 +7,9 @@ SXREvaluator::SXREvaluator(std::vector<uint8_t> serialized_parms,
 								   double scale)
 	: context_(context_from_parms(serialized_parms)),
 	  encryptor_(*context_, deserialize_to_pk(serialized_pk, context_)),
-	  encoder_(*context_), evaluator_(*context_), scale_(scale) {
-	
-	relin_keys_ = deserialize_to_rlk(serialized_rlk, context_);
-	galois_keys_ = deserialize_to_galk(serialized_galk, context_);
+	  encoder_(*context_), evaluator_(*context_), scale_(scale),
+	  relin_keys_(deserialize_to_rlk(serialized_rlk, context_)),
+	  galois_keys_(deserialize_to_galk(serialized_galk, context_)){
 }
 
 std::vector<uint8_t> SXREvaluator::add(std::vector<uint8_t> sct_a, std::vector<uint8_t> sct_b) {

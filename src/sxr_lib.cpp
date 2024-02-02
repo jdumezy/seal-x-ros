@@ -2,7 +2,7 @@
 
 double calculate_scale(int depth, double scale, std::vector<double> cm_prime_array) {
 	double new_scale = scale;
-	size_t max_depth = cm_prime_array.size();
+	int max_depth = static_cast<int>(cm_prime_array.size());
 	
 	if (depth == 0) {
 		return new_scale;
@@ -17,7 +17,6 @@ double calculate_scale(int depth, double scale, std::vector<double> cm_prime_arr
 		for (int i = 0; i < depth; i++) {
 			new_scale *= pow(scale, pow(2, (depth - i - 1))) / pow(cm_prime_array[i], pow(2, (depth - i - 1)));
 		}
-		//new_scale = pow(scale, pow(2, 1))/cm_prime_array[0];
 		return new_scale;
 	}
 }

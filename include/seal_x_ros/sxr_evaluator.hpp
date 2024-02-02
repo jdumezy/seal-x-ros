@@ -61,9 +61,9 @@ private:
 	seal::Encryptor encryptor_;
 	seal::CKKSEncoder encoder_;
 	seal::Evaluator evaluator_;
+	double scale_;
 	seal::RelinKeys relin_keys_;
 	seal::GaloisKeys galois_keys_;
-	double scale_;
 };
 
 #endif // SXR_EVALUATOR_HPP

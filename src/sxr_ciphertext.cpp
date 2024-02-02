@@ -7,11 +7,11 @@ SXRCiphertext::SXRCiphertext(std::vector<uint8_t> serialized_parms,
 							 double scale)
 	: context_(context_from_parms(serialized_parms)),
 	  encryptor_(*context_, deserialize_to_pk(serialized_pk, context_)), 
-	  encoder_(*context_), scale_(scale), evaluator_(*context_),
-	  ciphertext_(deserialize_to_ct(serialized_ct, context_)){
+	  encoder_(*context_), evaluator_(*context_),
+	  ciphertext_(deserialize_to_ct(serialized_ct, context_)),
+	  relin_keys_(deserialize_to_rlk(serialized_rlk, context_)),
+	  scale_(scale){
 	
-	relin_keys_ = deserialize_to_rlk(serialized_rlk, context_);
-	scale_ = scale;
 	depth_ = 0;
 	
 	auto& context_data = *context_->key_context_data();
@@ -42,35 +42,33 @@ void SXRCiphertext::set_scale(int new_scale) {
 }
 
 void SXRCiphertext::match_depth(int new_depth) {
-	int depth_diff = new_depth - depth_diff;
+	int depth_diff = new_depth - depth_;
 	
 	if (depth_diff < 0) {
 		throw std::invalid_argument("New depth must be bigger than current depth");
 	}
 	else if (depth_diff > 0) {
-//		float one = 1.0f;
-//		seal::Plaintext one_pt;
-//		
-//		double new_scale = calculate_scale(???, scale_, cm_prime_array_);
-//		
-//		encoder_.encode(one, new_scale, one_pt);
-//		
-//		seal::Ciphertext one_ct;
-//		encryptor_.encrypt(one_pt, one_ct);
-//		
-//		for (int i = 0; i < depth_diff; i++) {
-//			evaluator_.square_inplace(one_ct);
-//			evaluator_.relinearize_inplace(one_ct, relin_keys_);
-//			evaluator_.rescale_to_next_inplace(one_ct);
-//		}
-//		
-//		seal::Ciphertext new_ciphertext;
-//		evaluator_.multiply(ciphertext_, one_ct, new_ciphertext);
-//		evaluator_.relinearize_inplace(new_ciphertext, relin_keys_);
-//		evaluator_.rescale_to_next_inplace(new_ciphertext);
-//		
-//		ciphertext_ = new_ciphertext;
-//		depth_ = new_depth;
+		float one = 1.0f;
+
+		seal::Plaintext one_pt;
+		encoder_.encode(one, scale_, one_pt);
+		
+		seal::Ciphertext one_ct;
+		encryptor_.encrypt(one_pt, one_ct);
+		
+		for (int i = 0; i < depth_diff - 1; i++) {
+			evaluator_.square_inplace(one_ct);
+			evaluator_.relinearize_inplace(one_ct, relin_keys_);
+			evaluator_.rescale_to_next_inplace(one_ct);
+		}
+		
+		seal::Ciphertext new_ciphertext;
+		evaluator_.multiply(ciphertext_, one_ct, new_ciphertext);
+		evaluator_.relinearize_inplace(new_ciphertext, relin_keys_);
+		evaluator_.rescale_to_next_inplace(new_ciphertext);
+		
+		ciphertext_ = new_ciphertext;
+		depth_ = new_depth;
 	}
 }
 
