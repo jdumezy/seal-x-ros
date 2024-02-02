@@ -42,6 +42,9 @@ public:
 					 std::vector<uint8_t> serialized_galk,
 					 double scale);
 	
+	std::vector<uint8_t> add(std::vector<uint8_t> sct_a, std::vector<uint8_t> sct_b);
+	std::vector<uint8_t> multiply(std::vector<uint8_t> sct_a, std::vector<uint8_t> sct_b);
+	
 	/**
 	 * @brief Performs the squaring operation on encrypted data.
 	 *
@@ -58,9 +61,9 @@ private:
 	seal::Encryptor encryptor_;
 	seal::CKKSEncoder encoder_;
 	seal::Evaluator evaluator_;
+	double scale_;
 	seal::RelinKeys relin_keys_;
 	seal::GaloisKeys galois_keys_;
-	double scale_;
 };
 
 #endif // SXR_EVALUATOR_HPP

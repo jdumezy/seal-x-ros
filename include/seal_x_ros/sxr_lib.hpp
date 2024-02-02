@@ -6,6 +6,11 @@
 #include <vector>
 #include <memory>
 #include <cstdint>
+#include <stdexcept>
+
+double calculate_scale(int depth, double scale, std::vector<double> cm_prime_array);
+std::vector<double> convert_float_array_to_double(const std::vector<float>& float_array);
+std::vector<float> convert_double_array_to_float(const std::vector<double>& double_array);
 
 /**
  * @brief Create a SEALContext from serialized parameters.

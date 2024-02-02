@@ -45,12 +45,15 @@ public:
 	 * @return Serialized ciphertext of the encrypted floating-point number.
 	 */
 	std::vector<uint8_t> encrypt_float(float input_float);
+	std::vector<uint8_t> encrypt_float_array(const std::vector<float>& input_float_array);
 
 private:
 	std::shared_ptr<seal::SEALContext> context_;
 	seal::Encryptor encryptor_;
 	seal::CKKSEncoder encoder_;
 	double scale_;
+	
+	std::vector<uint8_t> encrypt(seal::Plaintext encoded_pt);
 };
 
 #endif // SXR_ENCRYPTOR_HPP

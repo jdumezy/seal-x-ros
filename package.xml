@@ -5,7 +5,10 @@
   <description>A ROS2 package to use SEAL for FHE</description>
   <maintainer email="contact@jdumezy.com">jdumezy</maintainer>
   <license>MIT</license>
-
+  
+  <depend>launch</depend>
+  <depend>launch_ros</depend>
+  
   <buildtool_depend>ament_cmake</buildtool_depend>
   <depend>rclcpp</depend>
   <build_depend>SEAL</build_depend>
@@ -13,6 +16,9 @@
   <buildtool_depend>rosidl_default_generators</buildtool_depend>
   <exec_depend>rosidl_default_runtime</exec_depend>
   <member_of_group>rosidl_interface_packages</member_of_group>
+  
+  <build_depend>std_msgs</build_depend>
+  <exec_depend>std_msgs</exec_depend>
   
   <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_lint_common</test_depend>

@@ -9,6 +9,7 @@ endif()
 # Find dependencies
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
+find_package(std_msgs REQUIRED)
 find_package(rosidl_default_generators REQUIRED)
 find_package(SEAL 4.1 REQUIRED)
 
@@ -20,6 +21,7 @@ add_library(sxr_parms_and_keys src/sxr_parms_and_keys.cpp)
 add_library(sxr_encryptor src/sxr_encryptor.cpp)
 add_library(sxr_decryptor src/sxr_decryptor.cpp)
 add_library(sxr_evaluator src/sxr_evaluator.cpp)
+add_library(sxr_ciphertext src/sxr_ciphertext.cpp)
 add_library(sxr_lib src/sxr_lib.cpp)
 
 # Define executables for the nodes
@@ -29,15 +31,18 @@ add_executable(sxr_server_node src/sxr_server_node.cpp)
 rosidl_generate_interfaces(${PROJECT_NAME}
   "srv/KeyExchange.srv"
   "srv/OperationRequest.srv"
+  "srv/ServerMessage.srv"
 )
 
 ament_target_dependencies(sxr_client_node
 	rclcpp
+	std_msgs
 	SEAL
 )
 
 ament_target_dependencies(sxr_server_node
 	rclcpp
+	std_msgs
 	SEAL
 )
 
@@ -47,17 +52,19 @@ target_link_libraries(sxr_parms_and_keys SEAL::seal sxr_lib)
 target_link_libraries(sxr_encryptor SEAL::seal sxr_lib)
 target_link_libraries(sxr_decryptor SEAL::seal sxr_lib)
 target_link_libraries(sxr_evaluator SEAL::seal sxr_lib)
+target_link_libraries(sxr_ciphertext SEAL::seal sxr_lib)
 target_link_libraries(sxr_lib SEAL::seal)
 
 target_link_libraries(sxr_client_node
-	sxr_parms_and_keys
-	sxr_encryptor
 	sxr_decryptor
+	sxr_encryptor
+	sxr_parms_and_keys
 	SEAL::seal
 	"${cpp_typesupport_target}"
 )
 
 target_link_libraries(sxr_server_node
+	sxr_encryptor
 	sxr_evaluator
 	sxr_lib
 	SEAL::seal
@@ -69,6 +76,10 @@ install(TARGETS
   sxr_client_node
   sxr_server_node
   DESTINATION lib/${PROJECT_NAME}
+)
+
+install(DIRECTORY launch
+  DESTINATION share/${PROJECT_NAME}/
 )
 
 if(BUILD_TESTING)

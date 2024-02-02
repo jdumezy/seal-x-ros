@@ -44,11 +44,14 @@ public:
 	 * @return The decrypted floating-point number.
 	 */
 	float decrypt_float(std::vector<uint8_t> encrypted_tt);
+	std::vector<float> decrypt_float_array(std::vector<uint8_t> serialized_ct);
 
 private:
 	std::shared_ptr<seal::SEALContext> context_;
 	seal::Decryptor decryptor_;
 	seal::CKKSEncoder encoder_;
+	
+	seal::Plaintext decrypt(std::vector<uint8_t> serialized_ct);
 };
 
 #endif // SXR_DECRYPTOR_HPP
