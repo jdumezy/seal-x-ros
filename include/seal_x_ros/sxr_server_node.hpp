@@ -75,9 +75,15 @@ private:
 	double scale_;
 	
 	std::optional<SXREncryptor> encryptor_;
-	std::shared_ptr<SXREncryptor> encryptor2_;
 	std::optional<SXREvaluator> evaluator_;
-	std::shared_ptr<SXREvaluator> evaluator2_;
+	
+	std::shared_ptr<seal::SEALContext> context_;
+	std::shared_ptr<seal::PublicKey> public_key_;
+	std::shared_ptr<seal::RelinKeys> relin_keys_;
+	std::shared_ptr<seal::GaloisKeys> galois_keys_;
+	std::shared_ptr<seal::CKKSEncoder> seal_encoder_;
+	std::shared_ptr<seal::Encryptor> seal_encryptor_;
+	std::shared_ptr<seal::Evaluator> seal_evaluator_;
 };
 
 #endif // SXR_SERVER_NODE_HPP

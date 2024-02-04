@@ -17,6 +17,7 @@ std::vector<uint8_t> SXREncryptor::encrypt(seal::Plaintext encoded_pt) {
 	return serialized_ct;
 }
 
+//TODO add srx ciphertext
 std::vector<uint8_t> SXREncryptor::encrypt_float(float input_float) {
 	seal::Plaintext encoded_pt;
 	encoder_.encode(input_float, scale_, encoded_pt);
@@ -24,6 +25,7 @@ std::vector<uint8_t> SXREncryptor::encrypt_float(float input_float) {
 	return encrypt(encoded_pt);
 }
 
+//TODO add srx ciphertext
 std::vector<uint8_t> SXREncryptor::encrypt_float_array(const std::vector<float>& input_float_array) {
 	std::vector<double> double_array = convert_float_array_to_double(input_float_array);
 	

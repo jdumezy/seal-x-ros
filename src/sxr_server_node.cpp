@@ -58,12 +58,20 @@ void SXRServerNode::handle_key_exchange(const std::shared_ptr<seal_x_ros::srv::K
 	
 	response->success = true;
 	
+	// Initialise SXR objects
 	encryptor_.emplace(serialized_parms_, serialized_pk_, scale_);
-	//std::shared_ptr<seal::SEALContext> context = std::make_shared<seal::SEALContext>(parms);
-	encryptor2_ = std::make_shared<SXREncryptor>(serialized_parms_, serialized_pk_, scale_);
 	evaluator_.emplace(serialized_parms_, serialized_pk_, serialized_rlk_, serialized_galk_, scale_);
-	//std::shared_ptr<seal::SEALContext> context = std::make_shared<seal::SEALContext>(parms);
-	evaluator2_ = std::make_shared<SXREvaluator>(serialized_parms_, serialized_pk_, serialized_rlk_, serialized_galk_, scale_);
+	
+	// Initialise SEAL shared objects
+	context_ = std::make_shared<seal::SEALContext>(deserialize_to_parms(serialized_parms_));
+	
+	public_key_ = std::make_shared<seal::PublicKey>(deserialize_to_pk(serialized_pk_, context_));
+	relin_keys_ = std::make_shared<seal::RelinKeys>(deserialize_to_rlk(serialized_rlk_, context_));
+	galois_keys_ = std::make_shared<seal::GaloisKeys>(deserialize_to_galk(serialized_galk_, context_));
+	
+	seal_encoder_ = std::make_shared<seal::CKKSEncoder>(*context_);
+	seal_encryptor_ = std::make_shared<seal::Encryptor>(*context_, *public_key_);
+	seal_evaluator_ = std::make_shared<seal::Evaluator>(*context_);
 }
 
 void SXRServerNode::handle_operation_request(const std::shared_ptr<seal_x_ros::srv::OperationRequest::Request> request,
