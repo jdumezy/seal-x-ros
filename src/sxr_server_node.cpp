@@ -74,25 +74,37 @@ void SXRServerNode::handle_operation_request(const std::shared_ptr<seal_x_ros::s
 	if (evaluator_) {
 		//TODO make shorter
 		SXRCiphertext message1(serialized_parms_, serialized_pk_, serialized_rlk_, request->serialized_ct, scale_);
-		SXRCiphertext message2(serialized_parms_, serialized_pk_, serialized_rlk_, request->serialized_ct, scale_);
+		RCLCPP_INFO(this->get_logger(), "message1: %d", message1.get_depth());
+		
+		SXRCiphertext message2(message1);
+		RCLCPP_INFO(this->get_logger(), "message2: %d", message2.get_depth());
+		
+		SXRCiphertext message3(message1);
+		RCLCPP_INFO(this->get_logger(), "message3: %d", message3.get_depth());
+		
+		SXRCiphertext message4(message1);
+		RCLCPP_INFO(this->get_logger(), "message4: %d", message4.get_depth());
 		
 		
-		//SXRCiphertext message2(message1);
-		// SXRCiphertext message3(message1);
+		SXRCiphertext result1 = evaluator_->multiply(message1, message2);
+		RCLCPP_INFO(this->get_logger(), "result1: %d", result1.get_depth());
 		
-		SXRCiphertext result = evaluator_->multiply(message1, message2);
+		RCLCPP_INFO(this->get_logger(), "match?: %d %d", result1.get_depth(), message1.get_depth());
+		SXRCiphertext result2 = evaluator_->multiply(result1, message1);
+		RCLCPP_INFO(this->get_logger(), "result2: %d", result2.get_depth());
 		
-//		float f = 2.0f;
-//		std::vector<uint8_t> pt = encryptor_->encrypt_float(f);
-//		
-//		pt = evaluator_->square(pt);
-//		
-//		result = evaluator_->multiply(result, pt);
+		RCLCPP_INFO(this->get_logger(), "match?: %d %d", result2.get_depth(), message3.get_depth());
+		SXRCiphertext result3 = evaluator_->add(result2, message3);
+		RCLCPP_INFO(this->get_logger(), "result3: %d", result3.get_depth());
+		
+		RCLCPP_INFO(this->get_logger(), "match?: %d %d", result3.get_depth(), message4.get_depth());
+		SXRCiphertext result4 = evaluator_->multiply(result3, message4);
+		RCLCPP_INFO(this->get_logger(), "result4: %d", result4.get_depth());
 		
 		RCLCPP_DEBUG(this->get_logger(), "Sending result ciphertext...");
 		
 		response->success = true;
-		response->serialized_ct_res = serialize_seal_object(message2.get_ct());
+		response->serialized_ct_res = serialize_seal_object(result4.get_ct());
 	}
 	else {
 		RCLCPP_ERROR(this->get_logger(), "Evaluator is not initialized");

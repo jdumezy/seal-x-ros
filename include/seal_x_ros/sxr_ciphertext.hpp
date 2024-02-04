@@ -27,15 +27,15 @@ public:
 
 private:
 	std::shared_ptr<seal::SEALContext> context_;
-	seal::Encryptor encryptor_;
-	seal::CKKSEncoder encoder_;
-	seal::Evaluator evaluator_;
-	seal::Ciphertext ciphertext_;
-	seal::RelinKeys relin_keys_;
-	seal::PublicKey public_key_;
-	double scale_;
-	int depth_;
-	std::vector<double> cm_prime_array_;
+    std::shared_ptr<seal::Encryptor> encryptor_;
+    std::shared_ptr<seal::CKKSEncoder> encoder_;
+    std::shared_ptr<seal::Evaluator> evaluator_;
+    seal::Ciphertext ciphertext_;
+    std::shared_ptr<seal::RelinKeys> relin_keys_;
+    std::shared_ptr<seal::PublicKey> public_key_;
+    double scale_;
+    int depth_;
+    std::vector<double> cm_prime_array_;
 };
 
 #endif // SXR_CIPHERTEXT_HPP

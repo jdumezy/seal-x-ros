@@ -19,9 +19,9 @@ SXRCiphertext SXREvaluator::add(SXRCiphertext sxrct_a, SXRCiphertext sxrct_b) {
 	
 	seal::Ciphertext result_ct;
 	
-	evaluator_.add(sxrct_a.get_ct(), sxrct_a.get_ct(), result_ct);
+	evaluator_.add(sxrct_a.get_ct(), sxrct_b.get_ct(), result_ct);
 	
-	SXRCiphertext result = sxrct_a;
+	SXRCiphertext result(sxrct_a);
 	result.set_ct(result_ct);
 	
 	return result;
@@ -34,11 +34,11 @@ SXRCiphertext SXREvaluator::multiply(SXRCiphertext sxrct_a, SXRCiphertext sxrct_
 	
 	seal::Ciphertext result_ct;
 	
-	evaluator_.multiply(sxrct_a.get_ct(), sxrct_a.get_ct(), result_ct);
+	evaluator_.multiply(sxrct_a.get_ct(), sxrct_b.get_ct(), result_ct);
 	evaluator_.relinearize_inplace(result_ct, relin_keys_);
 	evaluator_.rescale_to_next_inplace(result_ct);
 	
-	SXRCiphertext result = sxrct_a;
+	SXRCiphertext result(sxrct_a);
 	result.set_ct(result_ct);
 	result.set_depth(depth + 1);
 	
@@ -52,7 +52,7 @@ SXRCiphertext SXREvaluator::square(SXRCiphertext sxrct) {
 	evaluator_.relinearize_inplace(result_ct, relin_keys_);
 	evaluator_.rescale_to_next_inplace(result_ct);
 	
-	SXRCiphertext result = sxrct;
+	SXRCiphertext result(sxrct);
 	result.set_ct(result_ct);
 	result.set_depth(sxrct.get_depth() + 1);
 	return result;

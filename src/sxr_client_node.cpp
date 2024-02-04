@@ -54,7 +54,7 @@ void SXRClientNode::connection_and_send_key() {
 }
 
 void SXRClientNode::send_ciphertext() {
-	float f = 3.1415f;
+	float f = 3.0f;
 	std::vector<uint8_t> serialized_ct = encryptor_.encrypt_float(f);
 	
 	RCLCPP_DEBUG(this->get_logger(), "Sending ciphertext: %f", f);
