@@ -101,10 +101,13 @@ void SXRServerNode::handle_operation_request(const std::shared_ptr<seal_x_ros::s
 		SXRCiphertext result4 = evaluator_->multiply(result3, message4);
 		RCLCPP_INFO(this->get_logger(), "result4: %d", result4.get_depth());
 		
+		SXRCiphertext result5 = evaluator_->multiply(result4, result3);
+		RCLCPP_INFO(this->get_logger(), "result5: %d", result4.get_depth());
+		
 		RCLCPP_DEBUG(this->get_logger(), "Sending result ciphertext...");
 		
 		response->success = true;
-		response->serialized_ct_res = serialize_seal_object(result4.get_ct());
+		response->serialized_ct_res = serialize_seal_object(result5.get_ct());
 	}
 	else {
 		RCLCPP_ERROR(this->get_logger(), "Evaluator is not initialized");

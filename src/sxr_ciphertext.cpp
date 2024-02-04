@@ -67,7 +67,7 @@ void SXRCiphertext::match_depth(int new_depth) {
 		
 		seal::Ciphertext new_ciphertext = ciphertext_;
 		
-		for (int i = 0; i < depth_diff; i++) {
+		for (int i = 0; i < new_depth; i++) {
 			if (i >= depth_) {
 				(*evaluator_).multiply_inplace(new_ciphertext, one_ct);
 				(*evaluator_).relinearize_inplace(new_ciphertext, *relin_keys_);
