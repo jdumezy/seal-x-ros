@@ -51,7 +51,7 @@ rosidl_get_typesupport_target(cpp_typesupport_target "${PROJECT_NAME}" "rosidl_t
 target_link_libraries(sxr_parms_and_keys SEAL::seal sxr_lib)
 target_link_libraries(sxr_encryptor SEAL::seal sxr_lib)
 target_link_libraries(sxr_decryptor SEAL::seal sxr_lib)
-target_link_libraries(sxr_evaluator SEAL::seal sxr_lib)
+target_link_libraries(sxr_evaluator SEAL::seal sxr_lib sxr_ciphertext)
 target_link_libraries(sxr_ciphertext SEAL::seal sxr_lib)
 target_link_libraries(sxr_lib SEAL::seal)
 
@@ -64,6 +64,7 @@ target_link_libraries(sxr_client_node
 )
 
 target_link_libraries(sxr_server_node
+	sxr_ciphertext
 	sxr_encryptor
 	sxr_evaluator
 	sxr_lib

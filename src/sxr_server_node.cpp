@@ -59,7 +59,11 @@ void SXRServerNode::handle_key_exchange(const std::shared_ptr<seal_x_ros::srv::K
 	response->success = true;
 	
 	encryptor_.emplace(serialized_parms_, serialized_pk_, scale_);
+	//std::shared_ptr<seal::SEALContext> context = std::make_shared<seal::SEALContext>(parms);
+	encryptor2_ = std::make_shared<SXREncryptor>(serialized_parms_, serialized_pk_, scale_);
 	evaluator_.emplace(serialized_parms_, serialized_pk_, serialized_rlk_, serialized_galk_, scale_);
+	//std::shared_ptr<seal::SEALContext> context = std::make_shared<seal::SEALContext>(parms);
+	evaluator2_ = std::make_shared<SXREvaluator>(serialized_parms_, serialized_pk_, serialized_rlk_, serialized_galk_, scale_);
 }
 
 void SXRServerNode::handle_operation_request(const std::shared_ptr<seal_x_ros::srv::OperationRequest::Request> request,
@@ -68,19 +72,27 @@ void SXRServerNode::handle_operation_request(const std::shared_ptr<seal_x_ros::s
 	RCLCPP_DEBUG(this->get_logger(), "Received ciphertext");
 	
 	if (evaluator_) {
-		std::vector<uint8_t> result = evaluator_->square(request->serialized_ct);
+		//TODO make shorter
+		SXRCiphertext message1(serialized_parms_, serialized_pk_, serialized_rlk_, request->serialized_ct, scale_);
+		SXRCiphertext message2(serialized_parms_, serialized_pk_, serialized_rlk_, request->serialized_ct, scale_);
 		
-		float f = 2.0f;
-		std::vector<uint8_t> pt = encryptor_->encrypt_float(f);
 		
-		pt = evaluator_->square(pt);
+		//SXRCiphertext message2(message1);
+		// SXRCiphertext message3(message1);
 		
-		result = evaluator_->multiply(result, pt);
+		SXRCiphertext result = evaluator_->multiply(message1, message2);
+		
+//		float f = 2.0f;
+//		std::vector<uint8_t> pt = encryptor_->encrypt_float(f);
+//		
+//		pt = evaluator_->square(pt);
+//		
+//		result = evaluator_->multiply(result, pt);
 		
 		RCLCPP_DEBUG(this->get_logger(), "Sending result ciphertext...");
 		
 		response->success = true;
-		response->serialized_ct_res = result;
+		response->serialized_ct_res = serialize_seal_object(message2.get_ct());
 	}
 	else {
 		RCLCPP_ERROR(this->get_logger(), "Evaluator is not initialized");

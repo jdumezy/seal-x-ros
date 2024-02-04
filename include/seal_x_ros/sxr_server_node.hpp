@@ -5,6 +5,7 @@
 
 #include "seal/seal.h"
 
+#include "seal_x_ros/sxr_ciphertext.hpp"
 #include "seal_x_ros/sxr_encryptor.hpp"
 #include "seal_x_ros/sxr_evaluator.hpp"
 #include "seal_x_ros/sxr_lib.hpp"
@@ -74,7 +75,9 @@ private:
 	double scale_;
 	
 	std::optional<SXREncryptor> encryptor_;
+	std::shared_ptr<SXREncryptor> encryptor2_;
 	std::optional<SXREvaluator> evaluator_;
+	std::shared_ptr<SXREvaluator> evaluator2_;
 };
 
 #endif // SXR_SERVER_NODE_HPP

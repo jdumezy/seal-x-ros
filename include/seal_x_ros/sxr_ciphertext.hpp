@@ -17,11 +17,12 @@ public:
 				  std::vector<uint8_t> serialized_rlk,
 				  std::vector<uint8_t> serialized_ct,
 				  double scale);
+	SXRCiphertext(const SXRCiphertext& other);
 	
 	seal::Ciphertext get_ct();
 	int get_depth();
+	void set_ct(seal::Ciphertext new_ct);
 	void set_depth(int new_depth);
-	void set_scale(int new_scale);
 	void match_depth(int new_depth);
 
 private:
@@ -31,6 +32,7 @@ private:
 	seal::Evaluator evaluator_;
 	seal::Ciphertext ciphertext_;
 	seal::RelinKeys relin_keys_;
+	seal::PublicKey public_key_;
 	double scale_;
 	int depth_;
 	std::vector<double> cm_prime_array_;

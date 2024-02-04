@@ -3,6 +3,7 @@
 
 #include "seal/seal.h"
 
+#include "seal_x_ros/sxr_ciphertext.hpp"
 #include "seal_x_ros/sxr_lib.hpp"
 
 #include <vector>
@@ -42,8 +43,8 @@ public:
 					 std::vector<uint8_t> serialized_galk,
 					 double scale);
 	
-	std::vector<uint8_t> add(std::vector<uint8_t> sct_a, std::vector<uint8_t> sct_b);
-	std::vector<uint8_t> multiply(std::vector<uint8_t> sct_a, std::vector<uint8_t> sct_b);
+	SXRCiphertext add(SXRCiphertext sxrct_a, SXRCiphertext sxrct_b);
+	SXRCiphertext multiply(SXRCiphertext sxrct_a, SXRCiphertext sxrct_b);
 	
 	/**
 	 * @brief Performs the squaring operation on encrypted data.
@@ -54,7 +55,7 @@ public:
 	 * @param serialized_ct Serialized ciphertext to be squared.
 	 * @return Serialized ciphertext of the squared result.
 	 */
-	std::vector<uint8_t> square(std::vector<uint8_t> serialized_ct);
+	SXRCiphertext square(SXRCiphertext sxrct);
 
 private:
 	std::shared_ptr<seal::SEALContext> context_;

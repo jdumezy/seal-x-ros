@@ -12,31 +12,49 @@ SXREvaluator::SXREvaluator(std::vector<uint8_t> serialized_parms,
 	  galois_keys_(deserialize_to_galk(serialized_galk, context_)){
 }
 
-std::vector<uint8_t> SXREvaluator::add(std::vector<uint8_t> sct_a, std::vector<uint8_t> sct_b) {
-	seal::Ciphertext result;
-	seal::Ciphertext ciphertext_a = deserialize_to_ct(sct_a, context_);
-	seal::Ciphertext ciphertext_b = deserialize_to_ct(sct_b, context_);
+SXRCiphertext SXREvaluator::add(SXRCiphertext sxrct_a, SXRCiphertext sxrct_b) {
+	int depth = std::max(sxrct_a.get_depth(), sxrct_b.get_depth());
+	sxrct_a.match_depth(depth);
+	sxrct_b.match_depth(depth);
 	
-	evaluator_.add(ciphertext_a, ciphertext_b, result);
-	return serialize_seal_object(result);
+	seal::Ciphertext result_ct;
+	
+	evaluator_.add(sxrct_a.get_ct(), sxrct_a.get_ct(), result_ct);
+	
+	SXRCiphertext result = sxrct_a;
+	result.set_ct(result_ct);
+	
+	return result;
 }
 
-std::vector<uint8_t> SXREvaluator::multiply(std::vector<uint8_t> sct_a, std::vector<uint8_t> sct_b) {
-	seal::Ciphertext result;
-	seal::Ciphertext ciphertext_a = deserialize_to_ct(sct_a, context_);
-	seal::Ciphertext ciphertext_b = deserialize_to_ct(sct_b, context_);
+SXRCiphertext SXREvaluator::multiply(SXRCiphertext sxrct_a, SXRCiphertext sxrct_b) {
+	int depth = std::max(sxrct_a.get_depth(), sxrct_b.get_depth());
+	sxrct_a.match_depth(depth);
+	sxrct_b.match_depth(depth);
 	
-	evaluator_.multiply(ciphertext_a, ciphertext_b, result);
-	evaluator_.relinearize_inplace(result, relin_keys_);
-	// evaluator_.rescale_to_next_inplace(result);
-	return serialize_seal_object(result);
+	seal::Ciphertext result_ct;
+	
+	evaluator_.multiply(sxrct_a.get_ct(), sxrct_a.get_ct(), result_ct);
+	evaluator_.relinearize_inplace(result_ct, relin_keys_);
+	evaluator_.rescale_to_next_inplace(result_ct);
+	
+	SXRCiphertext result = sxrct_a;
+	result.set_ct(result_ct);
+	result.set_depth(depth + 1);
+	
+	return result;
 }
 
-std::vector<uint8_t> SXREvaluator::square(std::vector<uint8_t> serialized_ct) {
-	seal::Ciphertext result;
-	evaluator_.square(deserialize_to_ct(serialized_ct, context_), result);
-	evaluator_.relinearize_inplace(result, relin_keys_);
-	// evaluator_.rescale_to_next_inplace(result);
-	return serialize_seal_object(result);
+SXRCiphertext SXREvaluator::square(SXRCiphertext sxrct) {
+	seal::Ciphertext result_ct;
+	
+	evaluator_.square(sxrct.get_ct(), result_ct);
+	evaluator_.relinearize_inplace(result_ct, relin_keys_);
+	evaluator_.rescale_to_next_inplace(result_ct);
+	
+	SXRCiphertext result = sxrct;
+	result.set_ct(result_ct);
+	result.set_depth(sxrct.get_depth() + 1);
+	return result;
 }
 

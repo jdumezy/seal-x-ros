@@ -10,6 +10,7 @@ SXRCiphertext::SXRCiphertext(std::vector<uint8_t> serialized_parms,
 	  encoder_(*context_), evaluator_(*context_),
 	  ciphertext_(deserialize_to_ct(serialized_ct, context_)),
 	  relin_keys_(deserialize_to_rlk(serialized_rlk, context_)),
+	  public_key_(deserialize_to_pk(serialized_pk, context_)),
 	  scale_(scale){
 	
 	depth_ = 0;
@@ -18,11 +19,21 @@ SXRCiphertext::SXRCiphertext(std::vector<uint8_t> serialized_parms,
 	auto coeff_modulus = context_data.parms().coeff_modulus();
 	size_t n = coeff_modulus.size();
 	
-	std::vector<double> cm_prime_array_;
-	
 	for (int i = n - 2; i >= 1; i--) {
 		cm_prime_array_.push_back(static_cast<double>(coeff_modulus[i].value()));
 	}
+}
+// TODO make all shared pointers
+SXRCiphertext::SXRCiphertext(const SXRCiphertext& other)
+	: context_(other.context_),
+	  encryptor_(*context_, public_key_),
+	  encoder_(*context_),
+	  evaluator_(*context_),
+	  ciphertext_(other.ciphertext_),
+	  relin_keys_(other.relin_keys_),
+	  scale_(other.scale_),
+	  depth_(other.depth_),
+	  cm_prime_array_(other.cm_prime_array_) {
 }
 
 seal::Ciphertext SXRCiphertext::get_ct() {
@@ -33,12 +44,12 @@ int SXRCiphertext::get_depth() {
 	return depth_;
 }
 
-void SXRCiphertext::set_depth(int new_depth) {
-	depth_ = new_depth;
+void SXRCiphertext::set_ct(seal::Ciphertext new_ct) {
+	ciphertext_ = new_ct;
 }
 
-void SXRCiphertext::set_scale(int new_scale) {
-	scale_ = new_scale;
+void SXRCiphertext::set_depth(int new_depth) {
+	depth_ = new_depth;
 }
 
 void SXRCiphertext::match_depth(int new_depth) {
