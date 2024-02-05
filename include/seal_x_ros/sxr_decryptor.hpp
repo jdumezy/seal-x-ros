@@ -28,8 +28,8 @@ public:
      * Initializes the SEAL context and decryptor using the provided serialized parameters
      * and secret key.
      *
-     * @param serialized_parms Serialized SEAL encryption parameters.
-     * @param secret_key The secret key used for decryption.
+     * @param serializedParms Serialized SEAL encryption parameters.
+     * @param SecretKey The secret key used for decryption.
      */
     SXRDecryptor(std::vector<uint8_t> serializedParms,
                  const seal::SecretKey &SecretKey);
@@ -40,7 +40,7 @@ public:
      * Decrypts and decodes the input serialized ciphertext using the SEAL library, 
      * returning the corresponding floating-point number.
      *
-     * @param encrypted_tt Serialized ciphertext to be decrypted.
+     * @param serializedCt Serialized ciphertext to be decrypted.
      * @return The decrypted floating-point number.
      */
     float decryptFloat(std::vector<uint8_t> serializedCt);

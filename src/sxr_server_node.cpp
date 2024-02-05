@@ -1,130 +1,121 @@
+// Copyright 2024 Jules Dumezy
+// This code is licensed under MIT license (see LICENSE.md for details)
+
 #include "seal_x_ros/sxr_server_node.hpp"
 
 SXRServerNode::SXRServerNode()
     : Node("sxr_server_node") {
-    
-    key_exchange_service_ = this->create_service<seal_x_ros::srv::KeyExchange>(
+    key_exchange_service = this->create_service<seal_x_ros::srv::KeyExchange>(
         "key_exchange_service",
-        std::bind(&SXRServerNode::handle_key_exchange, this,
-            std::placeholders::_1, std::placeholders::_2)
-    );
-    
-    operation_request_service_ = this->create_service<seal_x_ros::srv::OperationRequest>(
+        std::bind(&SXRServerNode::handleKeyExchange, this,
+            std::placeholders::_1, std::placeholders::_2));
+
+    operation_request_service = this->create_service<seal_x_ros::srv::OperationRequest>(
         "operation_request_service",
-        std::bind(&SXRServerNode::handle_operation_request, this,
-            std::placeholders::_1, std::placeholders::_2)
-    );
-    server_message_client_ = this->create_client<seal_x_ros::srv::ServerMessage>(
-        "server_message_service"
-    );
+        std::bind(&SXRServerNode::handleOperationRequest, this,
+            std::placeholders::_1, std::placeholders::_2));
+    server_message_client = this->create_client<seal_x_ros::srv::ServerMessage>(
+        "server_message_service");
 }
 
-void SXRServerNode::send_message() {    
+void SXRServerNode::sendMessage() {
     auto request = std::make_shared<seal_x_ros::srv::ServerMessage::Request>();
-    
+
     float f = 3.1415f;
-    std::vector<uint8_t> serialized_ct = encryptor_->encrypt_float(f);
-    
-    if (encryptor_) {
-        request->serialized_ct = serialized_ct;
-        
-        server_message_client_->async_send_request(request,
-            [this](rclcpp::Client<seal_x_ros::srv::ServerMessage>::SharedFuture future_response) {
-                auto response = future_response.get();
+    std::vector<uint8_t> serializedCt = mEncryptor->encryptFloat(f);
+
+    if (mEncryptor) {
+        request->serialized_ct = serializedCt;
+
+        server_message_client->async_send_request(request,
+            [this](rclcpp::Client<seal_x_ros::srv::ServerMessage>::SharedFuture futureResponse) {
+                auto response = futureResponse.get();
                 if (response->success) {
                     RCLCPP_INFO(this->get_logger(), "Message sent successfully");
-                }
-                else {
+                } else {
                     RCLCPP_ERROR(this->get_logger(), "Message sending failed");
                 }
         });
-    }
-    else {
+    } else {
         RCLCPP_ERROR(this->get_logger(), "Encryptor is not initialized");
     }
-    
 }
 
-void SXRServerNode::handle_key_exchange(const std::shared_ptr<seal_x_ros::srv::KeyExchange::Request> request,
+void SXRServerNode::handleKeyExchange(const std::shared_ptr<seal_x_ros::srv::KeyExchange::Request> request,
     std::shared_ptr<seal_x_ros::srv::KeyExchange::Response> response) {
-    
-    serialized_parms_ = request->serialized_parms;
-    serialized_pk_ = request->serialized_pk;
-    serialized_rlk_ = request->serialized_rlk;
-    serialized_galk_ = request->serialized_galk;
-    scale_ = request->scale;
-    
+
+    mSerializedParms = request->serialized_parms;
+    mSerializedPk = request->serialized_pk;
+    mSerializedRlk = request->serialized_rlk;
+    mSerializedGalk = request->serialized_galk;
+    mScale = request->scale;
+
     RCLCPP_INFO(this->get_logger(), "Received public key");
-    
+
     response->success = true;
-    
+
     // Initialise SXR objects
-    encryptor_.emplace(serialized_parms_, serialized_pk_, scale_);
-    evaluator_.emplace(serialized_parms_, serialized_pk_, serialized_rlk_, serialized_galk_, scale_);
-    
+    mEncryptor.emplace(mSerializedParms, mSerializedPk, mScale);
+    mEvaluator.emplace(mSerializedParms, mSerializedPk, mSerializedRlk, mSerializedGalk, mScale);
+
     // Initialise SEAL shared objects
-    
-    parms_ = deserializeToParms(serialized_parms_);
-    
-    seal::SEALContext context(parms_);
-    std::shared_ptr<seal::SEALContext> pcontext = std::make_shared<seal::SEALContext>(parms_);
-    
-    publicKey_ = deserializeToPk(serialized_pk_, pcontext);
-    relinKeys_ = deserializeToRlk(serialized_rlk_, pcontext);
-    galoisKeys_ = deserializeToGalk(serialized_galk_, pcontext);
+
+    mParms = deserializeToParms(mSerializedParms);
+
+    seal::SEALContext context(mParms);
+    std::shared_ptr<seal::SEALContext> pContext = std::make_shared<seal::SEALContext>(mParms);
+
+    mPublicKey = deserializeToPk(mSerializedPk, pContext);
+    mRelinKeys = deserializeToRlk(mSerializedRlk, pContext);
+    mGaloisKeys = deserializeToGalk(mSerializedGalk, pContext);
 }
 
-void SXRServerNode::handle_operation_request(const std::shared_ptr<seal_x_ros::srv::OperationRequest::Request> request,
+void SXRServerNode::handleOperationRequest(const std::shared_ptr<seal_x_ros::srv::OperationRequest::Request> request,
     std::shared_ptr<seal_x_ros::srv::OperationRequest::Response> response) {
-    
+
     RCLCPP_DEBUG(this->get_logger(), "Received ciphertext");
-    
-    seal::SEALContext context(parms_);
-    std::shared_ptr<seal::SEALContext> pcontext = std::make_shared<seal::SEALContext>(parms_); // remove later
-    seal::Ciphertext requestCiphertext = deserializeToCt(request->serialized_ct, pcontext);
-    
-    
-    if (evaluator_) {
+
+    seal::SEALContext context(mParms);
+    std::shared_ptr<seal::SEALContext> pContext = std::make_shared<seal::SEALContext>(mParms);  // remove later
+    seal::Ciphertext requestCiphertext = deserializeToCt(request->serialized_ct, pContext);
+
+    if (mEvaluator) {
         SXRCiphertext message1(requestCiphertext);
-        
+
         RCLCPP_INFO(this->get_logger(), "message1: %d", message1.getDepth());
-        
+
         SXRCiphertext message2(requestCiphertext);
         RCLCPP_INFO(this->get_logger(), "message2: %d", message2.getDepth());
-        
+
         SXRCiphertext message3(requestCiphertext);
         RCLCPP_INFO(this->get_logger(), "message3: %d", message3.getDepth());
-        
+
         SXRCiphertext message4(requestCiphertext);
         RCLCPP_INFO(this->get_logger(), "message4: %d", message4.getDepth());
-        
-        
-        
-        
-        SXRCiphertext result1 = evaluator_->multiply(message1, message2);
+
+        SXRCiphertext result1 = mEvaluator->multiply(message1, message2);
         RCLCPP_INFO(this->get_logger(), "result1: %d", result1.getDepth());
-        
+
         RCLCPP_INFO(this->get_logger(), "match?: %d %d", result1.getDepth(), message1.getDepth());
-        SXRCiphertext result2 = evaluator_->multiply(result1, message1);
+        SXRCiphertext result2 = mEvaluator->multiply(result1, message1);
         RCLCPP_INFO(this->get_logger(), "result2: %d", result2.getDepth());
-        
+
         RCLCPP_INFO(this->get_logger(), "match?: %d %d", result2.getDepth(), message3.getDepth());
-        SXRCiphertext result3 = evaluator_->add(result2, message3);
+        SXRCiphertext result3 = mEvaluator->add(result2, message3);
         RCLCPP_INFO(this->get_logger(), "result3: %d", result3.getDepth());
-        
+
         RCLCPP_INFO(this->get_logger(), "match?: %d %d", result3.getDepth(), message4.getDepth());
-        SXRCiphertext result4 = evaluator_->multiply(result3, message4);
+        SXRCiphertext result4 = mEvaluator->multiply(result3, message4);
         RCLCPP_INFO(this->get_logger(), "result4: %d", result4.getDepth());
-        
-        SXRCiphertext result5 = evaluator_->multiply(result4, result3);
+
+        SXRCiphertext result5 = mEvaluator->multiply(result4, result3);
         RCLCPP_INFO(this->get_logger(), "result5: %d", result5.getDepth());
-        
+
         RCLCPP_DEBUG(this->get_logger(), "Sending result ciphertext...");
-        
+
         response->success = true;
         response->serialized_ct_res = serializeSealObject(result5.getCiphertext());
-    }
-    else {
+    } else {
         RCLCPP_ERROR(this->get_logger(), "Evaluator is not initialized");
         response->success = false;
     }

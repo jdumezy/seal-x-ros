@@ -37,12 +37,12 @@ public:
     SXRServerNode();
 
 private:
-    rclcpp::Client<seal_x_ros::srv::ServerMessage>::SharedPtr server_message_client_;
+    rclcpp::Client<seal_x_ros::srv::ServerMessage>::SharedPtr server_message_client;
     
-    void send_message();
+    void sendMessage();
     
-    rclcpp::Service<seal_x_ros::srv::KeyExchange>::SharedPtr key_exchange_service_;
-    rclcpp::Service<seal_x_ros::srv::OperationRequest>::SharedPtr operation_request_service_;
+    rclcpp::Service<seal_x_ros::srv::KeyExchange>::SharedPtr key_exchange_service;
+    rclcpp::Service<seal_x_ros::srv::OperationRequest>::SharedPtr operation_request_service;
     
     /**
      * @brief Handles the key exchange request from the client.
@@ -54,7 +54,7 @@ private:
      * @param request The request object containing serialized encryption parameters and keys.
      * @param response The response object to be sent back to the client.
      */
-    void handle_key_exchange(const std::shared_ptr<seal_x_ros::srv::KeyExchange::Request> request, std::shared_ptr<seal_x_ros::srv::KeyExchange::Response> response);
+    void handleKeyExchange(const std::shared_ptr<seal_x_ros::srv::KeyExchange::Request> request, std::shared_ptr<seal_x_ros::srv::KeyExchange::Response> response);
     
     /**
      * @brief Handles an operation request on encrypted data from the client.
@@ -66,21 +66,21 @@ private:
      * @param request The request object containing the serialized ciphertext.
      * @param response The response object containing the result or error message.
      */
-    void handle_operation_request(const std::shared_ptr<seal_x_ros::srv::OperationRequest::Request> request, std::shared_ptr<seal_x_ros::srv::OperationRequest::Response> response);
+    void handleOperationRequest(const std::shared_ptr<seal_x_ros::srv::OperationRequest::Request> request, std::shared_ptr<seal_x_ros::srv::OperationRequest::Response> response);
     
-    std::vector<uint8_t> serialized_parms_;
-    std::vector<uint8_t> serialized_pk_;
-    std::vector<uint8_t> serialized_rlk_;
-    std::vector<uint8_t> serialized_galk_;
-    double scale_;
+    std::vector<uint8_t> mSerializedParms;
+    std::vector<uint8_t> mSerializedPk;
+    std::vector<uint8_t> mSerializedRlk;
+    std::vector<uint8_t> mSerializedGalk;
+    double mScale;
     
-    std::optional<SXREncryptor> encryptor_;
-    std::optional<SXREvaluator> evaluator_;
+    std::optional<SXREncryptor> mEncryptor;
+    std::optional<SXREvaluator> mEvaluator;
     
-    seal::EncryptionParameters parms_;
-    seal::PublicKey publicKey_;
-    seal::RelinKeys relinKeys_;
-    seal::GaloisKeys galoisKeys_;
+    seal::EncryptionParameters mParms;
+    seal::PublicKey mPublicKey;
+    seal::RelinKeys mRelinKeys;
+    seal::GaloisKeys mGaloisKeys;
 };
 
 #endif // SXR_SERVER_NODE_HPP_

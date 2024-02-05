@@ -27,12 +27,12 @@ public:
      * Initializes the SEAL context, encryptor, and encoder using the provided serialized parameters
      * and public key. The scale factor for encoding is also set during construction.
      *
-     * @param serialized_parms Serialized SEAL encryption parameters.
-     * @param serialized_pk Serialized public key for encryption.
+     * @param serializedParms Serialized SEAL encryption parameters.
+     * @param serializedPk Serialized public key for encryption.
      * @param scale The scale factor to be used in encoding floating-point numbers.
      */
-    SXREncryptor(std::vector<uint8_t> serialized_parms, 
-                 std::vector<uint8_t> serialized_pk, 
+    SXREncryptor(std::vector<uint8_t> serializedParms, 
+                 std::vector<uint8_t> serializedPk, 
                  double scale);
     
     /**
@@ -41,19 +41,19 @@ public:
      * Encodes and encrypts the input float using the SEAL library. The encrypted data is then 
      * serialized into a vector of bytes for transmission.
      *
-     * @param input_float The floating-point number to be encrypted.
+     * @param inputFloat The floating-point number to be encrypted.
      * @return Serialized ciphertext of the encrypted floating-point number.
      */
-    std::vector<uint8_t> encrypt_float(float input_float);
-    std::vector<uint8_t> encrypt_float_array(const std::vector<float>& input_float_array);
+    std::vector<uint8_t> encryptFloat(float inputFloat);
+    std::vector<uint8_t> encryptFloatArray(const std::vector<float>& inputFloatArray);
 
 private:
-    std::shared_ptr<seal::SEALContext> context_;
-    seal::Encryptor encryptor_;
-    seal::CKKSEncoder encoder_;
-    double scale_;
+    std::shared_ptr<seal::SEALContext> mpContext;
+    seal::Encryptor mEncryptor;
+    seal::CKKSEncoder mEncoder;
+    double mScale;
     
-    std::vector<uint8_t> encrypt(seal::Plaintext encoded_pt);
+    std::vector<uint8_t> encrypt(seal::Plaintext encodedPlaintext);
 };
 
 #endif // SXR_ENCRYPTOR_HPP_

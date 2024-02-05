@@ -1,69 +1,69 @@
+// Copyright 2024 Jules Dumezy
+// This code is licensed under MIT license (see LICENSE.md for details)
+
 #include "seal_x_ros/sxr_parms_and_keys.hpp"
 
 ParmsAndKeysManager::ParmsAndKeysManager() {
-    create_parms();
-    create_keys();
+    createParms();
+    createKeys();
 }
 
-void ParmsAndKeysManager::create_parms() {
+void ParmsAndKeysManager::createParms() {
     seal::EncryptionParameters parms(seal::scheme_type::ckks);
-    
     size_t poly_modulus_degree = 16384;
     parms.set_poly_modulus_degree(poly_modulus_degree);
     parms.set_coeff_modulus(seal::CoeffModulus::Create(poly_modulus_degree, { 60, 40, 40, 40, 40, 60 }));
-    
-    serialized_parms_ = serializeSealObject(parms);
-    
-    context_ = std::make_shared<seal::SEALContext>(parms);
-    scale_ = std::pow(2.0, 40);
+    mScale = std::pow(2.0, 40);
+
+    mSerializedParms = serializeSealObject(parms);
+    mpContext = std::make_shared<seal::SEALContext>(parms);
 }
 
-void ParmsAndKeysManager::create_keys() {
-    seal::KeyGenerator keygen(*context_);
-    secret_key_ = keygen.secret_key();
-    
-    keygen.create_public_key(public_key_);
-    keygen.create_relin_keys(relin_keys_);
-    keygen.create_galois_keys(galois_keys_);
-    
-    serialized_pk_ = serializeSealObject(public_key_);
-    serialized_rlk_ = serializeSealObject(relin_keys_);
-    serialized_galk_ = serializeSealObject(galois_keys_);
+void ParmsAndKeysManager::createKeys() {
+    seal::KeyGenerator keygen(*mpContext);
+    mSecretKey = keygen.secret_key();
+    keygen.create_public_key(mPublicKey);
+    keygen.create_relin_keys(mRelinKeys);
+    keygen.create_galois_keys(mGaloisKeys);
+
+    mSerializedPk = serializeSealObject(mPublicKey);
+    mSerializedRlk = serializeSealObject(mRelinKeys);
+    mSerializedGalk = serializeSealObject(mGaloisKeys);
 }
 
-double ParmsAndKeysManager::get_scale() const {
-    return scale_;
+double ParmsAndKeysManager::getScale() const {
+    return mScale;
 }
 
-seal::SecretKey ParmsAndKeysManager::get_secret_key() const {
-    return secret_key_;
+seal::SecretKey ParmsAndKeysManager::getSecretKey() const {
+    return mSecretKey;
 }
 
-seal::PublicKey ParmsAndKeysManager::get_public_key() const {
-    return public_key_;
+seal::PublicKey ParmsAndKeysManager::getPublicKey() const {
+    return mPublicKey;
 }
 
-seal::RelinKeys ParmsAndKeysManager::get_relin_keys() const {
-    return relin_keys_;
+seal::RelinKeys ParmsAndKeysManager::getRelinKeys() const {
+    return mRelinKeys;
 }
 
-seal::GaloisKeys ParmsAndKeysManager::get_galois_keys() const {
-    return galois_keys_;
+seal::GaloisKeys ParmsAndKeysManager::getGaloisKeys() const {
+    return mGaloisKeys;
 }
 
-std::vector<uint8_t> ParmsAndKeysManager::get_serialized_parms() const {
-    return serialized_parms_;
+std::vector<uint8_t> ParmsAndKeysManager::getSerializedParms() const {
+    return mSerializedParms;
 }
 
-std::vector<uint8_t> ParmsAndKeysManager::get_serialized_pk() const {
-    return serialized_pk_;
+std::vector<uint8_t> ParmsAndKeysManager::getSerializedPk() const {
+    return mSerializedPk;
 }
 
-std::vector<uint8_t> ParmsAndKeysManager::get_serialized_rlk() const {
-    return serialized_rlk_;
+std::vector<uint8_t> ParmsAndKeysManager::getSerializedRlk() const {
+    return mSerializedRlk;
 }
 
-std::vector<uint8_t> ParmsAndKeysManager::get_serialized_galk() const {
-    return serialized_galk_;
+std::vector<uint8_t> ParmsAndKeysManager::getSerializedGalk() const {
+    return mSerializedGalk;
 }
 

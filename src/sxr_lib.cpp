@@ -1,19 +1,19 @@
+// Copyright 2024 Jules Dumezy
+// This code is licensed under MIT license (see LICENSE.md for details)
+
 #include "seal_x_ros/sxr_lib.hpp"
 
 double calculateScale(int depth, double scale, std::vector<double> primeArray) {
     double newScale = scale;
     int maxDepth = static_cast<int>(primeArray.size());
-    
+
     if (depth == 0) {
         return newScale;
-    }
-    else if (depth < 0) {
+    } else if (depth < 0) {
         throw std::invalid_argument("Depth must be positive");
-    }
-    else if (depth > maxDepth) {
+    } else if (depth > maxDepth) {
         throw std::invalid_argument("Depth is too deep for coeff modulus");
-    }
-    else {
+    } else {
         for (int i = 0; i < depth; i++) {
             newScale *= pow(scale, pow(2, (depth - i - 1))) / pow(primeArray[i], pow(2, (depth - i - 1)));
         }
@@ -24,9 +24,8 @@ double calculateScale(int depth, double scale, std::vector<double> primeArray) {
 int calculateDepth(double ciphertextScale, double scale, std::vector<double> primeArray) {
     int depth = 0;
     double calculatedScale = scale;
-    
     int maxDepth = static_cast<int>(primeArray.size());
-    
+
     for (int i = 0; i < maxDepth; i++) {
         if (std::abs(calculatedScale - ciphertextScale) < 0.0001) {
             return depth;
@@ -34,33 +33,28 @@ int calculateDepth(double ciphertextScale, double scale, std::vector<double> pri
         depth++;
         calculatedScale = calculateScale(depth, scale, primeArray);
     }
-    
+
     if (depth == maxDepth) {
         throw std::runtime_error("Unable to match the ciphertext scale");
     }
-    
     return -1;
 }
 
 std::vector<double> floatArrayToDoubleArray(const std::vector<float>& floatArray) {
     std::vector<double> doubleArray;
     doubleArray.reserve(floatArray.size());
-    
     for (float value : floatArray) {
         doubleArray.push_back(static_cast<double>(value));
     }
-    
     return doubleArray;
 }
 
 std::vector<float> doubleArrayToFloatArray(const std::vector<double>& doubleArray) {
     std::vector<float> floatArray;
     floatArray.reserve(doubleArray.size());
-    
     for (double value : doubleArray) {
         floatArray.push_back(static_cast<float>(value));
     }
-    
     return floatArray;
 }
 
