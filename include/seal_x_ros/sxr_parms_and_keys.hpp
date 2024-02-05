@@ -20,41 +20,41 @@
  */
 class ParmsAndKeysManager {
 public:
-     /**
-     * @brief Constructs a new ParmsAndKeysManager object.
-     *
-     * Sets up the SEAL environment and generates the necessary encryption parameters and keys.
-     */
-    ParmsAndKeysManager();
+   /**
+   * @brief Constructs a new ParmsAndKeysManager object.
+   *
+   * Sets up the SEAL environment and generates the necessary encryption parameters and keys.
+   */
+  ParmsAndKeysManager();
 
-    double getScale() const;
-    
-    seal::SecretKey getSecretKey() const;
-    seal::PublicKey getPublicKey() const;
-    seal::RelinKeys getRelinKeys() const;
-    seal::GaloisKeys getGaloisKeys() const;
-    
-    std::vector<uint8_t> getSerializedParms() const;
-    std::vector<uint8_t> getSerializedPk() const;
-    std::vector<uint8_t> getSerializedRlk() const;
-    std::vector<uint8_t> getSerializedGalk() const;
+  double getScale() const;
+  
+  seal::SecretKey getSecretKey() const;
+  seal::PublicKey getPublicKey() const;
+  seal::RelinKeys getRelinKeys() const;
+  seal::GaloisKeys getGaloisKeys() const;
+  
+  std::vector<uint8_t> getSerializedParms() const;
+  std::vector<uint8_t> getSerializedPk() const;
+  std::vector<uint8_t> getSerializedRlk() const;
+  std::vector<uint8_t> getSerializedGalk() const;
 
 private:
-    void createParms();
-    void createKeys();
+  void createParms();
+  void createKeys();
 
-    double mScale;
-    std::shared_ptr<seal::SEALContext> mpContext;
-    
-    seal::SecretKey mSecretKey;
-    seal::PublicKey mPublicKey;
-    seal::RelinKeys mRelinKeys;
-    seal::GaloisKeys mGaloisKeys;
-    
-    std::vector<uint8_t> mSerializedParms;
-    std::vector<uint8_t> mSerializedPk;
-    std::vector<uint8_t> mSerializedRlk;
-    std::vector<uint8_t> mSerializedGalk;
+  double mScale;
+  std::shared_ptr<seal::SEALContext> mpContext;
+  
+  seal::SecretKey mSecretKey;
+  seal::PublicKey mPublicKey;
+  seal::RelinKeys mRelinKeys;
+  seal::GaloisKeys mGaloisKeys;
+  
+  std::vector<uint8_t> mSerializedParms;
+  std::vector<uint8_t> mSerializedPk;
+  std::vector<uint8_t> mSerializedRlk;
+  std::vector<uint8_t> mSerializedGalk;
 };
 
 #endif // SXR_PARMS_AND_KEYS_HPP_

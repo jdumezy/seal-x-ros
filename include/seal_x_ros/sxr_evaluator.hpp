@@ -24,49 +24,49 @@
  */
 class SXREvaluator {
 public:
-    /**
-     * @brief Constructs a new SXREvaluator object.
-     *
-     * Initializes the SEAL context, encryptor, evaluator, and encoder using the provided 
-     * serialized parameters, public key, relinearization keys, and Galois keys. 
-     * The scale factor for encoding is also set during construction.
-     *
-     * @param serializedParms Serialized SEAL encryption parameters.
-     * @param serializedPk Serialized public key for encryption.
-     * @param serializedRlk Serialized relinearization keys.
-     * @param serializedGalk Serialized Galois keys.
-     * @param scale The scale factor to be used in encoding and operations.
-     */
-    SXREvaluator(std::vector<uint8_t> serializedParms, 
-                     std::vector<uint8_t> serializedPk, 
-                     std::vector<uint8_t> serializedRlk,
-                     std::vector<uint8_t> serializedGalk,
-                     double scale);
-    
-    SXRCiphertext add(SXRCiphertext sxrctA, SXRCiphertext sxrctB);
-    SXRCiphertext multiply(SXRCiphertext sxrctA, SXRCiphertext sxrctB);
-    
-    /**
-     * @brief Performs the squaring operation on encrypted data.
-     *
-     * Accepts an SXRCiphertext, performs the squaring operation on it, 
-     * and then returns the result as an SXRCiphertext.
-     *
-     * @param sxrct Serialized ciphertext to be squared.
-     * @return SXRCiphertext ciphertext of the squared result.
-     */
-    SXRCiphertext square(SXRCiphertext sxrct);
-    
-    int matchDepth(SXRCiphertext& sxrctA, SXRCiphertext& sxrctB);
+  /**
+   * @brief Constructs a new SXREvaluator object.
+   *
+   * Initializes the SEAL context, encryptor, evaluator, and encoder using the provided 
+   * serialized parameters, public key, relinearization keys, and Galois keys. 
+   * The scale factor for encoding is also set during construction.
+   *
+   * @param serializedParms Serialized SEAL encryption parameters.
+   * @param serializedPk Serialized public key for encryption.
+   * @param serializedRlk Serialized relinearization keys.
+   * @param serializedGalk Serialized Galois keys.
+   * @param scale The scale factor to be used in encoding and operations.
+   */
+  SXREvaluator(std::vector<uint8_t> serializedParms, 
+           std::vector<uint8_t> serializedPk, 
+           std::vector<uint8_t> serializedRlk,
+           std::vector<uint8_t> serializedGalk,
+           double scale);
+  
+  SXRCiphertext add(SXRCiphertext sxrctA, SXRCiphertext sxrctB);
+  SXRCiphertext multiply(SXRCiphertext sxrctA, SXRCiphertext sxrctB);
+  
+  /**
+   * @brief Performs the squaring operation on encrypted data.
+   *
+   * Accepts an SXRCiphertext, performs the squaring operation on it, 
+   * and then returns the result as an SXRCiphertext.
+   *
+   * @param sxrct Serialized ciphertext to be squared.
+   * @return SXRCiphertext ciphertext of the squared result.
+   */
+  SXRCiphertext square(SXRCiphertext sxrct);
+  
+  int matchDepth(SXRCiphertext& sxrctA, SXRCiphertext& sxrctB);
 
 private:
-    std::shared_ptr<seal::SEALContext> mpContext;
-    seal::Encryptor mEncryptor;
-    seal::CKKSEncoder mEncoder;
-    seal::Evaluator mEvaluator;
-    double mScale;
-    seal::RelinKeys mRelinKeys;
-    seal::GaloisKeys mGaloisKeys;
+  std::shared_ptr<seal::SEALContext> mpContext;
+  seal::Encryptor mEncryptor;
+  seal::CKKSEncoder mEncoder;
+  seal::Evaluator mEvaluator;
+  double mScale;
+  seal::RelinKeys mRelinKeys;
+  seal::GaloisKeys mGaloisKeys;
 };
 
 #endif // SXR_EVALUATOR_HPP_

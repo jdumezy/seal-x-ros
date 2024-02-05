@@ -97,14 +97,14 @@ seal::Ciphertext deserializeToCt(std::vector<uint8_t> serializedCt, std::shared_
  * @return A vector of bytes representing the serialized form of the input SEAL object.
  *
  * @note The serialized object can be deserialized using the appropriate SEAL deserialization methods.
- *       Ensure that the type `T` is consistent during serialization and deserialization.
+ *     Ensure that the type `T` is consistent during serialization and deserialization.
  */
 template<typename T>
 std::vector<uint8_t> serializeSealObject(const T& obj) {
-    std::size_t size = obj.save_size();
-    std::vector<uint8_t> serializedObject(size);
-    obj.save(reinterpret_cast<seal::seal_byte*>(serializedObject.data()), size);
-    return serializedObject;
+  std::size_t size = obj.save_size();
+  std::vector<uint8_t> serializedObject(size);
+  obj.save(reinterpret_cast<seal::seal_byte*>(serializedObject.data()), size);
+  return serializedObject;
 }
 
 #endif // SXR_LIB_HPP_

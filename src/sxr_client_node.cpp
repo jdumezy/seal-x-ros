@@ -4,90 +4,89 @@
 #include "seal_x_ros/sxr_client_node.hpp"
 
 SXRClientNode::SXRClientNode()
-    : rclcpp::Node("sxr_client_node"),
-      mParmsAndKeys(),
-      mEncryptor(mParmsAndKeys.getSerializedParms(),
-                 mParmsAndKeys.getSerializedPk(),
-                 mParmsAndKeys.getScale()),
-      mDecryptor(mParmsAndKeys.getSerializedParms(),
-                 mParmsAndKeys.getSecretKey()) {
-    key_exchange_client = this->create_client<seal_x_ros::srv::KeyExchange>(
-        "key_exchange_service");
-    operation_request_client = this->create_client<seal_x_ros::srv::OperationRequest>(
-        "operation_request_service");
-    server_message_service = this->create_service<seal_x_ros::srv::ServerMessage>(
-        "server_message_service",
-        std::bind(&SXRClientNode::handleServerMessage, this,
-            std::placeholders::_1, std::placeholders::_2));
+  : rclcpp::Node("sxr_client_node"),
+    mParmsAndKeys(),
+    mEncryptor(mParmsAndKeys.getSerializedParms(),
+         mParmsAndKeys.getSerializedPk(),
+         mParmsAndKeys.getScale()),
+    mDecryptor(mParmsAndKeys.getSerializedParms(),
+         mParmsAndKeys.getSecretKey()) {
+  key_exchange_client = this->create_client<seal_x_ros::srv::KeyExchange>(
+    "key_exchange_service");
+  operation_request_client = this->create_client<seal_x_ros::srv::OperationRequest>(
+    "operation_request_service");
+  server_message_service = this->create_service<seal_x_ros::srv::ServerMessage>(
+    "server_message_service",
+    std::bind(&SXRClientNode::handleServerMessage, this,
+      std::placeholders::_1, std::placeholders::_2));
 
-    mSerializedParms = mParmsAndKeys.getSerializedParms();
-    mSerializedPk = mParmsAndKeys.getSerializedPk();
-    mSerializedRlk = mParmsAndKeys.getSerializedRlk();
-    mSerializedGalk = mParmsAndKeys.getSerializedGalk();
-    mSecretKey = mParmsAndKeys.getSecretKey();
-    mScale = mParmsAndKeys.getScale();
+  mSerializedParms = mParmsAndKeys.getSerializedParms();
+  mSerializedPk = mParmsAndKeys.getSerializedPk();
+  mSerializedRlk = mParmsAndKeys.getSerializedRlk();
+  mSerializedGalk = mParmsAndKeys.getSerializedGalk();
+  mSecretKey = mParmsAndKeys.getSecretKey();
+  mScale = mParmsAndKeys.getScale();
 
-    connectionAndSendKey();
+  connectionAndSendKey();
 }
 
 void SXRClientNode::connectionAndSendKey() {
-    while (!key_exchange_client->wait_for_service(std::chrono::seconds(1))) {
-        RCLCPP_WARN(this->get_logger(), "Waiting for the server to be up...");
-    }
+  while (!key_exchange_client->wait_for_service(std::chrono::seconds(1))) {
+    RCLCPP_WARN(this->get_logger(), "Waiting for the server to be up...");
+  }
 
-    auto request = std::make_shared<seal_x_ros::srv::KeyExchange::Request>();
-    request->serialized_parms = mSerializedParms;
-    request->serialized_pk = mSerializedPk;
-    request->serialized_rlk = mSerializedRlk;
-    request->serialized_galk = mSerializedGalk;
-    request->scale = mScale;
+  auto request = std::make_shared<seal_x_ros::srv::KeyExchange::Request>();
+  request->serialized_parms = mSerializedParms;
+  request->serialized_pk = mSerializedPk;
+  request->serialized_rlk = mSerializedRlk;
+  request->serialized_galk = mSerializedGalk;
+  request->scale = mScale;
 
-    key_exchange_client->async_send_request(request,
-        [this](rclcpp::Client<seal_x_ros::srv::KeyExchange>::SharedFuture futureResponse) {
-            auto response = futureResponse.get();
-            if (response->success) {
-                RCLCPP_INFO(this->get_logger(), "Key exchange successful");
-                sendCiphertext();
-            } else {
-                RCLCPP_ERROR(this->get_logger(), "Key exchange failed");
-            }
-    });
+  key_exchange_client->async_send_request(request,
+    [this](rclcpp::Client<seal_x_ros::srv::KeyExchange>::SharedFuture futureResponse) {
+      auto response = futureResponse.get();
+      if (response->success) {
+        RCLCPP_INFO(this->get_logger(), "Key exchange successful");
+        sendCiphertext();
+      } else {
+        RCLCPP_ERROR(this->get_logger(), "Key exchange failed");
+      }
+  });
 }
 
 void SXRClientNode::sendCiphertext() {
-    float f = 3.0f;
-    std::vector<uint8_t> serializedCt = mEncryptor.encryptFloat(f);
+  float f = 3.0f;
+  std::vector<uint8_t> serializedCt = mEncryptor.encryptFloat(f);
 
-    RCLCPP_DEBUG(this->get_logger(), "Sending ciphertext: %f", f);
+  RCLCPP_DEBUG(this->get_logger(), "Sending ciphertext: %f", f);
 
-    auto request = std::make_shared<seal_x_ros::srv::OperationRequest::Request>();
-    request->serialized_ct = serializedCt;
+  auto request = std::make_shared<seal_x_ros::srv::OperationRequest::Request>();
+  request->serialized_ct = serializedCt;
 
-    operation_request_client->async_send_request(request,
-        [this](rclcpp::Client<seal_x_ros::srv::OperationRequest>::SharedFuture futureResponse) {
-            auto response = futureResponse.get();
-            if (response->success) {
-                RCLCPP_DEBUG(this->get_logger(), "Ciphertext received");
-                std::vector<uint8_t> serializedCtRes = response->serialized_ct_res;
-                float result = mDecryptor.decryptFloat(serializedCtRes);
-                RCLCPP_INFO(this->get_logger(), "Received response: %f", result);
-            } else {
-                RCLCPP_ERROR(this->get_logger(), "Failed to send ciphertext");
-            }
-    });
+  operation_request_client->async_send_request(request,
+    [this](rclcpp::Client<seal_x_ros::srv::OperationRequest>::SharedFuture futureResponse) {
+      auto response = futureResponse.get();
+      if (response->success) {
+        RCLCPP_DEBUG(this->get_logger(), "Ciphertext received");
+        std::vector<uint8_t> serializedCtRes = response->serialized_ct_res;
+        float result = mDecryptor.decryptFloat(serializedCtRes);
+        RCLCPP_INFO(this->get_logger(), "Received response: %f", result);
+      } else {
+        RCLCPP_ERROR(this->get_logger(), "Failed to send ciphertext");
+      }
+  });
 }
 
 void SXRClientNode::handleServerMessage(const std::shared_ptr<seal_x_ros::srv::ServerMessage::Request> request,
-    std::shared_ptr<seal_x_ros::srv::ServerMessage::Response> response) {
+  std::shared_ptr<seal_x_ros::srv::ServerMessage::Response> response) {
+  std::vector<uint8_t> serializedCt = request->serialized_ct;
 
-    std::vector<uint8_t> serializedCt = request->serialized_ct;
+  RCLCPP_INFO(this->get_logger(), "Received message from server");
 
-    RCLCPP_INFO(this->get_logger(), "Received message from server");
+  response->success = true;
 
-    response->success = true;
-
-    float message = mDecryptor.decryptFloat(serializedCt);
-    message++;
+  float message = mDecryptor.decryptFloat(serializedCt);
+  message++;
 }
 
 /**
@@ -101,10 +100,10 @@ void SXRClientNode::handleServerMessage(const std::shared_ptr<seal_x_ros::srv::S
  * @return Integer representing the status at the end of execution.
  */
 int main(int argc, char **argv) {
-    rclcpp::init(argc, argv);
-    auto node = std::make_shared<SXRClientNode>();
-    rclcpp::spin(node);
-    rclcpp::shutdown();
-    return 0;
+  rclcpp::init(argc, argv);
+  auto node = std::make_shared<SXRClientNode>();
+  rclcpp::spin(node);
+  rclcpp::shutdown();
+  return 0;
 }
 

@@ -4,22 +4,22 @@
 #include "seal_x_ros/sxr_ciphertext.hpp"
 
 SXRCiphertext::SXRCiphertext(seal::Ciphertext ciphertext)
-    : mCiphertext(ciphertext) {
-    mDepth = 0;
+  : mCiphertext(ciphertext) {
+  mDepth = 0;
 }
 
 seal::Ciphertext SXRCiphertext::getCiphertext() {
-    return mCiphertext;
+  return mCiphertext;
 }
 
 int SXRCiphertext::getDepth() {
-    return mDepth;
+  return mDepth;
 }
 
 void SXRCiphertext::setCiphertext(seal::Ciphertext newCiphertext) {
-    mCiphertext = newCiphertext;
+  mCiphertext = newCiphertext;
 }
 
 void SXRCiphertext::setDepth(int newDepth) {
-    mDepth = newDepth;
+  mDepth = newDepth;
 }
