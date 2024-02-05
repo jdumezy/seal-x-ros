@@ -56,6 +56,8 @@ public:
 	 * @return Serialized ciphertext of the squared result.
 	 */
 	SXRCiphertext square(SXRCiphertext sxrct);
+	
+	int match_depth(SXRCiphertext& sxrctA, SXRCiphertext& sxrctB);
 
 private:
 	std::shared_ptr<seal::SEALContext> context_;

@@ -21,6 +21,27 @@ double calculate_scale(int depth, double scale, std::vector<double> cm_prime_arr
 	}
 }
 
+int calculateDepth(double ciphertextScale, double scale, std::vector<double> primeArray) {
+	int depth = 0;
+	double calculatedScale = scale;
+	
+	int max_depth = static_cast<int>(primeArray.size());
+	
+	for (int i = 0; i < max_depth; i++) {
+		if (std::abs(calculatedScale - ciphertextScale) < 0.0001) {
+			return depth;
+		}
+		depth++;
+		calculatedScale = calculate_scale(depth, scale, primeArray);
+	}
+	
+	if (depth == max_depth) {
+		throw std::runtime_error("Unable to match the ciphertext scale");
+	}
+	
+	return -1;
+}
+
 std::vector<double> convert_float_array_to_double(const std::vector<float>& float_array) {
 	std::vector<double> double_array;
 	double_array.reserve(float_array.size());

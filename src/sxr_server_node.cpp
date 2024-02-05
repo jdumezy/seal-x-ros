@@ -63,15 +63,15 @@ void SXRServerNode::handle_key_exchange(const std::shared_ptr<seal_x_ros::srv::K
 	evaluator_.emplace(serialized_parms_, serialized_pk_, serialized_rlk_, serialized_galk_, scale_);
 	
 	// Initialise SEAL shared objects
-	context_ = std::make_shared<seal::SEALContext>(deserialize_to_parms(serialized_parms_));
 	
-	public_key_ = std::make_shared<seal::PublicKey>(deserialize_to_pk(serialized_pk_, context_));
-	relin_keys_ = std::make_shared<seal::RelinKeys>(deserialize_to_rlk(serialized_rlk_, context_));
-	galois_keys_ = std::make_shared<seal::GaloisKeys>(deserialize_to_galk(serialized_galk_, context_));
+	parms_ = deserialize_to_parms(serialized_parms_);
 	
-	seal_encoder_ = std::make_shared<seal::CKKSEncoder>(*context_);
-	seal_encryptor_ = std::make_shared<seal::Encryptor>(*context_, *public_key_);
-	seal_evaluator_ = std::make_shared<seal::Evaluator>(*context_);
+	seal::SEALContext context(parms_);
+	std::shared_ptr<seal::SEALContext> pcontext = std::make_shared<seal::SEALContext>(parms_);
+	
+	publicKey_ = deserialize_to_pk(serialized_pk_, pcontext);
+	relinKeys_ = deserialize_to_rlk(serialized_rlk_, pcontext);
+	galoisKeys_ = deserialize_to_galk(serialized_galk_, pcontext);
 }
 
 void SXRServerNode::handle_operation_request(const std::shared_ptr<seal_x_ros::srv::OperationRequest::Request> request,
@@ -79,19 +79,26 @@ void SXRServerNode::handle_operation_request(const std::shared_ptr<seal_x_ros::s
 	
 	RCLCPP_DEBUG(this->get_logger(), "Received ciphertext");
 	
+	seal::SEALContext context(parms_);
+	std::shared_ptr<seal::SEALContext> pcontext = std::make_shared<seal::SEALContext>(parms_); // remove later
+	seal::Ciphertext requestCiphertext = deserialize_to_ct(request->serialized_ct, pcontext);
+	
+	
 	if (evaluator_) {
-		//TODO make shorter
-		SXRCiphertext message1(serialized_parms_, serialized_pk_, serialized_rlk_, request->serialized_ct, scale_);
+		SXRCiphertext message1(requestCiphertext);
+		
 		RCLCPP_INFO(this->get_logger(), "message1: %d", message1.get_depth());
 		
-		SXRCiphertext message2(message1);
+		SXRCiphertext message2(requestCiphertext);
 		RCLCPP_INFO(this->get_logger(), "message2: %d", message2.get_depth());
 		
-		SXRCiphertext message3(message1);
+		SXRCiphertext message3(requestCiphertext);
 		RCLCPP_INFO(this->get_logger(), "message3: %d", message3.get_depth());
 		
-		SXRCiphertext message4(message1);
+		SXRCiphertext message4(requestCiphertext);
 		RCLCPP_INFO(this->get_logger(), "message4: %d", message4.get_depth());
+		
+		
 		
 		
 		SXRCiphertext result1 = evaluator_->multiply(message1, message2);
@@ -110,7 +117,7 @@ void SXRServerNode::handle_operation_request(const std::shared_ptr<seal_x_ros::s
 		RCLCPP_INFO(this->get_logger(), "result4: %d", result4.get_depth());
 		
 		SXRCiphertext result5 = evaluator_->multiply(result4, result3);
-		RCLCPP_INFO(this->get_logger(), "result5: %d", result4.get_depth());
+		RCLCPP_INFO(this->get_logger(), "result5: %d", result5.get_depth());
 		
 		RCLCPP_DEBUG(this->get_logger(), "Sending result ciphertext...");
 		
