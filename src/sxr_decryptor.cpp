@@ -1,35 +1,35 @@
 #include "seal_x_ros/sxr_decryptor.hpp"
 
-SXRDecryptor::SXRDecryptor(std::vector<uint8_t> serialized_parms,
-						   const seal::SecretKey &secret_key)
-	: context_(context_from_parms(serialized_parms)),
-	  decryptor_(*context_, secret_key), 
-	  encoder_(*context_) {
+SXRDecryptor::SXRDecryptor(std::vector<uint8_t> serializedParms,
+                           const seal::SecretKey &secretKey)
+    : mpContext(pContextFromParms(serializedParms)),
+      mDecryptor(*mpContext, secretKey), 
+      mEncoder(*mpContext) {
 }
 
-seal::Plaintext SXRDecryptor::decrypt(std::vector<uint8_t> serialized_ct) {
-	seal::Plaintext decoded_pt;
-	seal::Ciphertext encrypted_ct = deserialize_to_ct(serialized_ct, context_);
-	decryptor_.decrypt(encrypted_ct, decoded_pt);
-	
-	return decoded_pt;
+seal::Plaintext SXRDecryptor::decrypt(std::vector<uint8_t> serializedCt) {
+    seal::Plaintext decodedPlantext;
+    seal::Ciphertext encryptedCt = deserializeToCt(serializedCt, mpContext);
+    mDecryptor.decrypt(encryptedCt, decodedPlantext);
+    
+    return decodedPlantext;
 }
 
-float SXRDecryptor::decrypt_float(std::vector<uint8_t> serialized_ct) {
-	seal::Plaintext decrypted_float = decrypt(serialized_ct);
-	
-	std::vector<double> decoded_float;
-	encoder_.decode(decrypted_float, decoded_float);
-	
-	return static_cast<float>(decoded_float[0]);
+float SXRDecryptor::decryptFloat(std::vector<uint8_t> serializedCt) {
+    seal::Plaintext decryptedFloat = decrypt(serializedCt);
+    
+    std::vector<double> decodedFloat;
+    mEncoder.decode(decryptedFloat, decodedFloat);
+    
+    return static_cast<float>(decodedFloat[0]);
 }
 
-std::vector<float> SXRDecryptor::decrypt_float_array(std::vector<uint8_t> serialized_ct) {
-	seal::Plaintext decrypted_double_array = decrypt(serialized_ct);
-	
-	std::vector<double> decoded_double_array;
-	encoder_.decode(decrypted_double_array, decoded_double_array);
-	
-	return convert_double_array_to_float(decoded_double_array);
+std::vector<float> SXRDecryptor::decryptFloatArray(std::vector<uint8_t> serializedCt) {
+    seal::Plaintext decryptedDoubleArray = decrypt(serializedCt);
+    
+    std::vector<double> decodedDoubleArray;
+    mEncoder.decode(decryptedDoubleArray, decodedDoubleArray);
+    
+    return doubleArrayToFloatArray(decodedDoubleArray);
 }
 

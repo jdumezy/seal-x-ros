@@ -1,30 +1,22 @@
 #include "seal_x_ros/sxr_ciphertext.hpp"
 
 SXRCiphertext::SXRCiphertext(seal::Ciphertext ciphertext)
-	: ciphertext_(ciphertext) {
-	depth_ = 0;
-	
-//	auto& contextData = context_->key_context_data();
-//	auto coeffModulus = contextData.parms().coeff_modulus();
-//	size_t n = coeffModulus.size();
-//	
-//	for (int i = n - 2; i >= 1; i--) {
-//		primeArray_.push_back(static_cast<double>(coeffModulus[i].value()));
-//	}
+    : mCiphertext(ciphertext) {
+    mDepth = 0;
 }
 
-seal::Ciphertext SXRCiphertext::get_ct() {
-	return ciphertext_;
+seal::Ciphertext SXRCiphertext::getCiphertext() {
+    return mCiphertext;
 }
 
-int SXRCiphertext::get_depth() {
-	return depth_;
+int SXRCiphertext::getDepth() {
+    return mDepth;
 }
 
-void SXRCiphertext::set_ct(seal::Ciphertext new_ct) {
-	ciphertext_ = new_ct;
+void SXRCiphertext::setCiphertext(seal::Ciphertext newCiphertext) {
+    mCiphertext = newCiphertext;
 }
 
-void SXRCiphertext::set_depth(int new_depth) {
-	depth_ = new_depth;
+void SXRCiphertext::setDepth(int newDepth) {
+    mDepth = newDepth;
 }

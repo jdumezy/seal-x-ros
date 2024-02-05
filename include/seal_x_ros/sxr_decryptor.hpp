@@ -1,5 +1,5 @@
-#ifndef SXR_DECRYPTOR_HPP
-#define SXR_DECRYPTOR_HPP
+#ifndef SXR_DECRYPTOR_HPP_
+#define SXR_DECRYPTOR_HPP_
 
 #include "seal/seal.h"
 
@@ -22,37 +22,37 @@
  */
 class SXRDecryptor {
 public:
-	/**
-	 * @brief Constructs a new SXRDecryptor object.
-	 *
-	 * Initializes the SEAL context and decryptor using the provided serialized parameters
-	 * and secret key.
-	 *
-	 * @param serialized_parms Serialized SEAL encryption parameters.
-	 * @param secret_key The secret key used for decryption.
-	 */
-	SXRDecryptor(std::vector<uint8_t> serialized_parms,
-				 const seal::SecretKey &secret_key);
-	
-	/**
-	 * @brief Decrypts a serialized ciphertext into a floating-point number.
-	 *
-	 * Decrypts and decodes the input serialized ciphertext using the SEAL library, 
-	 * returning the corresponding floating-point number.
-	 *
-	 * @param encrypted_tt Serialized ciphertext to be decrypted.
-	 * @return The decrypted floating-point number.
-	 */
-	float decrypt_float(std::vector<uint8_t> encrypted_tt);
-	std::vector<float> decrypt_float_array(std::vector<uint8_t> serialized_ct);
+    /**
+     * @brief Constructs a new SXRDecryptor object.
+     *
+     * Initializes the SEAL context and decryptor using the provided serialized parameters
+     * and secret key.
+     *
+     * @param serialized_parms Serialized SEAL encryption parameters.
+     * @param secret_key The secret key used for decryption.
+     */
+    SXRDecryptor(std::vector<uint8_t> serializedParms,
+                 const seal::SecretKey &SecretKey);
+    
+    /**
+     * @brief Decrypts a serialized ciphertext into a floating-point number.
+     *
+     * Decrypts and decodes the input serialized ciphertext using the SEAL library, 
+     * returning the corresponding floating-point number.
+     *
+     * @param encrypted_tt Serialized ciphertext to be decrypted.
+     * @return The decrypted floating-point number.
+     */
+    float decryptFloat(std::vector<uint8_t> serializedCt);
+    std::vector<float> decryptFloatArray(std::vector<uint8_t> serializedCt);
 
 private:
-	std::shared_ptr<seal::SEALContext> context_;
-	seal::Decryptor decryptor_;
-	seal::CKKSEncoder encoder_;
-	
-	seal::Plaintext decrypt(std::vector<uint8_t> serialized_ct);
+    std::shared_ptr<seal::SEALContext> mpContext;
+    seal::Decryptor mDecryptor;
+    seal::CKKSEncoder mEncoder;
+    
+    seal::Plaintext decrypt(std::vector<uint8_t> serializedCt);
 };
 
-#endif // SXR_DECRYPTOR_HPP
+#endif // SXR_DECRYPTOR_HPP_
 

@@ -1,28 +1,21 @@
-#ifndef SXR_CIPHERTEXT_HPP
-#define SXR_CIPHERTEXT_HPP
+#ifndef SXR_CIPHERTEXT_HPP_
+#define SXR_CIPHERTEXT_HPP_
 
 #include "seal/seal.h"
 
-#include "seal_x_ros/sxr_lib.hpp"
-
-#include <vector>
-#include <memory>
-#include <cstdint>
-
 class SXRCiphertext {
 public:
-	SXRCiphertext(seal::Ciphertext ciphertext);
-	
-	seal::Ciphertext get_ct();
-	int get_depth();
-	void set_ct(seal::Ciphertext new_ct);
-	void set_depth(int new_depth);
+    SXRCiphertext(seal::Ciphertext ciphertext);
+    
+    seal::Ciphertext getCiphertext();
+    int getDepth();
+    void setCiphertext(seal::Ciphertext newCiphertext);
+    void setDepth(int newDepth);
 
 private:
-	seal::Ciphertext ciphertext_;	
-	int depth_;
-//	std::vector<double> primeArray_;
+    seal::Ciphertext mCiphertext;
+    int mDepth;
 };
 
-#endif // SXR_CIPHERTEXT_HPP
+#endif // SXR_CIPHERTEXT_HPP_
 

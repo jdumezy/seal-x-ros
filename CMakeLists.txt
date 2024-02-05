@@ -35,15 +35,15 @@ rosidl_generate_interfaces(${PROJECT_NAME}
 )
 
 ament_target_dependencies(sxr_client_node
-	rclcpp
-	std_msgs
-	SEAL
+  rclcpp
+  std_msgs
+  SEAL
 )
 
 ament_target_dependencies(sxr_server_node
-	rclcpp
-	std_msgs
-	SEAL
+  rclcpp
+  std_msgs
+  SEAL
 )
 
 rosidl_get_typesupport_target(cpp_typesupport_target "${PROJECT_NAME}" "rosidl_typesupport_cpp")
@@ -56,20 +56,20 @@ target_link_libraries(sxr_ciphertext SEAL::seal sxr_lib)
 target_link_libraries(sxr_lib SEAL::seal)
 
 target_link_libraries(sxr_client_node
-	sxr_decryptor
-	sxr_encryptor
-	sxr_parms_and_keys
-	SEAL::seal
-	"${cpp_typesupport_target}"
+  sxr_decryptor
+  sxr_encryptor
+  sxr_parms_and_keys
+  SEAL::seal
+  "${cpp_typesupport_target}"
 )
 
 target_link_libraries(sxr_server_node
-	sxr_ciphertext
-	sxr_encryptor
-	sxr_evaluator
-	sxr_lib
-	SEAL::seal
-	"${cpp_typesupport_target}"
+  sxr_ciphertext
+  sxr_encryptor
+  sxr_evaluator
+  sxr_lib
+  SEAL::seal
+  "${cpp_typesupport_target}"
 )
 
 # Install targets

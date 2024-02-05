@@ -1,96 +1,99 @@
 #include "seal_x_ros/sxr_evaluator.hpp"
 
-SXREvaluator::SXREvaluator(std::vector<uint8_t> serialized_parms, 
-								   std::vector<uint8_t> serialized_pk,
-								   std::vector<uint8_t> serialized_rlk,
-								   std::vector<uint8_t> serialized_galk, 
-								   double scale)
-	: context_(context_from_parms(serialized_parms)),
-	  encryptor_(*context_, deserialize_to_pk(serialized_pk, context_)),
-	  encoder_(*context_), evaluator_(*context_), scale_(scale),
-	  relin_keys_(deserialize_to_rlk(serialized_rlk, context_)),
-	  galois_keys_(deserialize_to_galk(serialized_galk, context_)){
-}
-//TODO add init
-SXRCiphertext SXREvaluator::add(SXRCiphertext sxrct_a, SXRCiphertext sxrct_b) {
-	int depth = match_depth(sxrct_a, sxrct_b);
-	
-	seal::Ciphertext result_ct;
-	
-	evaluator_.add(sxrct_a.get_ct(), sxrct_b.get_ct(), result_ct);
-	
-	SXRCiphertext result(result_ct);
-	result.set_depth(depth);
-	
-	return result;
+SXREvaluator::SXREvaluator(std::vector<uint8_t> serializedParms, 
+                                   std::vector<uint8_t> serializedPk,
+                                   std::vector<uint8_t> serializedRlk,
+                                   std::vector<uint8_t> serializedGalk, 
+                                   double scale)
+    : mpContext(pContextFromParms(serializedParms)),
+      mEncryptor(*mpContext, deserializeToPk(serializedPk, mpContext)),
+      mEncoder(*mpContext), mEvaluator(*mpContext), mScale(scale),
+      mRelinKeys(deserializeToRlk(serializedRlk, mpContext)),
+      mGaloisKeys(deserializeToGalk(serializedGalk, mpContext)){
 }
 
-SXRCiphertext SXREvaluator::multiply(SXRCiphertext sxrct_a, SXRCiphertext sxrct_b) {
-	int depth = match_depth(sxrct_a, sxrct_b);
-	
-	seal::Ciphertext result_ct;
-	
-	evaluator_.multiply(sxrct_a.get_ct(), sxrct_b.get_ct(), result_ct);
-	evaluator_.relinearize_inplace(result_ct, relin_keys_);
-	evaluator_.rescale_to_next_inplace(result_ct);
-	
-	SXRCiphertext result(result_ct);
-	result.set_depth(depth + 1);
-	
-	return result;
+//TODO add init
+
+SXRCiphertext SXREvaluator::add(SXRCiphertext sxrctA, SXRCiphertext sxrctB) {
+    int depth = matchDepth(sxrctA, sxrctB);
+    
+    seal::Ciphertext resultCiphertext;
+    
+    mEvaluator.add(sxrctA.getCiphertext(), sxrctB.getCiphertext(), resultCiphertext);
+    
+    SXRCiphertext result(resultCiphertext);
+    result.setDepth(depth);
+    
+    return result;
+}
+
+SXRCiphertext SXREvaluator::multiply(SXRCiphertext sxrctA, SXRCiphertext sxrctB) {
+    int depth = matchDepth(sxrctA, sxrctB);
+    
+    seal::Ciphertext resultCiphertext;
+    
+    mEvaluator.multiply(sxrctA.getCiphertext(), sxrctB.getCiphertext(), resultCiphertext);
+    mEvaluator.relinearize_inplace(resultCiphertext, mRelinKeys);
+    mEvaluator.rescale_to_next_inplace(resultCiphertext);
+    
+    SXRCiphertext result(resultCiphertext);
+    result.setDepth(depth + 1);
+    
+    return result;
 }
 
 SXRCiphertext SXREvaluator::square(SXRCiphertext sxrct) {
-	seal::Ciphertext result_ct;
-	
-	evaluator_.square(sxrct.get_ct(), result_ct);
-	evaluator_.relinearize_inplace(result_ct, relin_keys_);
-	evaluator_.rescale_to_next_inplace(result_ct);
-	
-	SXRCiphertext result(result_ct);
-	result.set_depth(sxrct.get_depth() + 1);
-	return result;
+    seal::Ciphertext resultCiphertext;
+    
+    mEvaluator.square(sxrct.getCiphertext(), resultCiphertext);
+    mEvaluator.relinearize_inplace(resultCiphertext, mRelinKeys);
+    mEvaluator.rescale_to_next_inplace(resultCiphertext);
+    
+    SXRCiphertext result(resultCiphertext);
+    result.setDepth(sxrct.getDepth() + 1);
+    return result;
 }
 
-int SXREvaluator::match_depth(SXRCiphertext& sxrctA, SXRCiphertext& sxrctB) {
-	int minDepth = std::min(sxrctA.get_depth(), sxrctB.get_depth());
-	int maxDepth = std::max(sxrctA.get_depth(), sxrctB.get_depth());
-	
-	seal::Ciphertext newCiphertext = (sxrctA.get_depth() == minDepth) ? sxrctA.get_ct() : sxrctB.get_ct();
-	
-	int depthDiff = maxDepth - minDepth;
-	
-	if (depthDiff != 0) {
-		float oneFloat = 1.0f;
-		
-		seal::Plaintext onePlaintext;
-		encoder_.encode(oneFloat, scale_, onePlaintext);
-		
-		seal::Ciphertext oneCiphertext;
-		encryptor_.encrypt(onePlaintext, oneCiphertext);
-		
-		
-		for (int i = 0; i < maxDepth; i++) {
-			if (i >= minDepth) {
-				evaluator_.multiply_inplace(newCiphertext, oneCiphertext);
-				evaluator_.relinearize_inplace(newCiphertext, relin_keys_);
-				evaluator_.rescale_to_next_inplace(newCiphertext);
-			}
-			
-			evaluator_.square_inplace(oneCiphertext);
-			evaluator_.relinearize_inplace(oneCiphertext, relin_keys_);
-			evaluator_.rescale_to_next_inplace(oneCiphertext);
-		}
-	}
-	
-	if (sxrctA.get_depth() == minDepth) {
-		sxrctA.set_ct(newCiphertext);
-		sxrctA.set_depth(maxDepth);
-	}
-	else {
-		sxrctB.set_ct(newCiphertext);
-		sxrctB.set_depth(maxDepth);
-	}
-	
-	return maxDepth;
+int SXREvaluator::matchDepth(SXRCiphertext& sxrctA, SXRCiphertext& sxrctB) {
+    int minDepth = std::min(sxrctA.getDepth(), sxrctB.getDepth());
+    int maxDepth = std::max(sxrctA.getDepth(), sxrctB.getDepth());
+    
+    seal::Ciphertext newCiphertext = (sxrctA.getDepth() == minDepth) ? sxrctA.getCiphertext() : sxrctB.getCiphertext();
+    
+    int depthDiff = maxDepth - minDepth;
+    
+    if (depthDiff != 0) {
+        float oneFloat = 1.0f;
+        
+        seal::Plaintext onePlaintext;
+        mEncoder.encode(oneFloat, mScale, onePlaintext);
+        
+        seal::Ciphertext oneCiphertext;
+        mEncryptor.encrypt(onePlaintext, oneCiphertext);
+        
+        
+        for (int i = 0; i < maxDepth; i++) {
+            if (i >= minDepth) {
+                mEvaluator.multiply_inplace(newCiphertext, oneCiphertext);
+                mEvaluator.relinearize_inplace(newCiphertext, mRelinKeys);
+                mEvaluator.rescale_to_next_inplace(newCiphertext);
+            }
+            
+            mEvaluator.square_inplace(oneCiphertext);
+            mEvaluator.relinearize_inplace(oneCiphertext, mRelinKeys);
+            mEvaluator.rescale_to_next_inplace(oneCiphertext);
+        }
+    }
+    
+    if (sxrctA.getDepth() == minDepth) {
+        sxrctA.setCiphertext(newCiphertext);
+        sxrctA.setDepth(maxDepth);
+    }
+    else {
+        sxrctB.setCiphertext(newCiphertext);
+        sxrctB.setDepth(maxDepth);
+    }
+    
+    return maxDepth;
 }
+
