@@ -57,3 +57,5 @@ CATKIN_IGNORE
 docs/html/
 docs/latex/
 
+# Idea
+.idea/
