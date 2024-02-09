@@ -39,7 +39,7 @@ ros2 run seal_x_ros sxr_server_node
 ```
 
 ## Contributing
-Contributions to the SEAL-ROS Bridge are welcome. Please submit a pull request or open an issue for any features, bugs, or improvements.
+Contributions to the SEAL-X-ROS are welcome. Please submit a pull request or open an issue for any features, bugs, or improvements.
 
 ## License
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for more details.

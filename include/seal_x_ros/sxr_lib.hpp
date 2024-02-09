@@ -103,7 +103,7 @@ template<typename T>
 std::vector<uint8_t> serializeSealObject(const T& obj) {
   std::size_t size = obj.save_size();
   std::vector<uint8_t> serializedObject(size);
-  obj.save(reinterpret_cast<seal::seal_byte*>(serializedObject.data()), size);
+  obj.save(reinterpret_cast<seal::seal_byte*>(serializedObject.data()), size, seal::compr_mode_type::zstd);
   return serializedObject;
 }
 

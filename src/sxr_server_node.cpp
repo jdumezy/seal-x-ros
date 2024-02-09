@@ -74,8 +74,8 @@ void SXRServerNode::handleOperationRequest(const std::shared_ptr<seal_x_ros::srv
   std::shared_ptr<seal_x_ros::srv::OperationRequest::Response> response) {
   RCLCPP_DEBUG(this->get_logger(), "Received ciphertext");
 
-  seal::SEALContext context(mParms);
-  std::shared_ptr<seal::SEALContext> pContext = std::make_shared<seal::SEALContext>(mParms);  // remove later
+  seal::SEALContext context(mParms);  // TODO(jdumezy) remove + change classes
+  std::shared_ptr<seal::SEALContext> pContext = std::make_shared<seal::SEALContext>(mParms);
   seal::Ciphertext requestCiphertext = deserializeToCt(request->serialized_ct, pContext);
 
   if (mEvaluator) {
