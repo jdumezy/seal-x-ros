@@ -11,7 +11,7 @@ The package is built to share data between a client node (encryption and decrypt
 - C++17 or higher
 
 ## Installation
-1. Install Microsoft SEAL following the instructions at [SEAL GitHub](https://github.com/microsoft/SEAL).
+1. Install Microsoft SEAL following the instructions at [SEAL GitHub](https://github.com/microsoft/SEAL). You need to turn the option `SEAL_USE_ZSTD` to `ON` as SEAL-X-ROS uses zstandard compression. 
 2. Clone this repository into your ROS workspace (e.g., `ros2_ws/src/`).
    ```bash
    git clone https://github.com/jdumezy/seal-x-ros.git
@@ -39,7 +39,7 @@ ros2 run seal_x_ros sxr_server_node
 ```
 
 ## Contributing
-Contributions to the SEAL-ROS Bridge are welcome. Please submit a pull request or open an issue for any features, bugs, or improvements.
+Contributions to the SEAL-X-ROS are welcome. Please submit a pull request or open an issue for any features, bugs, or improvements.
 
 ## License
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for more details.

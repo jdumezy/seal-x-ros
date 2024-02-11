@@ -1,40 +1,21 @@
-#ifndef SXR_CIPHERTEXT_HPP
-#define SXR_CIPHERTEXT_HPP
+#ifndef SXR_CIPHERTEXT_HPP_
+#define SXR_CIPHERTEXT_HPP_
 
 #include "seal/seal.h"
 
-#include "seal_x_ros/sxr_lib.hpp"
-
-#include <vector>
-#include <memory>
-#include <cstdint>
-#include <stdexcept>
-
 class SXRCiphertext {
 public:
-	SXRCiphertext(std::vector<uint8_t> serialized_parms,
-				  std::vector<uint8_t> serialized_pk,
-				  std::vector<uint8_t> serialized_rlk,
-				  std::vector<uint8_t> serialized_ct,
-				  double scale);
-	
-	seal::Ciphertext get_ct();
-	int get_depth();
-	void set_depth(int new_depth);
-	void set_scale(int new_scale);
-	void match_depth(int new_depth);
+  SXRCiphertext(seal::Ciphertext ciphertext);
+  
+  seal::Ciphertext getCiphertext();
+  int getDepth();
+  void setCiphertext(seal::Ciphertext newCiphertext);
+  void setDepth(int newDepth);
 
 private:
-	std::shared_ptr<seal::SEALContext> context_;
-	seal::Encryptor encryptor_;
-	seal::CKKSEncoder encoder_;
-	seal::Evaluator evaluator_;
-	seal::Ciphertext ciphertext_;
-	seal::RelinKeys relin_keys_;
-	double scale_;
-	int depth_;
-	std::vector<double> cm_prime_array_;
+  seal::Ciphertext mCiphertext;
+  int mDepth;
 };
 
-#endif // SXR_CIPHERTEXT_HPP
+#endif // SXR_CIPHERTEXT_HPP_
 

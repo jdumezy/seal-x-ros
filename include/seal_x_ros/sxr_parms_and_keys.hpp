@@ -1,5 +1,5 @@
-#ifndef SXR_PARMS_AND_KEYS_HPP
-#define SXR_PARMS_AND_KEYS_HPP
+#ifndef SXR_PARMS_AND_KEYS_HPP_
+#define SXR_PARMS_AND_KEYS_HPP_
 
 #include "seal/seal.h"
 
@@ -20,42 +20,42 @@
  */
 class ParmsAndKeysManager {
 public:
-	 /**
-	 * @brief Constructs a new ParmsAndKeysManager object.
-	 *
-	 * Sets up the SEAL environment and generates the necessary encryption parameters and keys.
-	 */
-	ParmsAndKeysManager();
+   /**
+   * @brief Constructs a new ParmsAndKeysManager object.
+   *
+   * Sets up the SEAL environment and generates the necessary encryption parameters and keys.
+   */
+  ParmsAndKeysManager();
 
-	double get_scale() const;
-	
-	seal::SecretKey get_secret_key() const;
-	seal::PublicKey get_public_key() const;
-	seal::RelinKeys get_relin_keys() const;
-	seal::GaloisKeys get_galois_keys() const;
-	
-	std::vector<uint8_t> get_serialized_parms() const;
-	std::vector<uint8_t> get_serialized_pk() const;
-	std::vector<uint8_t> get_serialized_rlk() const;
-	std::vector<uint8_t> get_serialized_galk() const;
+  double getScale() const;
+  
+  seal::SecretKey getSecretKey() const;
+  seal::PublicKey getPublicKey() const;
+  seal::RelinKeys getRelinKeys() const;
+  seal::GaloisKeys getGaloisKeys() const;
+  
+  std::vector<uint8_t> getSerializedParms() const;
+  std::vector<uint8_t> getSerializedPk() const;
+  std::vector<uint8_t> getSerializedRlk() const;
+  std::vector<uint8_t> getSerializedGalk() const;
 
 private:
-	void create_parms();
-	void create_keys();
+  void createParms();
+  void createKeys();
 
-	double scale_;
-	std::shared_ptr<seal::SEALContext> context_;
-	
-	seal::SecretKey secret_key_;
-	seal::PublicKey public_key_;
-	seal::RelinKeys relin_keys_;
-	seal::GaloisKeys galois_keys_;
-	
-	std::vector<uint8_t> serialized_parms_;
-	std::vector<uint8_t> serialized_pk_;
-	std::vector<uint8_t> serialized_rlk_;
-	std::vector<uint8_t> serialized_galk_;
+  double mScale;
+  std::shared_ptr<seal::SEALContext> mpContext;
+  
+  seal::SecretKey mSecretKey;
+  seal::PublicKey mPublicKey;
+  seal::RelinKeys mRelinKeys;
+  seal::GaloisKeys mGaloisKeys;
+  
+  std::vector<uint8_t> mSerializedParms;
+  std::vector<uint8_t> mSerializedPk;
+  std::vector<uint8_t> mSerializedRlk;
+  std::vector<uint8_t> mSerializedGalk;
 };
 
-#endif // SXR_PARMS_AND_KEYS_HPP
+#endif // SXR_PARMS_AND_KEYS_HPP_
 

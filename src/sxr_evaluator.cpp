@@ -1,42 +1,84 @@
+// Copyright 2024 Jules Dumezy
+// This code is licensed under MIT license (see LICENSE.md for details)
+
 #include "seal_x_ros/sxr_evaluator.hpp"
 
-SXREvaluator::SXREvaluator(std::vector<uint8_t> serialized_parms, 
-								   std::vector<uint8_t> serialized_pk,
-								   std::vector<uint8_t> serialized_rlk,
-								   std::vector<uint8_t> serialized_galk, 
-								   double scale)
-	: context_(context_from_parms(serialized_parms)),
-	  encryptor_(*context_, deserialize_to_pk(serialized_pk, context_)),
-	  encoder_(*context_), evaluator_(*context_), scale_(scale),
-	  relin_keys_(deserialize_to_rlk(serialized_rlk, context_)),
-	  galois_keys_(deserialize_to_galk(serialized_galk, context_)){
+SXREvaluator::SXREvaluator(std::vector<uint8_t> serializedParms,
+                   std::vector<uint8_t> serializedPk,
+                   std::vector<uint8_t> serializedRlk,
+                   std::vector<uint8_t> serializedGalk,
+                   double scale)
+  : mpContext(pContextFromParms(serializedParms)),
+    mEncryptor(*mpContext, deserializeToPk(serializedPk, mpContext)),
+    mEncoder(*mpContext), mEvaluator(*mpContext), mScale(scale),
+    mRelinKeys(deserializeToRlk(serializedRlk, mpContext)),
+    mGaloisKeys(deserializeToGalk(serializedGalk, mpContext)) {
 }
 
-std::vector<uint8_t> SXREvaluator::add(std::vector<uint8_t> sct_a, std::vector<uint8_t> sct_b) {
-	seal::Ciphertext result;
-	seal::Ciphertext ciphertext_a = deserialize_to_ct(sct_a, context_);
-	seal::Ciphertext ciphertext_b = deserialize_to_ct(sct_b, context_);
-	
-	evaluator_.add(ciphertext_a, ciphertext_b, result);
-	return serialize_seal_object(result);
+// TODO(jdumezy) add init
+
+SXRCiphertext SXREvaluator::add(SXRCiphertext sxrctA, SXRCiphertext sxrctB) {
+  int depth = matchDepth(sxrctA, sxrctB);
+  seal::Ciphertext resultCiphertext;
+  mEvaluator.add(sxrctA.getCiphertext(), sxrctB.getCiphertext(), resultCiphertext);
+  SXRCiphertext result(resultCiphertext);
+  result.setDepth(depth);
+  return result;
 }
 
-std::vector<uint8_t> SXREvaluator::multiply(std::vector<uint8_t> sct_a, std::vector<uint8_t> sct_b) {
-	seal::Ciphertext result;
-	seal::Ciphertext ciphertext_a = deserialize_to_ct(sct_a, context_);
-	seal::Ciphertext ciphertext_b = deserialize_to_ct(sct_b, context_);
-	
-	evaluator_.multiply(ciphertext_a, ciphertext_b, result);
-	evaluator_.relinearize_inplace(result, relin_keys_);
-	// evaluator_.rescale_to_next_inplace(result);
-	return serialize_seal_object(result);
+SXRCiphertext SXREvaluator::multiply(SXRCiphertext sxrctA, SXRCiphertext sxrctB) {
+  int depth = matchDepth(sxrctA, sxrctB);
+  seal::Ciphertext resultCiphertext;
+  mEvaluator.multiply(sxrctA.getCiphertext(), sxrctB.getCiphertext(), resultCiphertext);
+  mEvaluator.relinearize_inplace(resultCiphertext, mRelinKeys);
+  mEvaluator.rescale_to_next_inplace(resultCiphertext);
+  SXRCiphertext result(resultCiphertext);
+  result.setDepth(depth + 1);
+  return result;
 }
 
-std::vector<uint8_t> SXREvaluator::square(std::vector<uint8_t> serialized_ct) {
-	seal::Ciphertext result;
-	evaluator_.square(deserialize_to_ct(serialized_ct, context_), result);
-	evaluator_.relinearize_inplace(result, relin_keys_);
-	// evaluator_.rescale_to_next_inplace(result);
-	return serialize_seal_object(result);
+SXRCiphertext SXREvaluator::square(SXRCiphertext sxrct) {
+  seal::Ciphertext resultCiphertext;
+  mEvaluator.square(sxrct.getCiphertext(), resultCiphertext);
+  mEvaluator.relinearize_inplace(resultCiphertext, mRelinKeys);
+  mEvaluator.rescale_to_next_inplace(resultCiphertext);
+  SXRCiphertext result(resultCiphertext);
+  result.setDepth(sxrct.getDepth() + 1);
+  return result;
+}
+
+int SXREvaluator::matchDepth(SXRCiphertext& sxrctA, SXRCiphertext& sxrctB) {
+  int minDepth = std::min(sxrctA.getDepth(), sxrctB.getDepth());
+  int maxDepth = std::max(sxrctA.getDepth(), sxrctB.getDepth());
+  int depthDiff = maxDepth - minDepth;
+  seal::Ciphertext newCiphertext = (sxrctA.getDepth() == minDepth) ? sxrctA.getCiphertext() : sxrctB.getCiphertext();
+
+  if (depthDiff != 0) {
+    float oneFloat = 1.0f;
+    seal::Plaintext onePlaintext;
+    mEncoder.encode(oneFloat, mScale, onePlaintext);
+    seal::Ciphertext oneCiphertext;
+    mEncryptor.encrypt(onePlaintext, oneCiphertext);
+    for (int i = 0; i < maxDepth; i++) {
+      if (i >= minDepth) {
+        mEvaluator.multiply_inplace(newCiphertext, oneCiphertext);
+        mEvaluator.relinearize_inplace(newCiphertext, mRelinKeys);
+        mEvaluator.rescale_to_next_inplace(newCiphertext);
+      }
+      mEvaluator.square_inplace(oneCiphertext);
+      mEvaluator.relinearize_inplace(oneCiphertext, mRelinKeys);
+      mEvaluator.rescale_to_next_inplace(oneCiphertext);
+    }
+  }
+
+  if (sxrctA.getDepth() == minDepth) {
+    sxrctA.setCiphertext(newCiphertext);
+    sxrctA.setDepth(maxDepth);
+  } else {
+    sxrctB.setCiphertext(newCiphertext);
+    sxrctB.setDepth(maxDepth);
+  }
+
+  return maxDepth;
 }
 
