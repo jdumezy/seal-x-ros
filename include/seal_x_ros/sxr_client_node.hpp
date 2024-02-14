@@ -1,7 +1,9 @@
 #ifndef SXR_CLIENT_NODE_HPP_
 #define SXR_CLIENT_NODE_HPP_
 
+#include <functional>
 #include "rclcpp/rclcpp.hpp"
+#include "std_msgs/msg/byte_multi_array.hpp"
 
 #include "seal/seal.h"
 
@@ -39,7 +41,10 @@ public:
 private:
   rclcpp::Client<seal_x_ros::srv::KeyExchange>::SharedPtr key_exchange_client;
   rclcpp::Client<seal_x_ros::srv::OperationRequest>::SharedPtr operation_request_client;
-  
+  rclcpp::Service<seal_x_ros::srv::ServerMessage>::SharedPtr server_message_service;
+  rclcpp::Subscription<std_msgs::msg::ByteMultiArray>::SharedPtr subscription;
+  rclcpp::Publisher<std_msgs::msg::ByteMultiArray>::SharedPtr publisher;
+
   /**
    * @brief Establishes connection with the server and sends encryption keys.
    * 
@@ -49,6 +54,8 @@ private:
    */
   void connectionAndSendKey();
   
+  void messageCallback(const std_msgs::msg::ByteMultiArray::SharedPtr msg);
+
   /**
    * @brief Sends an encrypted ciphertext to the server for processing.
    * 
@@ -56,10 +63,8 @@ private:
    * to the server for processing. Upon receiving the processed ciphertext
    * back from the server, it decrypts and logs the result.
    */
-  void sendCiphertext();
-  
-  rclcpp::Service<seal_x_ros::srv::ServerMessage>::SharedPtr server_message_service;
-  
+  void sendCiphertext(std::vector<float> message, std::function<void(const std::vector<float>&)> callback);
+
   void handleServerMessage(const std::shared_ptr<seal_x_ros::srv::ServerMessage::Request> request, std::shared_ptr<seal_x_ros::srv::ServerMessage::Response> response);
   
   ParmsAndKeysManager mParmsAndKeys;

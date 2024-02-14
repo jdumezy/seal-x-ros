@@ -40,6 +40,32 @@ int calculateDepth(double ciphertextScale, double scale, std::vector<double> pri
   return -1;
 }
 
+std::vector<float> byteArrayToFloatArray(const std::vector<uint8_t>& byteArray) {
+  std::vector<float> floatArray;
+  size_t len = byteArray.size() / sizeof(float);
+  floatArray.resize(len);
+
+  for (size_t i = 0; i < len; ++i) {
+    std::memcpy(&floatArray[i], &byteArray[i * sizeof(float)], sizeof(float));
+  }
+
+  return floatArray;
+}
+
+std::vector<uint8_t> floatArrayToByteArray(const std::vector<float>& floatArray) {
+    std::vector<uint8_t> byteArray;
+    byteArray.reserve(floatArray.size() * sizeof(float));
+
+    for (const float& value : floatArray) {
+        uint8_t temp[sizeof(float)];
+        std::memcpy(temp, &value, sizeof(float));
+
+        byteArray.insert(byteArray.end(), temp, temp + sizeof(float));
+    }
+
+    return byteArray;
+}
+
 std::vector<double> floatArrayToDoubleArray(const std::vector<float>& floatArray) {
   std::vector<double> doubleArray;
   doubleArray.reserve(floatArray.size());

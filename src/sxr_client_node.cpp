@@ -19,6 +19,10 @@ SXRClientNode::SXRClientNode()
     "server_message_service",
     std::bind(&SXRClientNode::handleServerMessage, this,
       std::placeholders::_1, std::placeholders::_2));
+  subscription = this->create_subscription<std_msgs::msg::ByteMultiArray>(
+    "sxr_input", 10, std::bind(&SXRClientNode::messageCallback, this, std::placeholders::_1));
+  publisher = this->create_publisher<std_msgs::msg::ByteMultiArray>("sxr_output", 10);
+
 
   mSerializedParms = mParmsAndKeys.getSerializedParms();
   mSerializedPk = mParmsAndKeys.getSerializedPk();
@@ -47,32 +51,43 @@ void SXRClientNode::connectionAndSendKey() {
       auto response = futureResponse.get();
       if (response->success) {
         RCLCPP_INFO(this->get_logger(), "Key exchange successful");
-        sendCiphertext();
       } else {
         RCLCPP_ERROR(this->get_logger(), "Key exchange failed");
       }
   });
 }
 
-void SXRClientNode::sendCiphertext() {
-  float f = 3.0f;
-  std::vector<uint8_t> serializedCt = mEncryptor.encryptFloat(f);
+void SXRClientNode::messageCallback(const std_msgs::msg::ByteMultiArray::SharedPtr msg) {
+  RCLCPP_DEBUG(this->get_logger(), "Received data from outside node");
+  std::vector<float> message = byteArrayToFloatArray(msg->data);
+  
+  sendCiphertext(message, [this](const std::vector<float>& result) {
+    auto result_msg = std_msgs::msg::ByteMultiArray();
+    result_msg.data = floatArrayToByteArray(result);
+    publisher->publish(result_msg);
+    RCLCPP_INFO(this->get_logger(), "Received processed ciphertext");
+  });
+}
 
-  RCLCPP_DEBUG(this->get_logger(), "Sending ciphertext: %f", f);
+void SXRClientNode::sendCiphertext(std::vector<float> message, std::function<void(const std::vector<float>&)> callback) {
+  std::vector<uint8_t> serializedCt = mEncryptor.encryptFloatArray(message);
+
+  RCLCPP_DEBUG(this->get_logger(), "Sending ciphertext");
 
   auto request = std::make_shared<seal_x_ros::srv::OperationRequest::Request>();
   request->serialized_ct = serializedCt;
 
   operation_request_client->async_send_request(request,
-    [this](rclcpp::Client<seal_x_ros::srv::OperationRequest>::SharedFuture futureResponse) {
+    [this, callback](rclcpp::Client<seal_x_ros::srv::OperationRequest>::SharedFuture futureResponse) {
       auto response = futureResponse.get();
       if (response->success) {
         RCLCPP_DEBUG(this->get_logger(), "Ciphertext received");
         std::vector<uint8_t> serializedCtRes = response->serialized_ct_res;
-        float result = mDecryptor.decryptFloat(serializedCtRes);
-        RCLCPP_INFO(this->get_logger(), "Received response: %f", result);
+        std::vector<float> result = { mDecryptor.decryptFloatArray(serializedCtRes) };
+        callback(result);
       } else {
         RCLCPP_ERROR(this->get_logger(), "Failed to send ciphertext");
+        callback(std::vector<float>());
       }
   });
 }

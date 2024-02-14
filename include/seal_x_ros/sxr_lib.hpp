@@ -11,6 +11,8 @@
 double calculateScale(int depth, double scale, std::vector<double> primeArray);
 int calculateDepth(double ciphertextScale, double scale, std::vector<double> primeArray);
 
+std::vector<float> byteArrayToFloatArray(const std::vector<uint8_t>& bytes);
+std::vector<uint8_t> floatArrayToByteArray(const std::vector<float>& floatArray);
 std::vector<double> floatArrayToDoubleArray(const std::vector<float>& floatArray);
 std::vector<float> doubleArrayToFloatArray(const std::vector<double>& doubleArray);
 

@@ -21,7 +21,7 @@ SXRServerNode::SXRServerNode()
 void SXRServerNode::sendMessage() {
   auto request = std::make_shared<seal_x_ros::srv::ServerMessage::Request>();
 
-  float f = 3.1415f;
+  float f = 3.1415f;  //TODO(jdumezy) add entry message instead of float
   std::vector<uint8_t> serializedCt = mEncryptor->encryptFloat(f);
 
   if (mEncryptor) {
@@ -59,7 +59,6 @@ void SXRServerNode::handleKeyExchange(const std::shared_ptr<seal_x_ros::srv::Key
   mEvaluator.emplace(mSerializedParms, mSerializedPk, mSerializedRlk, mSerializedGalk, mScale);
 
   // Initialise SEAL shared objects
-
   mParms = deserializeToParms(mSerializedParms);
 
   seal::SEALContext context(mParms);
@@ -79,41 +78,13 @@ void SXRServerNode::handleOperationRequest(const std::shared_ptr<seal_x_ros::srv
   seal::Ciphertext requestCiphertext = deserializeToCt(request->serialized_ct, pContext);
 
   if (mEvaluator) {
-    SXRCiphertext message1(requestCiphertext);
+    SXRCiphertext message(requestCiphertext);
 
-    RCLCPP_INFO(this->get_logger(), "message1: %d", message1.getDepth());
+    SXRCiphertext result = mEvaluator->add(message, message);  //TODO(jdumezy) add default constructor for later init
 
-    SXRCiphertext message2(requestCiphertext);
-    RCLCPP_INFO(this->get_logger(), "message2: %d", message2.getDepth());
-
-    SXRCiphertext message3(requestCiphertext);
-    RCLCPP_INFO(this->get_logger(), "message3: %d", message3.getDepth());
-
-    SXRCiphertext message4(requestCiphertext);
-    RCLCPP_INFO(this->get_logger(), "message4: %d", message4.getDepth());
-
-    SXRCiphertext result1 = mEvaluator->multiply(message1, message2);
-    RCLCPP_INFO(this->get_logger(), "result1: %d", result1.getDepth());
-
-    RCLCPP_INFO(this->get_logger(), "match?: %d %d", result1.getDepth(), message1.getDepth());
-    SXRCiphertext result2 = mEvaluator->multiply(result1, message1);
-    RCLCPP_INFO(this->get_logger(), "result2: %d", result2.getDepth());
-
-    RCLCPP_INFO(this->get_logger(), "match?: %d %d", result2.getDepth(), message3.getDepth());
-    SXRCiphertext result3 = mEvaluator->add(result2, message3);
-    RCLCPP_INFO(this->get_logger(), "result3: %d", result3.getDepth());
-
-    RCLCPP_INFO(this->get_logger(), "match?: %d %d", result3.getDepth(), message4.getDepth());
-    SXRCiphertext result4 = mEvaluator->multiply(result3, message4);
-    RCLCPP_INFO(this->get_logger(), "result4: %d", result4.getDepth());
-
-    SXRCiphertext result5 = mEvaluator->multiply(result4, result3);
-    RCLCPP_INFO(this->get_logger(), "result5: %d", result5.getDepth());
-
-    RCLCPP_DEBUG(this->get_logger(), "Sending result ciphertext...");
-
+    RCLCPP_INFO(this->get_logger(), "Sending processed ciphertext");
     response->success = true;
-    response->serialized_ct_res = serializeSealObject(result5.getCiphertext());
+    response->serialized_ct_res = serializeSealObject(result.getCiphertext());
   } else {
     RCLCPP_ERROR(this->get_logger(), "Evaluator is not initialized");
     response->success = false;
