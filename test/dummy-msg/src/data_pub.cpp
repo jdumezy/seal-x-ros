@@ -1,3 +1,6 @@
+// Copyright 2024 Jules Dumezy
+// This code is licensed under MIT license (see LICENSE.md for details)
+
 #include "dummy-msg/data_pub.hpp"
 
 using std::placeholders::_1;

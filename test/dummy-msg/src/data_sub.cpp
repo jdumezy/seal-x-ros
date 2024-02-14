@@ -1,3 +1,6 @@
+// Copyright 2024 Jules Dumezy
+// This code is licensed under MIT license (see LICENSE.md for details)
+
 #include "dummy-msg/data_sub.hpp"
 
 using std::placeholders::_1;
@@ -23,7 +26,7 @@ void SubscriberNode::message_callback(const std_msgs::msg::ByteMultiArray::Share
   std::vector<float> floatArray = byteArrayToFloatArray(msg->data);
   
   RCLCPP_INFO(this->get_logger(), "Received Float Array: [");
-  for (int i = 0; i < 4; i++) {
+  for (const float& value : floatArray) {
     RCLCPP_INFO(this->get_logger(), " %f ", floatArray[i]);
   }
   RCLCPP_INFO(this->get_logger(), "]\n");

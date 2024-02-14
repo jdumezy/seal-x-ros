@@ -60,10 +60,15 @@ void SXRClientNode::connectionAndSendKey() {
 void SXRClientNode::messageCallback(const std_msgs::msg::ByteMultiArray::SharedPtr msg) {
   RCLCPP_DEBUG(this->get_logger(), "Received data from outside node");
   std::vector<float> message = byteArrayToFloatArray(msg->data);
-  
-  sendCiphertext(message, [this](const std::vector<float>& result) {
+  size_t originalSize = message.size();
+
+  sendCiphertext(message, [this, originalSize](const std::vector<float>& result) {
+    std::vector<float> trimmedResult = result;
+    if (trimmedResult.size() > originalSize) {
+      trimmedResult.resize(originalSize);
+    }
     auto result_msg = std_msgs::msg::ByteMultiArray();
-    result_msg.data = floatArrayToByteArray(result);
+    result_msg.data = floatArrayToByteArray(trimmedResult);
     publisher->publish(result_msg);
     RCLCPP_INFO(this->get_logger(), "Received processed ciphertext");
   });

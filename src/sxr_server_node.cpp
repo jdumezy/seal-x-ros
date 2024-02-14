@@ -21,7 +21,7 @@ SXRServerNode::SXRServerNode()
 void SXRServerNode::sendMessage() {
   auto request = std::make_shared<seal_x_ros::srv::ServerMessage::Request>();
 
-  float f = 3.1415f;  //TODO(jdumezy) add entry message instead of float
+  float f = 3.1415f;  // TODO(jdumezy) add entry message instead of float
   std::vector<uint8_t> serializedCt = mEncryptor->encryptFloat(f);
 
   if (mEncryptor) {
@@ -43,7 +43,6 @@ void SXRServerNode::sendMessage() {
 
 void SXRServerNode::handleKeyExchange(const std::shared_ptr<seal_x_ros::srv::KeyExchange::Request> request,
   std::shared_ptr<seal_x_ros::srv::KeyExchange::Response> response) {
-
   mSerializedParms = request->serialized_parms;
   mSerializedPk = request->serialized_pk;
   mSerializedRlk = request->serialized_rlk;
@@ -57,6 +56,7 @@ void SXRServerNode::handleKeyExchange(const std::shared_ptr<seal_x_ros::srv::Key
   // Initialise SXR objects
   mEncryptor.emplace(mSerializedParms, mSerializedPk, mScale);
   mEvaluator.emplace(mSerializedParms, mSerializedPk, mSerializedRlk, mSerializedGalk, mScale);
+  // TODO(jdumezy) add encryptor
 
   // Initialise SEAL shared objects
   mParms = deserializeToParms(mSerializedParms);
@@ -80,7 +80,7 @@ void SXRServerNode::handleOperationRequest(const std::shared_ptr<seal_x_ros::srv
   if (mEvaluator) {
     SXRCiphertext message(requestCiphertext);
 
-    SXRCiphertext result = mEvaluator->add(message, message);  //TODO(jdumezy) add default constructor for later init
+    SXRCiphertext result = mEvaluator->square(message);  // TODO(jdumezy) add default constructor for later init
 
     RCLCPP_INFO(this->get_logger(), "Sending processed ciphertext");
     response->success = true;
