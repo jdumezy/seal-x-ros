@@ -4,27 +4,28 @@
 #include "seal_x_ros/sxr_server_node.hpp"
 
 SXRServerNode::SXRServerNode()
-  : Node("sxr_server_node") {
+  : Node("sxr_server_node"), encryptor(), evaluator() {
+  server_message_client = this->create_client<seal_x_ros::srv::ServerMessage>(
+    "server_message_service");
+
   key_exchange_service = this->create_service<seal_x_ros::srv::KeyExchange>(
     "key_exchange_service",
     std::bind(&SXRServerNode::handleKeyExchange, this,
-      std::placeholders::_1, std::placeholders::_2));
+              std::placeholders::_1, std::placeholders::_2));
 
   operation_request_service = this->create_service<seal_x_ros::srv::OperationRequest>(
     "operation_request_service",
     std::bind(&SXRServerNode::handleOperationRequest, this,
-      std::placeholders::_1, std::placeholders::_2));
-  server_message_client = this->create_client<seal_x_ros::srv::ServerMessage>(
-    "server_message_service");
+              std::placeholders::_1, std::placeholders::_2));
 }
 
 void SXRServerNode::sendMessage() {
   auto request = std::make_shared<seal_x_ros::srv::ServerMessage::Request>();
 
-  float f = 3.1415f;  // TODO(jdumezy) add entry message instead of float
-  std::vector<uint8_t> serializedCt = mEncryptor->encryptFloat(f);
+  float f = 3.1415f;  // TODO(jdumezy) add entry message instead of static float
+  std::vector<uint8_t> serializedCt = encryptor.encryptFloat(f);
 
-  if (mEncryptor) {
+  if (encryptor.isInit()) {
     request->serialized_ct = serializedCt;
 
     server_message_client->async_send_request(request,
@@ -42,45 +43,38 @@ void SXRServerNode::sendMessage() {
 }
 
 void SXRServerNode::handleKeyExchange(const std::shared_ptr<seal_x_ros::srv::KeyExchange::Request> request,
-  std::shared_ptr<seal_x_ros::srv::KeyExchange::Response> response) {
-  mSerializedParms = request->serialized_parms;
-  mSerializedPk = request->serialized_pk;
-  mSerializedRlk = request->serialized_rlk;
-  mSerializedGalk = request->serialized_galk;
+                                      std::shared_ptr<seal_x_ros::srv::KeyExchange::Response> response) {
   mScale = request->scale;
+  
+  mParms = deserializeToParms(request->serialized_parms);
+  mpContext = std::make_shared<seal::SEALContext>(mParms);
 
-  RCLCPP_INFO(this->get_logger(), "Received public key");
+  mpPublicKey = std::make_shared<seal::PublicKey>(deserializeToPk(request->serialized_pk, mpContext.get()));
+  mpRelinKeys = std::make_shared<seal::RelinKeys>(deserializeToRlk(request->serialized_rlk, mpContext.get()));
+  mpGaloisKeys = std::make_shared<seal::GaloisKeys>(deserializeToGalk(request->serialized_galk, mpContext.get()));
+
+  mpEncoder = std::make_unique<seal::CKKSEncoder>(*mpContext.get());
+  mpEncryptor = std::make_unique<seal::Encryptor>(*mpContext.get(), *mpPublicKey.get());
+  mpEvaluator = std::make_unique<seal::Evaluator>(*mpContext.get());
+
+  encryptor.init(mpEncoder.get(), mpEncryptor.get(), mScale);
+  evaluator.init(mpEncoder.get(), mpEncryptor.get(), mpEvaluator.get(), mpRelinKeys.get(), mpGaloisKeys.get(), mScale);
+
+  RCLCPP_INFO(this->get_logger(), "Received SEAL parameters");
 
   response->success = true;
-
-  // Initialise SXR objects
-  mEncryptor.emplace(mSerializedParms, mSerializedPk, mScale);
-  mEvaluator.emplace(mSerializedParms, mSerializedPk, mSerializedRlk, mSerializedGalk, mScale);
-  // TODO(jdumezy) add encryptor
-
-  // Initialise SEAL shared objects
-  mParms = deserializeToParms(mSerializedParms);
-
-  seal::SEALContext context(mParms);
-  std::shared_ptr<seal::SEALContext> pContext = std::make_shared<seal::SEALContext>(mParms);
-
-  mPublicKey = deserializeToPk(mSerializedPk, pContext);
-  mRelinKeys = deserializeToRlk(mSerializedRlk, pContext);
-  mGaloisKeys = deserializeToGalk(mSerializedGalk, pContext);
 }
 
 void SXRServerNode::handleOperationRequest(const std::shared_ptr<seal_x_ros::srv::OperationRequest::Request> request,
   std::shared_ptr<seal_x_ros::srv::OperationRequest::Response> response) {
   RCLCPP_DEBUG(this->get_logger(), "Received ciphertext");
 
-  seal::SEALContext context(mParms);  // TODO(jdumezy) remove + change classes
-  std::shared_ptr<seal::SEALContext> pContext = std::make_shared<seal::SEALContext>(mParms);
-  seal::Ciphertext requestCiphertext = deserializeToCt(request->serialized_ct, pContext);
+  seal::Ciphertext requestCiphertext = deserializeToCt(request->serialized_ct, mpContext.get());
 
-  if (mEvaluator) {
+  if (evaluator.isInit()) {
     SXRCiphertext message(requestCiphertext);
 
-    SXRCiphertext result = mEvaluator->square(message);  // TODO(jdumezy) add default constructor for later init
+    SXRCiphertext result = evaluator.square(message);
 
     RCLCPP_INFO(this->get_logger(), "Sending processed ciphertext");
     response->success = true;

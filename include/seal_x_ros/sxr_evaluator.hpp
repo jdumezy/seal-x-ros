@@ -37,12 +37,18 @@ public:
    * @param serializedGalk Serialized Galois keys.
    * @param scale The scale factor to be used in encoding and operations.
    */
-  SXREvaluator(std::vector<uint8_t> serializedParms, 
-           std::vector<uint8_t> serializedPk, 
-           std::vector<uint8_t> serializedRlk,
-           std::vector<uint8_t> serializedGalk,
-           double scale);
-  
+  SXREvaluator(seal::CKKSEncoder* pEncoder, seal::Encryptor* pEncryptor,
+               seal::Evaluator* evaluator,  seal::RelinKeys* pRelinKeys,
+               seal::GaloisKeys* pGaloisKeys, double scale);
+ 
+  SXREvaluator();
+
+  void init(seal::CKKSEncoder* pEncoder, seal::Encryptor* pEncryptor,
+            seal::Evaluator* pEvaluator, seal::RelinKeys* pRelinKeys,
+            seal::GaloisKeys* pGaloisKeys, double scale);
+
+  bool isInit();
+
   SXRCiphertext add(SXRCiphertext sxrctA, SXRCiphertext sxrctB);
   SXRCiphertext multiply(SXRCiphertext sxrctA, SXRCiphertext sxrctB);
   
@@ -60,13 +66,12 @@ public:
   int matchDepth(SXRCiphertext& sxrctA, SXRCiphertext& sxrctB);
 
 private:
-  std::shared_ptr<seal::SEALContext> mpContext;
-  seal::Encryptor mEncryptor;
-  seal::CKKSEncoder mEncoder;
-  seal::Evaluator mEvaluator;
+  seal::CKKSEncoder* mpEncoder;
+  seal::Encryptor* mpEncryptor;
+  seal::Evaluator* mpEvaluator;
+  seal::RelinKeys* mpRelinKeys;
+  seal::GaloisKeys* mpGaloisKeys; 
   double mScale;
-  seal::RelinKeys mRelinKeys;
-  seal::GaloisKeys mGaloisKeys;
 };
 
 #endif // SXR_EVALUATOR_HPP_

@@ -96,27 +96,27 @@ seal::EncryptionParameters deserializeToParms(std::vector<uint8_t> serializedPar
   return parms;
 }
 
-seal::PublicKey deserializeToPk(std::vector<uint8_t> serializedPk, std::shared_ptr<seal::SEALContext> context) {
+seal::PublicKey deserializeToPk(std::vector<uint8_t> serializedPk, seal::SEALContext* pContext) {
   seal::PublicKey pk;
-  pk.load(*context, reinterpret_cast<const seal::seal_byte*>(serializedPk.data()), serializedPk.size());
+  pk.load(*pContext, reinterpret_cast<const seal::seal_byte*>(serializedPk.data()), serializedPk.size());
   return pk;
 }
 
-seal::RelinKeys deserializeToRlk(std::vector<uint8_t> serializedRlk, std::shared_ptr<seal::SEALContext> context) {
+seal::RelinKeys deserializeToRlk(std::vector<uint8_t> serializedRlk, seal::SEALContext* pContext) {
   seal::RelinKeys rlk;
-  rlk.load(*context, reinterpret_cast<const seal::seal_byte*>(serializedRlk.data()), serializedRlk.size());
+  rlk.load(*pContext, reinterpret_cast<const seal::seal_byte*>(serializedRlk.data()), serializedRlk.size());
   return rlk;
 }
 
-seal::GaloisKeys deserializeToGalk(std::vector<uint8_t> serializedGalk, std::shared_ptr<seal::SEALContext> context) {
+seal::GaloisKeys deserializeToGalk(std::vector<uint8_t> serializedGalk, seal::SEALContext* pContext) {
   seal::GaloisKeys galk;
-  galk.load(*context, reinterpret_cast<const seal::seal_byte*>(serializedGalk.data()), serializedGalk.size());
+  galk.load(*pContext, reinterpret_cast<const seal::seal_byte*>(serializedGalk.data()), serializedGalk.size());
   return galk;
 }
 
-seal::Ciphertext deserializeToCt(std::vector<uint8_t> serializedCt, std::shared_ptr<seal::SEALContext> context) {
+seal::Ciphertext deserializeToCt(std::vector<uint8_t> serializedCt, seal::SEALContext* pContext) {
   seal::Ciphertext ct;
-  ct.load(*context, reinterpret_cast<const seal::seal_byte*>(serializedCt.data()), serializedCt.size());
+  ct.load(*pContext, reinterpret_cast<const seal::seal_byte*>(serializedCt.data()), serializedCt.size());
   return ct;
 }
 

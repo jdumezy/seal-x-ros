@@ -15,6 +15,7 @@
 #include "seal_x_ros/srv/key_exchange.hpp"
 #include "seal_x_ros/srv/operation_request.hpp"
 #include "seal_x_ros/srv/server_message.hpp"
+#include "sxr_encryptor.hpp"
 
 #include <vector>
 #include <memory>
@@ -37,13 +38,15 @@ public:
    * operation requests. It also sets up the encryption and decryption environment.
    */
   SXRClientNode();
+  SXRDecryptor decryptor;
+  SXREncryptor encryptor;
 
 private:
+  rclcpp::Subscription<std_msgs::msg::ByteMultiArray>::SharedPtr subscription;
+  rclcpp::Publisher<std_msgs::msg::ByteMultiArray>::SharedPtr publisher;
   rclcpp::Client<seal_x_ros::srv::KeyExchange>::SharedPtr key_exchange_client;
   rclcpp::Client<seal_x_ros::srv::OperationRequest>::SharedPtr operation_request_client;
   rclcpp::Service<seal_x_ros::srv::ServerMessage>::SharedPtr server_message_service;
-  rclcpp::Subscription<std_msgs::msg::ByteMultiArray>::SharedPtr subscription;
-  rclcpp::Publisher<std_msgs::msg::ByteMultiArray>::SharedPtr publisher;
 
   /**
    * @brief Establishes connection with the server and sends encryption keys.
@@ -72,10 +75,20 @@ private:
   std::vector<uint8_t> mSerializedPk;
   std::vector<uint8_t> mSerializedRlk;
   std::vector<uint8_t> mSerializedGalk;
-  seal::SecretKey mSecretKey;
   double mScale;
-  
-  SXREncryptor mEncryptor;
+
+  seal::EncryptionParameters mParms;
+  std::shared_ptr<seal::SEALContext> mpContext;
+
+  std::shared_ptr<seal::PublicKey> mpPublicKey;
+  std::shared_ptr<seal::SecretKey> mpSecretKey;
+  std::shared_ptr<seal::RelinKeys> mpRelinKeys;
+  std::shared_ptr<seal::GaloisKeys> mpGaloisKeys;
+
+  std::unique_ptr<seal::Decryptor> mpDecryptor;
+  std::unique_ptr<seal::CKKSEncoder> mpEncoder;
+  std::unique_ptr<seal::Encryptor> mpEncryptor;
+
   SXRDecryptor mDecryptor;
 };
 

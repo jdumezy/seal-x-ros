@@ -31,9 +31,16 @@ public:
    * @param serializedParms Serialized SEAL encryption parameters.
    * @param SecretKey The secret key used for decryption.
    */
-  SXRDecryptor(std::vector<uint8_t> serializedParms,
-         const seal::SecretKey &SecretKey);
+  SXRDecryptor(seal::SEALContext* pContext, seal::Decryptor* pDecryptor,
+               seal::CKKSEncoder* pEncoder);
   
+  SXRDecryptor();
+
+  void init(seal::SEALContext* pContext, seal::Decryptor* pDecryptor,
+            seal::CKKSEncoder* pEncoder);
+
+  bool isInit();
+
   /**
    * @brief Decrypts a serialized ciphertext into a floating-point number.
    *
@@ -44,13 +51,14 @@ public:
    * @return The decrypted floating-point number.
    */
   float decryptFloat(std::vector<uint8_t> serializedCt);
+
   std::vector<float> decryptFloatArray(std::vector<uint8_t> serializedCt);
 
-private:
-  std::shared_ptr<seal::SEALContext> mpContext;
-  seal::Decryptor mDecryptor;
-  seal::CKKSEncoder mEncoder;
-  
+private:  
+  seal::SEALContext* mpContext;
+  seal::Decryptor* mpDecryptor;
+  seal::CKKSEncoder* mpEncoder;
+
   seal::Plaintext decrypt(std::vector<uint8_t> serializedCt);
 };
 

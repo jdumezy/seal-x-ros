@@ -2,34 +2,48 @@
 // This code is licensed under MIT license (see LICENSE.md for details)
 
 #include "seal_x_ros/sxr_client_node.hpp"
+#include <memory>
 
 SXRClientNode::SXRClientNode()
-  : rclcpp::Node("sxr_client_node"),
-    mParmsAndKeys(),
-    mEncryptor(mParmsAndKeys.getSerializedParms(),
-         mParmsAndKeys.getSerializedPk(),
-         mParmsAndKeys.getScale()),
-    mDecryptor(mParmsAndKeys.getSerializedParms(),
-         mParmsAndKeys.getSecretKey()) {
+  : rclcpp::Node("sxr_client_node"), decryptor(), encryptor(), mParmsAndKeys() {
+  subscription = this->create_subscription<std_msgs::msg::ByteMultiArray>(
+    "sxr_input", 10, std::bind(&SXRClientNode::messageCallback,
+                               this, std::placeholders::_1));
+
+  publisher = this->create_publisher<std_msgs::msg::ByteMultiArray>("sxr_output", 10);
+
   key_exchange_client = this->create_client<seal_x_ros::srv::KeyExchange>(
     "key_exchange_service");
+
   operation_request_client = this->create_client<seal_x_ros::srv::OperationRequest>(
     "operation_request_service");
+
   server_message_service = this->create_service<seal_x_ros::srv::ServerMessage>(
     "server_message_service",
     std::bind(&SXRClientNode::handleServerMessage, this,
-      std::placeholders::_1, std::placeholders::_2));
-  subscription = this->create_subscription<std_msgs::msg::ByteMultiArray>(
-    "sxr_input", 10, std::bind(&SXRClientNode::messageCallback, this, std::placeholders::_1));
-  publisher = this->create_publisher<std_msgs::msg::ByteMultiArray>("sxr_output", 10);
-
+              std::placeholders::_1, std::placeholders::_2));
 
   mSerializedParms = mParmsAndKeys.getSerializedParms();
   mSerializedPk = mParmsAndKeys.getSerializedPk();
   mSerializedRlk = mParmsAndKeys.getSerializedRlk();
   mSerializedGalk = mParmsAndKeys.getSerializedGalk();
-  mSecretKey = mParmsAndKeys.getSecretKey();
+
+  mParms = deserializeToParms(mSerializedParms);
+  mpContext = std::make_shared<seal::SEALContext>(mParms);
+
+  mpPublicKey = std::make_shared<seal::PublicKey>(deserializeToPk(mSerializedPk, mpContext.get()));
+  mpSecretKey = std::make_shared<seal::SecretKey>(mParmsAndKeys.getSecretKey());
+  mpRelinKeys = std::make_shared<seal::RelinKeys>(deserializeToRlk(mSerializedRlk, mpContext.get()));
+  mpGaloisKeys = std::make_shared<seal::GaloisKeys>(deserializeToGalk(mSerializedGalk, mpContext.get()));
+
+  mpDecryptor = std::make_unique<seal::Decryptor>(*mpContext.get(), *mpSecretKey.get());
+  mpEncoder = std::make_unique<seal::CKKSEncoder>(*mpContext.get());
+  mpEncryptor = std::make_unique<seal::Encryptor>(*mpContext.get(), *mpPublicKey.get());
+
   mScale = mParmsAndKeys.getScale();
+
+  decryptor.init(mpContext.get(), mpDecryptor.get(), mpEncoder.get());
+  encryptor.init(mpEncoder.get(), mpEncryptor.get(), mScale);
 
   connectionAndSendKey();
 }
@@ -75,7 +89,7 @@ void SXRClientNode::messageCallback(const std_msgs::msg::ByteMultiArray::SharedP
 }
 
 void SXRClientNode::sendCiphertext(std::vector<float> message, std::function<void(const std::vector<float>&)> callback) {
-  std::vector<uint8_t> serializedCt = mEncryptor.encryptFloatArray(message);
+  std::vector<uint8_t> serializedCt = encryptor.encryptFloatArray(message);
 
   RCLCPP_DEBUG(this->get_logger(), "Sending ciphertext");
 
@@ -88,7 +102,7 @@ void SXRClientNode::sendCiphertext(std::vector<float> message, std::function<voi
       if (response->success) {
         RCLCPP_DEBUG(this->get_logger(), "Ciphertext received");
         std::vector<uint8_t> serializedCtRes = response->serialized_ct_res;
-        std::vector<float> result = { mDecryptor.decryptFloatArray(serializedCtRes) };
+        std::vector<float> result = { decryptor.decryptFloatArray(serializedCtRes) };
         callback(result);
       } else {
         RCLCPP_ERROR(this->get_logger(), "Failed to send ciphertext");
@@ -105,7 +119,7 @@ void SXRClientNode::handleServerMessage(const std::shared_ptr<seal_x_ros::srv::S
 
   response->success = true;
 
-  float message = mDecryptor.decryptFloat(serializedCt);
+  float message = decryptor.decryptFloat(serializedCt);
   message++;
 }
 

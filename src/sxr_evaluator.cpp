@@ -3,24 +3,40 @@
 
 #include "seal_x_ros/sxr_evaluator.hpp"
 
-SXREvaluator::SXREvaluator(std::vector<uint8_t> serializedParms,
-                   std::vector<uint8_t> serializedPk,
-                   std::vector<uint8_t> serializedRlk,
-                   std::vector<uint8_t> serializedGalk,
-                   double scale)
-  : mpContext(pContextFromParms(serializedParms)),
-    mEncryptor(*mpContext, deserializeToPk(serializedPk, mpContext)),
-    mEncoder(*mpContext), mEvaluator(*mpContext), mScale(scale),
-    mRelinKeys(deserializeToRlk(serializedRlk, mpContext)),
-    mGaloisKeys(deserializeToGalk(serializedGalk, mpContext)) {
+SXREvaluator::SXREvaluator(seal::CKKSEncoder* pEncoder, seal::Encryptor* pEncryptor,
+                           seal::Evaluator* pEvaluator, seal::RelinKeys* pRelinKeys,
+                           seal::GaloisKeys* pGaloisKeys, double scale) {
+  init(pEncoder, pEncryptor, pEvaluator, pRelinKeys, pGaloisKeys, scale);
 }
 
-// TODO(jdumezy) add init
+SXREvaluator::SXREvaluator() {
+  mpEncryptor = NULL;
+  mpEncoder = NULL;
+  mpEvaluator = NULL;
+  mpRelinKeys = NULL;
+  mpGaloisKeys = NULL;
+  mScale = 0.0;
+}
+
+void SXREvaluator::init(seal::CKKSEncoder* pEncoder, seal::Encryptor* pEncryptor,
+                        seal::Evaluator* pEvaluator, seal::RelinKeys* pRelinKeys,
+                        seal::GaloisKeys* pGaloisKeys, double scale) {
+  mpEncoder = pEncoder;
+  mpEncryptor = pEncryptor;
+  mpEvaluator = pEvaluator;
+  mpRelinKeys = pRelinKeys;
+  mpGaloisKeys = pGaloisKeys;
+  mScale = scale;
+}
+
+bool SXREvaluator::isInit() {
+  return (mpEvaluator != NULL);
+}
 
 SXRCiphertext SXREvaluator::add(SXRCiphertext sxrctA, SXRCiphertext sxrctB) {
   int depth = matchDepth(sxrctA, sxrctB);
   seal::Ciphertext resultCiphertext;
-  mEvaluator.add(sxrctA.getCiphertext(), sxrctB.getCiphertext(), resultCiphertext);
+  mpEvaluator->add(sxrctA.getCiphertext(), sxrctB.getCiphertext(), resultCiphertext);
   SXRCiphertext result(resultCiphertext);
   result.setDepth(depth);
   return result;
@@ -29,9 +45,9 @@ SXRCiphertext SXREvaluator::add(SXRCiphertext sxrctA, SXRCiphertext sxrctB) {
 SXRCiphertext SXREvaluator::multiply(SXRCiphertext sxrctA, SXRCiphertext sxrctB) {
   int depth = matchDepth(sxrctA, sxrctB);
   seal::Ciphertext resultCiphertext;
-  mEvaluator.multiply(sxrctA.getCiphertext(), sxrctB.getCiphertext(), resultCiphertext);
-  mEvaluator.relinearize_inplace(resultCiphertext, mRelinKeys);
-  mEvaluator.rescale_to_next_inplace(resultCiphertext);
+  mpEvaluator->multiply(sxrctA.getCiphertext(), sxrctB.getCiphertext(), resultCiphertext);
+  mpEvaluator->relinearize_inplace(resultCiphertext, *mpRelinKeys);
+  mpEvaluator->rescale_to_next_inplace(resultCiphertext);
   SXRCiphertext result(resultCiphertext);
   result.setDepth(depth + 1);
   return result;
@@ -39,9 +55,9 @@ SXRCiphertext SXREvaluator::multiply(SXRCiphertext sxrctA, SXRCiphertext sxrctB)
 
 SXRCiphertext SXREvaluator::square(SXRCiphertext sxrct) {
   seal::Ciphertext resultCiphertext;
-  mEvaluator.square(sxrct.getCiphertext(), resultCiphertext);
-  mEvaluator.relinearize_inplace(resultCiphertext, mRelinKeys);
-  mEvaluator.rescale_to_next_inplace(resultCiphertext);
+  mpEvaluator->square(sxrct.getCiphertext(), resultCiphertext);
+  mpEvaluator->relinearize_inplace(resultCiphertext, *mpRelinKeys);
+  mpEvaluator->rescale_to_next_inplace(resultCiphertext);
   SXRCiphertext result(resultCiphertext);
   result.setDepth(sxrct.getDepth() + 1);
   return result;
@@ -56,18 +72,18 @@ int SXREvaluator::matchDepth(SXRCiphertext& sxrctA, SXRCiphertext& sxrctB) {
   if (depthDiff != 0) {
     float oneFloat = 1.0f;
     seal::Plaintext onePlaintext;
-    mEncoder.encode(oneFloat, mScale, onePlaintext);
+    mpEncoder->encode(oneFloat, mScale, onePlaintext);
     seal::Ciphertext oneCiphertext;
-    mEncryptor.encrypt(onePlaintext, oneCiphertext);
+    mpEncryptor->encrypt(onePlaintext, oneCiphertext);
     for (int i = 0; i < maxDepth; i++) {
       if (i >= minDepth) {
-        mEvaluator.multiply_inplace(newCiphertext, oneCiphertext);
-        mEvaluator.relinearize_inplace(newCiphertext, mRelinKeys);
-        mEvaluator.rescale_to_next_inplace(newCiphertext);
+        mpEvaluator->multiply_inplace(newCiphertext, oneCiphertext);
+        mpEvaluator->relinearize_inplace(newCiphertext, *mpRelinKeys);
+        mpEvaluator->rescale_to_next_inplace(newCiphertext);
       }
-      mEvaluator.square_inplace(oneCiphertext);
-      mEvaluator.relinearize_inplace(oneCiphertext, mRelinKeys);
-      mEvaluator.rescale_to_next_inplace(oneCiphertext);
+      mpEvaluator->square_inplace(oneCiphertext);
+      mpEvaluator->relinearize_inplace(oneCiphertext, *mpRelinKeys);
+      mpEvaluator->rescale_to_next_inplace(oneCiphertext);
     }
   }
 

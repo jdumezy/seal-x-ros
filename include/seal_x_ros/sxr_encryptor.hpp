@@ -31,9 +31,17 @@ public:
    * @param serializedPk Serialized public key for encryption.
    * @param scale The scale factor to be used in encoding floating-point numbers.
    */
-  SXREncryptor(std::vector<uint8_t> serializedParms, 
-         std::vector<uint8_t> serializedPk, 
-         double scale);
+  SXREncryptor(seal::CKKSEncoder* pEncoder,
+               seal::Encryptor* pEncryptor,
+               double scale);
+
+  SXREncryptor();
+
+  void init(seal::CKKSEncoder* pEncoder,
+            seal::Encryptor* pEncryptor,
+            double scale);
+
+  bool isInit();
   
   /**
    * @brief Encrypts a single floating-point number.
@@ -48,9 +56,8 @@ public:
   std::vector<uint8_t> encryptFloatArray(const std::vector<float>& inputFloatArray);
 
 private:
-  std::shared_ptr<seal::SEALContext> mpContext;
-  seal::Encryptor mEncryptor;
-  seal::CKKSEncoder mEncoder;
+  seal::Encryptor* mpEncryptor;
+  seal::CKKSEncoder* mpEncoder;
   double mScale;
   
   std::vector<uint8_t> encrypt(seal::Plaintext encodedPlaintext);
