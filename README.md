@@ -8,10 +8,11 @@ The package is built to share data between a client node (encryption and decrypt
 ## Prerequisites
 - ROS 2 (tested with Humble)
 - Microsoft SEAL 4.1
+- Zstandard (tested with 1.4.8)
 - C++17 or higher
 
 ## Installation
-1. Install Microsoft SEAL following the instructions at [SEAL GitHub](https://github.com/microsoft/SEAL). You need to turn the option `SEAL_USE_ZSTD` to `ON` as SEAL-X-ROS uses zstandard compression. 
+1. Install Microsoft SEAL following the instructions at [SEAL GitHub](https://github.com/microsoft/SEAL). *You need to turn the option `SEAL_USE_ZSTD` to `ON` as SEAL-X-ROS uses zstandard compression.*
 2. Clone this repository into your ROS workspace (e.g., `ros2_ws/src/`).
    ```bash
    git clone https://github.com/jdumezy/seal-x-ros.git

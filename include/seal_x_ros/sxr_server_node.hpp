@@ -10,9 +10,9 @@
 #include "seal_x_ros/sxr_evaluator.hpp"
 #include "seal_x_ros/sxr_lib.hpp"
 
+#include "seal_x_ros/srv/server_message.hpp"
 #include "seal_x_ros/srv/key_exchange.hpp"
 #include "seal_x_ros/srv/operation_request.hpp"
-#include "seal_x_ros/srv/server_message.hpp"
 
 #include <vector>
 #include <memory>
@@ -36,14 +36,16 @@ public:
    */
   SXRServerNode();
 
+  SXREncryptor encryptor;
+  SXREvaluator evaluator;
+
 private:
   rclcpp::Client<seal_x_ros::srv::ServerMessage>::SharedPtr server_message_client;
-  
-  void sendMessage();
-  
   rclcpp::Service<seal_x_ros::srv::KeyExchange>::SharedPtr key_exchange_service;
   rclcpp::Service<seal_x_ros::srv::OperationRequest>::SharedPtr operation_request_service;
-  
+
+
+  void sendMessage();
   /**
    * @brief Handles the key exchange request from the client.
    * 
@@ -67,20 +69,19 @@ private:
    * @param response The response object containing the result or error message.
    */
   void handleOperationRequest(const std::shared_ptr<seal_x_ros::srv::OperationRequest::Request> request, std::shared_ptr<seal_x_ros::srv::OperationRequest::Response> response);
-  
-  std::vector<uint8_t> mSerializedParms;
-  std::vector<uint8_t> mSerializedPk;
-  std::vector<uint8_t> mSerializedRlk;
-  std::vector<uint8_t> mSerializedGalk;
+
   double mScale;
   
-  std::optional<SXREncryptor> mEncryptor;
-  std::optional<SXREvaluator> mEvaluator;
-  
   seal::EncryptionParameters mParms;
-  seal::PublicKey mPublicKey;
-  seal::RelinKeys mRelinKeys;
-  seal::GaloisKeys mGaloisKeys;
+  std::shared_ptr<seal::SEALContext> mpContext;
+
+  std::shared_ptr<seal::PublicKey> mpPublicKey;
+  std::shared_ptr<seal::RelinKeys> mpRelinKeys;
+  std::shared_ptr<seal::GaloisKeys> mpGaloisKeys;
+
+  std::unique_ptr<seal::CKKSEncoder> mpEncoder;
+  std::unique_ptr<seal::Encryptor> mpEncryptor;
+  std::unique_ptr<seal::Evaluator> mpEvaluator;
 };
 
 #endif // SXR_SERVER_NODE_HPP_

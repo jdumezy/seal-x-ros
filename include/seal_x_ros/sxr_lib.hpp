@@ -11,6 +11,8 @@
 double calculateScale(int depth, double scale, std::vector<double> primeArray);
 int calculateDepth(double ciphertextScale, double scale, std::vector<double> primeArray);
 
+std::vector<float> byteArrayToFloatArray(const std::vector<uint8_t>& bytes);
+std::vector<uint8_t> floatArrayToByteArray(const std::vector<float>& floatArray);
 std::vector<double> floatArrayToDoubleArray(const std::vector<float>& floatArray);
 std::vector<float> doubleArrayToFloatArray(const std::vector<double>& doubleArray);
 
@@ -46,7 +48,7 @@ seal::EncryptionParameters deserializeToParms(std::vector<uint8_t> serializedPar
  * @param context Shared pointer of the context.
  * @return Deserialized public key.
  */
-seal::PublicKey deserializeToPk(std::vector<uint8_t> serializedPk, std::shared_ptr<seal::SEALContext> context);
+seal::PublicKey deserializeToPk(std::vector<uint8_t> serializedPk, seal::SEALContext* pContext);
 
 /**
  * @brief Deserialization of serialized relinearization keys.
@@ -58,7 +60,7 @@ seal::PublicKey deserializeToPk(std::vector<uint8_t> serializedPk, std::shared_p
  * @param context Shared pointer of the context.
  * @return Deserialized relinearization keys.
  */
-seal::RelinKeys deserializeToRlk(std::vector<uint8_t> serializedRlk, std::shared_ptr<seal::SEALContext> context);
+seal::RelinKeys deserializeToRlk(std::vector<uint8_t> serializedRlk, seal::SEALContext* pContext);
 
 /**
  * @brief Deserialization of serialized galois keys.
@@ -70,7 +72,7 @@ seal::RelinKeys deserializeToRlk(std::vector<uint8_t> serializedRlk, std::shared
  * @param context Shared pointer of the context.
  * @return Deserialized galois keys.
  */
-seal::GaloisKeys deserializeToGalk(std::vector<uint8_t> serializedGalk, std::shared_ptr<seal::SEALContext> context);
+seal::GaloisKeys deserializeToGalk(std::vector<uint8_t> serializedGalk, seal::SEALContext* pContext);
 
 /**
  * @brief Deserialization of a serialized ciphertext.
@@ -82,7 +84,7 @@ seal::GaloisKeys deserializeToGalk(std::vector<uint8_t> serializedGalk, std::sha
  * @param context Shared pointer of the context.
  * @return Deserialized ciphertext.
  */
-seal::Ciphertext deserializeToCt(std::vector<uint8_t> serializedCt, std::shared_ptr<seal::SEALContext> context);
+seal::Ciphertext deserializeToCt(std::vector<uint8_t> serializedCt, seal::SEALContext* pContext);
 
 /**
  * @brief Serializes a SEAL object into a vector of bytes.
