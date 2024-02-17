@@ -62,6 +62,8 @@ public:
    * @return SXRCiphertext ciphertext of the squared result.
    */
   SXRCiphertext square(SXRCiphertext sxrct);
+
+  SXRCiphertext rotateVector(SXRCiphertext sxrct, int steps);
   
   int matchDepth(SXRCiphertext& sxrctA, SXRCiphertext& sxrctB);
 

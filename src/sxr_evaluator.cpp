@@ -63,6 +63,14 @@ SXRCiphertext SXREvaluator::square(SXRCiphertext sxrct) {
   return result;
 }
 
+SXRCiphertext SXREvaluator::rotateVector(SXRCiphertext sxrct, int steps) {
+  seal::Ciphertext resultCiphertext;
+  mpEvaluator->rotate_vector(sxrct.getCiphertext(), steps, *mpGaloisKeys, resultCiphertext);
+  SXRCiphertext result(resultCiphertext);
+  result.setDepth(sxrct.getDepth());
+  return(result);
+}
+
 int SXREvaluator::matchDepth(SXRCiphertext& sxrctA, SXRCiphertext& sxrctB) {
   int minDepth = std::min(sxrctA.getDepth(), sxrctB.getDepth());
   int maxDepth = std::max(sxrctA.getDepth(), sxrctB.getDepth());
