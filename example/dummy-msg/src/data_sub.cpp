@@ -5,7 +5,8 @@
 
 using std::placeholders::_1;
 
-std::vector<float> byteArrayToFloatArray(const std::vector<uint8_t>& byteArray) {
+std::vector<float> byteArrayToFloatArray(
+  const std::vector<uint8_t>& byteArray) {
   std::vector<float> floatArray;
   size_t len = byteArray.size() / sizeof(float);
   floatArray.resize(len);
@@ -22,9 +23,10 @@ SubscriberNode::SubscriberNode() : Node("data_sub") {
     "sxr_output", 10, std::bind(&SubscriberNode::message_callback, this, _1));
 }
 
-void SubscriberNode::message_callback(const std_msgs::msg::ByteMultiArray::SharedPtr msg) {
+void SubscriberNode::message_callback(
+  const std_msgs::msg::ByteMultiArray::SharedPtr msg) {
   std::vector<float> floatArray = byteArrayToFloatArray(msg->data);
-  
+
   RCLCPP_INFO(this->get_logger(), "Received Float Array: [");
   for (const float& value : floatArray) {
     RCLCPP_INFO(this->get_logger(), " %f ", floatArray[i]);

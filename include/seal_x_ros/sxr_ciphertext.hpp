@@ -1,5 +1,8 @@
-#ifndef SXR_CIPHERTEXT_HPP_
-#define SXR_CIPHERTEXT_HPP_
+// Copyright 2024 Jules Dumezy
+// This code is licensed under MIT license (see LICENSE.md for details)
+
+#ifndef INCLUDE_SEAL_X_ROS_SXR_CIPHERTEXT_HPP_
+#define INCLUDE_SEAL_X_ROS_SXR_CIPHERTEXT_HPP_
 
 #include "seal/seal.h"
 
@@ -13,7 +16,7 @@
  * easier management of encrypted data within the SEAL-X-ROS framework.
  */
 class SXRCiphertext {
-public:
+ public:
   /**
    * @brief Constructs a new SXRCiphertext object from a SEAL Ciphertext.
    *
@@ -61,10 +64,10 @@ public:
    */
   void setDepth(int newDepth);
 
-private:
-  seal::Ciphertext mCiphertext; ///< The SEAL Ciphertext being encapsulated.
-  int mDepth; ///< The depth of the Ciphertext, indicating the number of operations performed.
+ private:
+  seal::Ciphertext mCiphertext;  ///< The SEAL Ciphertext being encapsulated.
+  int mDepth;  ///< The depth of the Ciphertext, indicating the number of operations performed.
 };
 
-#endif // SXR_CIPHERTEXT_HPP_
+#endif  // INCLUDE_SEAL_X_ROS_SXR_CIPHERTEXT_HPP_
 

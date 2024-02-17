@@ -1,14 +1,17 @@
-#ifndef SXR_EVALUATOR_HPP_
-#define SXR_EVALUATOR_HPP_
+// Copyright 2024 Jules Dumezy
+// This code is licensed under MIT license (see LICENSE.md for details)
+
+#ifndef INCLUDE_SEAL_X_ROS_SXR_EVALUATOR_HPP_
+#define INCLUDE_SEAL_X_ROS_SXR_EVALUATOR_HPP_
+
+#include <vector>
+#include <memory>
+#include <cstdint>
 
 #include "seal/seal.h"
 
 #include "seal_x_ros/sxr_ciphertext.hpp"
 #include "seal_x_ros/sxr_lib.hpp"
-
-#include <vector>
-#include <memory>
-#include <cstdint>
 
 /**
  * @class SXREvaluator
@@ -23,7 +26,7 @@
  * @see sxr_ciphertext for the SXRCiphertext definition
  */
 class SXREvaluator {
-public:
+ public:
   /**
    * @brief Constructs a new SXREvaluator object.
    *
@@ -38,9 +41,12 @@ public:
    * @param pGaloisKeys Pointer to GaloisKeys for rotations.
    * @param scale The scale factor to be used in encoding and operations.
    */
-  SXREvaluator(seal::CKKSEncoder* pEncoder, seal::Encryptor* pEncryptor,
-               seal::Evaluator* pEvaluator, seal::RelinKeys* pRelinKeys,
-               seal::GaloisKeys* pGaloisKeys, double scale);
+  SXREvaluator(seal::CKKSEncoder* pEncoder,
+               seal::Encryptor* pEncryptor,
+               seal::Evaluator* pEvaluator,
+               seal::RelinKeys* pRelinKeys,
+               seal::GaloisKeys* pGaloisKeys,
+               double scale);
 
   /**
    * @brief Default constructor for SXREvaluator.
@@ -64,9 +70,12 @@ public:
    * @param pGaloisKeys Pointer to GaloisKeys for rotations.
    * @param scale The scale factor to be used in encoding and operations.
    */
-  void init(seal::CKKSEncoder* pEncoder, seal::Encryptor* pEncryptor,
-            seal::Evaluator* pEvaluator, seal::RelinKeys* pRelinKeys,
-            seal::GaloisKeys* pGaloisKeys, double scale);
+  void init(seal::CKKSEncoder* pEncoder,
+            seal::Encryptor* pEncryptor,
+            seal::Evaluator* pEvaluator,
+            seal::RelinKeys* pRelinKeys,
+            seal::GaloisKeys* pGaloisKeys,
+            double scale);
 
   /**
    * @brief Checks if the SXREvaluator is initialized.
@@ -139,14 +148,14 @@ public:
    */
   int matchDepth(SXRCiphertext& sxrctA, SXRCiphertext& sxrctB);
 
-private:
-  seal::CKKSEncoder* mpEncoder; ///< Pointer to CKKS encoder
-  seal::Encryptor* mpEncryptor; ///< Pointer to SEAL encryptor
-  seal::Evaluator* mpEvaluator; ///< Pointer to SEAL evaluator
-  seal::RelinKeys* mpRelinKeys; ///< Pointer to relinearization keys
-  seal::GaloisKeys* mpGaloisKeys; ///< Pointer to Galois keys
-  double mScale; ///< Scale factor for CKKKS encryption scheme
+ private:
+  seal::CKKSEncoder* mpEncoder;  ///< Pointer to CKKS encoder
+  seal::Encryptor* mpEncryptor;  ///< Pointer to SEAL encryptor
+  seal::Evaluator* mpEvaluator;  ///< Pointer to SEAL evaluator
+  seal::RelinKeys* mpRelinKeys;  ///< Pointer to relinearization keys
+  seal::GaloisKeys* mpGaloisKeys;  ///< Pointer to Galois keys
+  double mScale;  ///< Scale factor for CKKKS encryption scheme
 };
 
-#endif // SXR_EVALUATOR_HPP_
+#endif  // INCLUDE_SEAL_X_ROS_SXR_EVALUATOR_HPP_
 

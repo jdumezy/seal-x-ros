@@ -1,13 +1,16 @@
-#ifndef SXR_DECRYPTOR_HPP_
-#define SXR_DECRYPTOR_HPP_
+// Copyright 2024 Jules Dumezy
+// This code is licensed under MIT license (see LICENSE.md for details)
 
-#include "seal/seal.h"
-
-#include "seal_x_ros/sxr_lib.hpp"
+#ifndef INCLUDE_SEAL_X_ROS_SXR_DECRYPTOR_HPP_
+#define INCLUDE_SEAL_X_ROS_SXR_DECRYPTOR_HPP_
 
 #include <vector>
 #include <memory>
 #include <cstdint>
+
+#include "seal/seal.h"
+
+#include "seal_x_ros/sxr_lib.hpp"
 
 /**
  * @class SXRDecryptor
@@ -20,7 +23,7 @@
  * @see sxr_lib for the serialization and deserialization process.
  */
 class SXRDecryptor {
-public:
+ public:
   /**
    * @brief Constructs a new SXRDecryptor object.
    *
@@ -31,9 +34,10 @@ public:
    * @param pDecryptor Pointer to the Decryptor, used for decryption operations.
    * @param pEncoder Pointer to the CKKSEncoder, facilitating the decoding of decrypted data.
    */
-  SXRDecryptor(seal::SEALContext* pContext, seal::Decryptor* pDecryptor,
+  SXRDecryptor(seal::SEALContext* pContext,
+               seal::Decryptor* pDecryptor,
                seal::CKKSEncoder* pEncoder);
-  
+
   /**
    * @brief Default constructor for the SXRDecryptor class.
    * 
@@ -53,7 +57,8 @@ public:
    * @param pDecryptor Pointer to the Decryptor.
    * @param pEncoder Pointer to the CKKSEncoder.
    */
-  void init(seal::SEALContext* pContext, seal::Decryptor* pDecryptor,
+  void init(seal::SEALContext* pContext,
+            seal::Decryptor* pDecryptor,
             seal::CKKSEncoder* pEncoder);
 
   /**
@@ -91,10 +96,10 @@ public:
    */
   std::vector<float> decryptFloatArray(std::vector<uint8_t> serializedCt);
 
-private:  
-  seal::SEALContext* mpContext; ///< Pointer to SEAL context.
-  seal::Decryptor* mpDecryptor; ///< Pointer to SEAL decryptor.
-  seal::CKKSEncoder* mpEncoder; ///< Pointer to CKKS encoder.
+ private:
+  seal::SEALContext* mpContext;  ///< Pointer to SEAL context.
+  seal::Decryptor* mpDecryptor;  ///< Pointer to SEAL decryptor.
+  seal::CKKSEncoder* mpEncoder;  ///< Pointer to CKKS encoder.
 
   /**
    * @brief Helper method to perform decryption.
@@ -109,5 +114,5 @@ private:
   seal::Plaintext decrypt(std::vector<uint8_t> serializedCt);
 };
 
-#endif // SXR_DECRYPTOR_HPP_
-//
+#endif  // INCLUDE_SEAL_X_ROS_SXR_DECRYPTOR_HPP_
+

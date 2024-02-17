@@ -1,13 +1,16 @@
-#ifndef SXR_ENCRYPTOR_HPP_
-#define SXR_ENCRYPTOR_HPP_
+// Copyright 2024 Jules Dumezy
+// This code is licensed under MIT license (see LICENSE.md for details)
 
-#include "seal/seal.h"
-
-#include "seal_x_ros/sxr_lib.hpp"
+#ifndef INCLUDE_SEAL_X_ROS_SXR_ENCRYPTOR_HPP_
+#define INCLUDE_SEAL_X_ROS_SXR_ENCRYPTOR_HPP_
 
 #include <vector>
 #include <memory>
 #include <cstdint>
+
+#include "seal/seal.h"
+
+#include "seal_x_ros/sxr_lib.hpp"
 
 /**
  * @class SXREncryptor
@@ -20,7 +23,7 @@
  * @see sxr_lib for the serialization and deserialization process.
  */
 class SXREncryptor {
-public:
+ public:
   /**
    * @brief Constructs a new SXREncryptor object.
    *
@@ -69,7 +72,7 @@ public:
    * @return bool True if initialized, false otherwise.
    */
   bool isInit();
-  
+
   /**
    * @brief Encrypts a single floating-point number.
    *
@@ -94,10 +97,10 @@ public:
    */
   std::vector<uint8_t> encryptFloatArray(const std::vector<float>& inputFloatArray);
 
-private:
-  seal::Encryptor* mpEncryptor; ///< Pointer to SEAL Encryptor.
-  seal::CKKSEncoder* mpEncoder; ///< Pointer to CKKS encoder.
-  double mScale; ///< Scale factor for encoding floating-point numbers.
+ private:
+  seal::Encryptor* mpEncryptor;  ///< Pointer to SEAL Encryptor.
+  seal::CKKSEncoder* mpEncoder;  ///< Pointer to CKKS encoder.
+  double mScale;  ///< Scale factor for encoding floating-point numbers.
 
   /**
    * @brief Helper method to perform encryption.
@@ -111,5 +114,5 @@ private:
   std::vector<uint8_t> encrypt(seal::Plaintext encodedPlaintext);
 };
 
-#endif // SXR_ENCRYPTOR_HPP_
+#endif  // INCLUDE_SEAL_X_ROS_SXR_ENCRYPTOR_HPP_
 

@@ -1,13 +1,16 @@
-#ifndef SXR_PARMS_AND_KEYS_HPP_
-#define SXR_PARMS_AND_KEYS_HPP_
+// Copyright 2024 Jules Dumezy
+// This code is licensed under MIT license (see LICENSE.md for details)
 
-#include "seal/seal.h"
-
-#include "seal_x_ros/sxr_lib.hpp"
+#ifndef INCLUDE_SEAL_X_ROS_SXR_PARMS_AND_KEYS_HPP_
+#define INCLUDE_SEAL_X_ROS_SXR_PARMS_AND_KEYS_HPP_
 
 #include <vector>
 #include <memory>
 #include <cstdint>
+
+#include "seal/seal.h"
+
+#include "seal_x_ros/sxr_lib.hpp"
 
 /**
  * @class ParmsAndKeysManager
@@ -19,7 +22,7 @@
  * storage or transmission. Ensures consistent encryption settings across the system.
  */
 class ParmsAndKeysManager {
-public:
+ public:
    /**
    * @brief Constructs a new ParmsAndKeysManager object.
    *
@@ -38,7 +41,7 @@ public:
    * @return The scale factor used in encoding.
    */
   double getScale() const;
-  
+
   /**
    * @brief Retrieves the secret key.
    * 
@@ -78,7 +81,7 @@ public:
    * @return The generated Galois keys.
    */
   seal::GaloisKeys getGaloisKeys() const;
-  
+
   /**
    * @brief Retrieves serialized encryption parameters.
    * 
@@ -119,7 +122,7 @@ public:
    */
   std::vector<uint8_t> getSerializedGalk() const;
 
-private:
+ private:
   /**
    * @brief Creates the encryption parameters.
    * 
@@ -136,19 +139,19 @@ private:
    */
   void createKeys();
 
-  double mScale; ///< Scale factor for encoding.
-  std::shared_ptr<seal::SEALContext> mpContext; ///< Shared pointer to the SEAL context.
-  
-  seal::SecretKey mSecretKey; ///< Secret key for decryption.
-  seal::PublicKey mPublicKey; ///< Public key for encryption.
-  seal::RelinKeys mRelinKeys; ///< Relinearization keys for size reduction after multiplication.
-  seal::GaloisKeys mGaloisKeys; ///< Galois keys for vector rotations.
-  
-  std::vector<uint8_t> mSerializedParms; ///< Serialized encryption parameters.
-  std::vector<uint8_t> mSerializedPk; ///< Serialized public key.
-  std::vector<uint8_t> mSerializedRlk; ///< Serialized relinearization keys.
-  std::vector<uint8_t> mSerializedGalk; ///< Serialized Galois keys.
+  double mScale;  ///< Scale factor for encoding.
+  std::shared_ptr<seal::SEALContext> mpContext;  ///< Shared pointer to the SEAL context.
+
+  seal::SecretKey mSecretKey;  ///< Secret key for decryption.
+  seal::PublicKey mPublicKey;  ///< Public key for encryption.
+  seal::RelinKeys mRelinKeys;  ///< Relinearization keys for size reduction after multiplication.
+  seal::GaloisKeys mGaloisKeys;  ///< Galois keys for vector rotations.
+
+  std::vector<uint8_t> mSerializedParms;  ///< Serialized encryption parameters.
+  std::vector<uint8_t> mSerializedPk;  ///< Serialized public key.
+  std::vector<uint8_t> mSerializedRlk;  ///< Serialized relinearization keys.
+  std::vector<uint8_t> mSerializedGalk;  ///< Serialized Galois keys.
 };
 
-#endif // SXR_PARMS_AND_KEYS_HPP_
+#endif  // INCLUDE_SEAL_X_ROS_SXR_PARMS_AND_KEYS_HPP_
 

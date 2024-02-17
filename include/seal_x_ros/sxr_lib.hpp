@@ -1,12 +1,15 @@
-#ifndef SXR_LIB_HPP_
-#define SXR_LIB_HPP_
+// Copyright 2024 Jules Dumezy
+// This code is licensed under MIT license (see LICENSE.md for details)
 
-#include "seal/seal.h"
+#ifndef INCLUDE_SEAL_X_ROS_SXR_LIB_HPP_
+#define INCLUDE_SEAL_X_ROS_SXR_LIB_HPP_
 
 #include <vector>
 #include <memory>
 #include <cstdint>
 #include <stdexcept>
+
+#include "seal/seal.h"
 
 /**
  * @brief Calculates the scale based on the encryption depth and prime factors.
@@ -162,5 +165,5 @@ std::vector<uint8_t> serializeSealObject(const T& obj) {
   return serializedObject;
 }
 
-#endif // SXR_LIB_HPP_
+#endif  // INCLUDE_SEAL_X_ROS_SXR_LIB_HPP_
 

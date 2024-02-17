@@ -5,7 +5,8 @@
 
 using std::placeholders::_1;
 
-std::vector<uint8_t> floatArrayToByteArray(const std::vector<float>& floatArray) {
+std::vector<uint8_t> floatArrayToByteArray(
+  const std::vector<float>& floatArray) {
   std::vector<uint8_t> byteArray;
   byteArray.reserve(floatArray.size() * sizeof(float));
 
@@ -20,8 +21,11 @@ std::vector<uint8_t> floatArrayToByteArray(const std::vector<float>& floatArray)
 }
 
 PublisherNode::PublisherNode() : Node("data_pub") {
-  publisher_ = this->create_publisher<std_msgs::msg::ByteMultiArray>("sxr_input", 10);
-  timer_ = this->create_wall_timer(std::chrono::seconds(1), std::bind(&PublisherNode::publish_message, this));
+  publisher_ = this->create_publisher<std_msgs::msg::ByteMultiArray>(
+    "sxr_input", 10);
+  timer_ = this->create_wall_timer(
+    std::chrono::seconds(1),
+    std::bind(&PublisherNode::publish_message, this));
 }
 
 void PublisherNode::publish_message() {
