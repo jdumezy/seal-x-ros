@@ -8,24 +8,77 @@
 #include <cstdint>
 #include <stdexcept>
 
+/**
+ * @brief Calculates the scale based on the encryption depth and prime factors.
+ * 
+ * This function calculates the appropriate scale factor to use in encryption parameters 
+ * based on the depth of the computation and a vector of prime numbers. The scale factor 
+ * influences the precision of encrypted computations.
+ * 
+ * @param depth The maximum depth of the arithmetic circuit.
+ * @param scale The initial scale factor.
+ * @param primeArray A vector of prime numbers used in the modulus chain.
+ * @return The calculated scale factor.
+ */
 double calculateScale(int depth, double scale, std::vector<double> primeArray);
-int calculateDepth(double ciphertextScale, double scale, std::vector<double> primeArray);
-
-std::vector<float> byteArrayToFloatArray(const std::vector<uint8_t>& bytes);
-std::vector<uint8_t> floatArrayToByteArray(const std::vector<float>& floatArray);
-std::vector<double> floatArrayToDoubleArray(const std::vector<float>& floatArray);
-std::vector<float> doubleArrayToFloatArray(const std::vector<double>& doubleArray);
 
 /**
- * @brief Create a SEALContext from serialized parameters.
+ * @brief Calculates the depth of encryption based on the ciphertext scale and prime factors.
  * 
- * This function generates a shared pointer of a SEALContext from a vector of bytes representing 
- * the serialized form of a SEAL EncryptionParameters object.
+ * This function calculates the depth of encryption that can be supported given a ciphertext's 
+ * scale and a vector of prime numbers. The depth is indicative of the complexity of computations 
+ * that can be performed on the encrypted data.
  * 
- * @param serializedParms Serialized encryption parameters.
- * @return Shared pointer of the generated SEALContext.
+ * @param ciphertextScale The scale of the ciphertext.
+ * @param scale The initial scale factor.
+ * @param primeArray A vector of prime numbers used in the modulus chain.
+ * @return The calculated depth of encryption.
  */
-std::shared_ptr<seal::SEALContext> pContextFromParms(const std::vector<uint8_t>& serializedParms);
+int calculateDepth(double ciphertextScale, double scale, std::vector<double> primeArray);
+
+/**
+ * @brief Converts a byte array to a float array.
+ * 
+ * This function takes a vector of bytes and converts it into a vector of floats. This is useful 
+ * for converting serialized data back into its original floating-point representation.
+ * 
+ * @param bytes The byte array to convert.
+ * @return A vector of floats converted from the byte array.
+ */
+std::vector<float> byteArrayToFloatArray(const std::vector<uint8_t>& bytes);
+
+/**
+ * @brief Converts a float array to a byte array.
+ * 
+ * This function takes a vector of floats and serializes it into a vector of bytes. This is useful 
+ * for preparing floating-point data for transmission or storage in serialized form.
+ * 
+ * @param floatArray The float array to convert.
+ * @return A vector of bytes converted from the float array.
+ */
+std::vector<uint8_t> floatArrayToByteArray(const std::vector<float>& floatArray);
+
+/**
+ * @brief Converts a float array to a double array.
+ * 
+ * This function converts a vector of floats into a vector of doubles. This is useful when higher 
+ * precision is required for subsequent calculations or operations.
+ * 
+ * @param floatArray The float array to convert.
+ * @return A vector of doubles converted from the float array.
+ */
+std::vector<double> floatArrayToDoubleArray(const std::vector<float>& floatArray);
+
+/**
+ * @brief Converts a double array to a float array.
+ * 
+ * This function converts a vector of doubles into a vector of floats. This is useful for 
+ * reducing the precision of data, typically for compatibility with certain APIs or to save space.
+ * 
+ * @param doubleArray The double array to convert.
+ * @return A vector of floats converted from the double array.
+ */
+std::vector<float> doubleArrayToFloatArray(const std::vector<double>& doubleArray);
 
 /**
  * @brief Deserialization of serialized parameters.
@@ -91,15 +144,15 @@ seal::Ciphertext deserializeToCt(std::vector<uint8_t> serializedCt, seal::SEALCo
  *
  * This template function serializes an object from the SEAL library, converting it into a 
  * vector of bytes. The function is designed to work with any SEAL object that supports 
- * the `save` method, `save_size` and `load` method. This serialization is useful for storing and 
- * transmitting encrypted data. Cf the serialization example in the SEAL library.
+ * the `save` method, indicating its ability to be serialized. This is crucial for storing 
+ * or transmitting encrypted data in a compact and efficient format.
  *
- * @tparam T The type of the SEAL object to be serialized.
+ * @tparam T The type of the SEAL object to be serialized (e.g., Ciphertext, PublicKey).
  * @param obj The SEAL object to serialize.
- * @return A vector of bytes representing the serialized form of the input SEAL object.
+ * @return A vector of bytes representing the serialized form of the SEAL object.
  *
  * @note The serialized object can be deserialized using the appropriate SEAL deserialization methods.
- *     Ensure that the type `T` is consistent during serialization and deserialization.
+ * Ensure that the type `T` is consistent during serialization and deserialization to avoid errors.
  */
 template<typename T>
 std::vector<uint8_t> serializeSealObject(const T& obj) {

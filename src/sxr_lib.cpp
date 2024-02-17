@@ -84,12 +84,6 @@ std::vector<float> doubleArrayToFloatArray(const std::vector<double>& doubleArra
   return floatArray;
 }
 
-std::shared_ptr<seal::SEALContext> pContextFromParms(const std::vector<uint8_t>& serializedParms) {
-  seal::EncryptionParameters parms = deserializeToParms(serializedParms);
-  std::shared_ptr<seal::SEALContext> context = std::make_shared<seal::SEALContext>(parms);
-  return context;
-}
-
 seal::EncryptionParameters deserializeToParms(std::vector<uint8_t> serializedParms) {
   seal::EncryptionParameters parms;
   parms.load(reinterpret_cast<const seal::seal_byte*>(serializedParms.data()), serializedParms.size());
