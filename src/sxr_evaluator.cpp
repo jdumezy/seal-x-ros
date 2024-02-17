@@ -66,6 +66,22 @@ SXRCiphertext SXREvaluator::multiply(SXRCiphertext sxrctA,
   return result;
 }
 
+SXRCiphertext SXREvaluator::multiplyFloat(SXRCiphertext sxrct,
+                                          float scalar) {
+  seal::Plaintext plaintextScalar;
+  mpEncoder->encode(scalar, mScale, plaintextScalar);
+
+  seal::Ciphertext resultCiphertext;
+  mpEvaluator->multiply_plain(sxrct.getCiphertext(),
+                              plaintextScalar,
+                              resultCiphertext);
+  mpEvaluator->relinearize_inplace(resultCiphertext, *mpRelinKeys);
+  mpEvaluator->rescale_to_next_inplace(resultCiphertext);
+  SXRCiphertext result(resultCiphertext);
+  result.setDepth(sxrct.getDepth() + 1);
+  return result;
+}
+
 SXRCiphertext SXREvaluator::square(SXRCiphertext sxrct) {
   seal::Ciphertext resultCiphertext;
   mpEvaluator->square(sxrct.getCiphertext(), resultCiphertext);

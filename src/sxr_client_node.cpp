@@ -2,7 +2,6 @@
 // This code is licensed under MIT license (see LICENSE.md for details)
 
 #include "seal_x_ros/sxr_client_node.hpp"
-#include <memory>
 
 SXRClientNode::SXRClientNode()
   : rclcpp::Node("sxr_client_node"), decryptor(), encryptor(), mParmsAndKeys() {

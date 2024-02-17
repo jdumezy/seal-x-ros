@@ -103,7 +103,7 @@ class SXREvaluator {
    * @brief Performs encrypted multiplication on two SXRCiphertexts.
    *
    * Accepts two SXRCiphertexts, multiplies them, and returns the result as a new 
-   * SXRCiphertext. This operation may require relinearization.
+   * SXRCiphertext.
    *
    * @param sxrctA First ciphertext for multiplication.
    * @param sxrctB Second ciphertext for multiplication.
@@ -111,6 +111,19 @@ class SXREvaluator {
    */
   SXRCiphertext multiply(SXRCiphertext sxrctA, SXRCiphertext sxrctB);
 
+  /**
+   * @brief Performs encrypted multiplication a SXRCiphertexts and a float.
+   *
+   * Accepts an SXRCiphertext and a float, encodes the float as a plaintext,
+   * multiplies the SXRCiphertext and plaintext, and returns the result as a new 
+   * SXRCiphertext.
+   *
+   * @param sxrct Ciphertext for multiplication.
+   * @param scalar Float for multiplication.
+   * @return SXRCiphertext Result of the multiplication.
+   */
+  SXRCiphertext multiplyFloat(SXRCiphertext sxrct,
+                              float scalar); 
   /**
    * @brief Performs the squaring operation on encrypted data.
    *

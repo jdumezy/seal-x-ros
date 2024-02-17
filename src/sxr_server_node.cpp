@@ -86,7 +86,7 @@ void SXRServerNode::handleOperationRequest(const std::shared_ptr<seal_x_ros::srv
     response->success = true;
     response->serialized_ct_res = serializeSealObject(result.getCiphertext());
   } else {
-    RCLCPP_ERROR(this->get_logger(), "Evaluator is not initialized");
+    RCLCPP_ERROR(this->get_logger(), "Evaluator is not initialized");
     response->success = false;
   }
 }
