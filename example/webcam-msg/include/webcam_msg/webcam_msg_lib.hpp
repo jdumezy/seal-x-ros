@@ -1,20 +1,20 @@
-
 // Copyright 2024 Jules Dumezy
 // This code is licensed under MIT license (see LICENSE.md for details)
 
-#ifndef EXAMPLE_CKKS_GRAY_SCALE_INCLUDE_CKKS_GRAY_SCALE_CKKS_GRAY_SCALE_HPP_
-#define EXAMPLE_CKKS_GRAY_SCALE_INCLUDE_CKKS_GRAY_SCALE_CKKS_GRAY_SCALE_HPP_
+#ifndef INCLUDE_WEBCAM_MSG_WEBCAM_MSG_LIB_HPP_
+#define INCLUDE_WEBCAM_MSG_WEBCAM_MSG_LIB_HPP_
 
 #include <opencv2/opencv.hpp>
 #include <vector>
-#include <iostream>
 #include <stdexcept>
+
+std::vector<float> byteArrayToFloatArray(const std::vector<uint8_t>& byteArray);
+std::vector<uint8_t> floatArrayToByteArray(const std::vector<float>& floatArray);
 
 std::tuple<std::vector<float>, int, int> loadImage(const char* filename);
 std::tuple<std::vector<float>, int, int> acquireWebcam();
-cv::Mat floatArrayToImage(std::vector<float> floatArray, int width, int height);
 void displayFloatArray(std::vector<float> floatArray, int width, int height, const char* windowName);
 void saveImage(cv::Mat image, const char* filename);
 
-#endif  // EXAMPLE_CKKS_GRAY_SCALE_INCLUDE_CKKS_GRAY_SCALE_CKKS_GRAY_SCALE_HPP_
+#endif  // INCLUDE_WEBCAM_MSG_WEBCAM_MSG_LIB_HPP_
 

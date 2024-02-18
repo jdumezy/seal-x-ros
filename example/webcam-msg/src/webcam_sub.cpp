@@ -1,21 +1,9 @@
 // Copyright 2024 Jules Dumezy
 // This code is licensed under MIT license (see LICENSE.md for details)
 
-#include "dummy_msg/data_sub.hpp"
+#include "webcam_msg/webcam_sub.hpp"
 
 using std::placeholders::_1;
-
-std::vector<float> byteArrayToFloatArray(const std::vector<uint8_t>& byteArray) {
-  std::vector<float> floatArray;
-  size_t len = byteArray.size() / sizeof(float);
-  floatArray.resize(len);
-
-  for (size_t i = 0; i < len; ++i) {
-    std::memcpy(&floatArray[i], &byteArray[i * sizeof(float)], sizeof(float));
-  }
-
-  return floatArray;
-}
 
 SubscriberNode::SubscriberNode() : Node("data_sub") {
   subscription_ = this->create_subscription<std_msgs::msg::ByteMultiArray>(
@@ -26,11 +14,12 @@ void SubscriberNode::message_callback(
   const std_msgs::msg::ByteMultiArray::SharedPtr msg) {
   std::vector<float> floatArray = byteArrayToFloatArray(msg->data);
 
-  RCLCPP_INFO(this->get_logger(), "Received Float Array: [");
-  for (const float& value : floatArray) {
-    RCLCPP_INFO(this->get_logger(), " %f ", value);
-  }
-  RCLCPP_INFO(this->get_logger(), "]\n");
+  int width = 640;
+  int height = 480;
+
+  displayFloatArray(floatArray, width, height, "Output stream");
+
+  RCLCPP_INFO(this->get_logger(), "Received Float Array");
 }
 
 int main(int argc, char **argv) {

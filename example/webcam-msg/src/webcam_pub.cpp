@@ -1,23 +1,9 @@
 // Copyright 2024 Jules Dumezy
 // This code is licensed under MIT license (see LICENSE.md for details)
 
-#include "dummy_msg/data_pub.hpp"
+#include "webcam_msg/webcam_pub.hpp"
 
 using std::placeholders::_1;
-
-std::vector<uint8_t> floatArrayToByteArray(const std::vector<float>& floatArray) {
-  std::vector<uint8_t> byteArray;
-  byteArray.reserve(floatArray.size() * sizeof(float));
-
-  for (const float& value : floatArray) {
-    uint8_t temp[sizeof(float)];
-    std::memcpy(temp, &value, sizeof(float));
-
-    byteArray.insert(byteArray.end(), temp, temp + sizeof(float));
-  }
-
-  return byteArray;
-}
 
 PublisherNode::PublisherNode() : Node("data_pub") {
   publisher_ = this->create_publisher<std_msgs::msg::ByteMultiArray>(
@@ -28,13 +14,14 @@ PublisherNode::PublisherNode() : Node("data_pub") {
 }
 
 void PublisherNode::publish_message() {
-  std::vector<float> floatArray = {3.1415, 42.0, 2.0, 1.0};
+  std::tuple<std::vector<float>, int, int> r = acquireWebcam();
+  int width = std::get<1>(r);
+  int height = std::get<2>(r);
+  std::vector<float> floatArray = std::get<0>(r);
 
-  RCLCPP_INFO(this->get_logger(), "Sending Float Array: [");
-  for (const float& value : floatArray) {
-    RCLCPP_INFO(this->get_logger(), " %f ", value);
-  }
-  RCLCPP_INFO(this->get_logger(), "]\n");
+  displayFloatArray(floatArray, width, height, "Input stream");
+
+  RCLCPP_INFO(this->get_logger(), "Sending Float Array %d %d", width, height);
 
   auto message = std_msgs::msg::ByteMultiArray();
   message.data = floatArrayToByteArray(floatArray);
@@ -48,3 +35,4 @@ int main(int argc, char **argv) {
   rclcpp::shutdown();
   return 0;
 }
+

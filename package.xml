@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package format="3">
   <name>seal_x_ros</name>
-  <version>0.1.0</version>
+  <version>1.0.0</version>
   <description>A ROS2 package to use SEAL for FHE</description>
   <maintainer email="contact@jdumezy.com">jdumezy</maintainer>
   <license>MIT</license>

@@ -1,7 +1,33 @@
 // Copyright 2024 Jules Dumezy
 // This code is licensed under MIT license (see LICENSE.md for details)
 
-#include "ckks_gray_scale/ckks_gray_scale.hpp"
+#include "webcam_msg/webcam_msg_lib.hpp"
+
+std::vector<float> byteArrayToFloatArray(const std::vector<uint8_t>& byteArray) {
+  std::vector<float> floatArray;
+  size_t len = byteArray.size() / sizeof(float);
+  floatArray.resize(len);
+
+  for (size_t i = 0; i < len; ++i) {
+    std::memcpy(&floatArray[i], &byteArray[i * sizeof(float)], sizeof(float));
+  }
+
+  return floatArray;
+}
+
+std::vector<uint8_t> floatArrayToByteArray(const std::vector<float>& floatArray) {
+  std::vector<uint8_t> byteArray;
+  byteArray.reserve(floatArray.size() * sizeof(float));
+
+  for (const float& value : floatArray) {
+    uint8_t temp[sizeof(float)];
+    std::memcpy(temp, &value, sizeof(float));
+
+    byteArray.insert(byteArray.end(), temp, temp + sizeof(float));
+  }
+
+  return byteArray;
+}
 
 std::vector<float> imageToFloatArray(cv::Mat image) {
   image.convertTo(image, CV_32FC3);
@@ -33,7 +59,7 @@ std::tuple<std::vector<float>, int, int> loadImage(const char* filename) {
 std::tuple<std::vector<float>, int, int> acquireWebcam() {
   cv::VideoCapture cap(0);
   if (!cap.isOpened()) {
-    return -1;
+    throw std::invalid_argument("Couldn't start acquisition");
   }
   
   cv::Mat image;
@@ -60,15 +86,12 @@ std::vector<float> transformVector(const std::vector<float>& input) {
 cv::Mat floatArrayToImage(std::vector<float> floatArray, int width, int height) {
   cv::Mat image(height, width, CV_32FC3, floatArray.data());
   image.convertTo(image, CV_8UC3);
-  
   return image;
 }
 
 void displayFloatArray(std::vector<float> floatArray, int width, int height, const char* windowName) {
-  cv::Mat image(height, width, CV_32FC3, floatArray.data());
-  image.convertTo(image, CV_8UC3);
-  
-  cv::imshow(windowName, image);
+  cv::imshow(windowName, floatArrayToImage(floatArray, width, height));
+  cv::waitKey(30);
 }
 
 void saveImage(cv::Mat image, const char* filename) {

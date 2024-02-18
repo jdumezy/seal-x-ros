@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <package format="3">
-  <name>dummy_msg</name>
-  <version>0.1.0</version>
-  <description>ROS2 package sending and reveiving random data</description>
+  <name>webcam_msg</name>
+  <version>1.0.0</version>
+  <description>ROS2 package sending and reveiving webcam feed with OpenCV</description>
   <maintainer email="contact@jdumezy.com">jdumezy</maintainer>
   <license>MIT</license>
 
