@@ -20,6 +20,7 @@
 #include "seal_x_ros/sxr_encryptor.hpp"
 #include "seal_x_ros/sxr_evaluator.hpp"
 #include "seal_x_ros/sxr_lib.hpp"
+#include "seal_x_ros/sxr_operations.hpp"
 
 /**
  * @class SXRServerNode

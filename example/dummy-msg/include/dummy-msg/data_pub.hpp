@@ -1,8 +1,8 @@
 // Copyright 2024 Jules Dumezy
 // This code is licensed under MIT license (see LICENSE.md for details)
 
-#ifndef EXAMPLE_DUMMY_MSG_INCLUDE_DUMMY_MSG_DATA_PUB_HPP_
-#define EXAMPLE_DUMMY_MSG_INCLUDE_DUMMY_MSG_DATA_PUB_HPP_
+#ifndef INCLUDE_DUMMY_MSG_DATA_PUB_HPP_
+#define INCLUDE_DUMMY_MSG_DATA_PUB_HPP_
 
 #include <vector>
 #include <cstring>
@@ -22,5 +22,5 @@ class PublisherNode : public rclcpp::Node {
   rclcpp::TimerBase::SharedPtr timer_;
 };
 
-#endif  // EXAMPLE_DUMMY_MSG_INCLUDE_DUMMY_MSG_DATA_PUB_HPP_
+#endif  // INCLUDE_DUMMY_MSG_DATA_PUB_HPP_
 
