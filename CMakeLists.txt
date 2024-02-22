@@ -17,12 +17,13 @@ find_package(SEAL 4.1 REQUIRED)
 include_directories(include)
 
 # Define library targets
-add_library(sxr_parms_and_keys src/sxr_parms_and_keys.cpp)
-add_library(sxr_encryptor src/sxr_encryptor.cpp)
-add_library(sxr_decryptor src/sxr_decryptor.cpp)
-add_library(sxr_evaluator src/sxr_evaluator.cpp)
 add_library(sxr_ciphertext src/sxr_ciphertext.cpp)
+add_library(sxr_decryptor src/sxr_decryptor.cpp)
+add_library(sxr_encryptor src/sxr_encryptor.cpp)
+add_library(sxr_evaluator src/sxr_evaluator.cpp)
 add_library(sxr_lib src/sxr_lib.cpp)
+add_library(sxr_operations src/sxr_operations.cpp)
+add_library(sxr_parms_and_keys src/sxr_parms_and_keys.cpp)
 
 # Define executables for the nodes
 add_executable(sxr_client_node src/sxr_client_node.cpp)
@@ -48,12 +49,13 @@ ament_target_dependencies(sxr_server_node
 
 rosidl_get_typesupport_target(cpp_typesupport_target "${PROJECT_NAME}" "rosidl_typesupport_cpp")
 
-target_link_libraries(sxr_parms_and_keys SEAL::seal sxr_lib)
-target_link_libraries(sxr_encryptor SEAL::seal sxr_lib)
-target_link_libraries(sxr_decryptor SEAL::seal sxr_lib)
-target_link_libraries(sxr_evaluator SEAL::seal sxr_lib sxr_ciphertext)
 target_link_libraries(sxr_ciphertext SEAL::seal sxr_lib)
+target_link_libraries(sxr_decryptor SEAL::seal sxr_lib)
+target_link_libraries(sxr_encryptor SEAL::seal sxr_lib)
+target_link_libraries(sxr_evaluator SEAL::seal sxr_lib sxr_ciphertext)
 target_link_libraries(sxr_lib SEAL::seal)
+target_link_libraries(sxr_operations sxr_ciphertext sxr_evaluator)
+target_link_libraries(sxr_parms_and_keys SEAL::seal sxr_lib)
 
 target_link_libraries(sxr_client_node
   sxr_decryptor
@@ -68,6 +70,7 @@ target_link_libraries(sxr_server_node
   sxr_encryptor
   sxr_evaluator
   sxr_lib
+  sxr_operations
   SEAL::seal
   "${cpp_typesupport_target}"
 )

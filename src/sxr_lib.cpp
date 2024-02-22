@@ -21,7 +21,8 @@ double calculateScale(int depth, double scale, std::vector<double> primeArray) {
   }
 }
 
-int calculateDepth(double ciphertextScale, double scale, std::vector<double> primeArray) {
+int calculateDepth(double ciphertextScale, double scale,
+                   std::vector<double> primeArray) {
   int depth = 0;
   double calculatedScale = scale;
   int maxDepth = static_cast<int>(primeArray.size());
@@ -84,39 +85,46 @@ std::vector<float> doubleArrayToFloatArray(const std::vector<double>& doubleArra
   return floatArray;
 }
 
-std::shared_ptr<seal::SEALContext> pContextFromParms(const std::vector<uint8_t>& serializedParms) {
-  seal::EncryptionParameters parms = deserializeToParms(serializedParms);
-  std::shared_ptr<seal::SEALContext> context = std::make_shared<seal::SEALContext>(parms);
-  return context;
-}
-
 seal::EncryptionParameters deserializeToParms(std::vector<uint8_t> serializedParms) {
   seal::EncryptionParameters parms;
-  parms.load(reinterpret_cast<const seal::seal_byte*>(serializedParms.data()), serializedParms.size());
+  parms.load(reinterpret_cast<const seal::seal_byte*>(serializedParms.data()),
+             serializedParms.size());
   return parms;
 }
 
-seal::PublicKey deserializeToPk(std::vector<uint8_t> serializedPk, seal::SEALContext* pContext) {
+seal::PublicKey deserializeToPk(std::vector<uint8_t> serializedPk,
+                                seal::SEALContext* pContext) {
   seal::PublicKey pk;
-  pk.load(*pContext, reinterpret_cast<const seal::seal_byte*>(serializedPk.data()), serializedPk.size());
+  pk.load(*pContext,
+          reinterpret_cast<const seal::seal_byte*>(serializedPk.data()),
+          serializedPk.size());
   return pk;
 }
 
-seal::RelinKeys deserializeToRlk(std::vector<uint8_t> serializedRlk, seal::SEALContext* pContext) {
+seal::RelinKeys deserializeToRlk(std::vector<uint8_t> serializedRlk,
+                                 seal::SEALContext* pContext) {
   seal::RelinKeys rlk;
-  rlk.load(*pContext, reinterpret_cast<const seal::seal_byte*>(serializedRlk.data()), serializedRlk.size());
+  rlk.load(*pContext,
+           reinterpret_cast<const seal::seal_byte*>(serializedRlk.data()),
+           serializedRlk.size());
   return rlk;
 }
 
-seal::GaloisKeys deserializeToGalk(std::vector<uint8_t> serializedGalk, seal::SEALContext* pContext) {
+seal::GaloisKeys deserializeToGalk(std::vector<uint8_t> serializedGalk,
+                                   seal::SEALContext* pContext) {
   seal::GaloisKeys galk;
-  galk.load(*pContext, reinterpret_cast<const seal::seal_byte*>(serializedGalk.data()), serializedGalk.size());
+  galk.load(*pContext,
+            reinterpret_cast<const seal::seal_byte*>(serializedGalk.data()),
+            serializedGalk.size());
   return galk;
 }
 
-seal::Ciphertext deserializeToCt(std::vector<uint8_t> serializedCt, seal::SEALContext* pContext) {
+seal::Ciphertext deserializeToCt(std::vector<uint8_t> serializedCt,
+                                 seal::SEALContext* pContext) {
   seal::Ciphertext ct;
-  ct.load(*pContext, reinterpret_cast<const seal::seal_byte*>(serializedCt.data()), serializedCt.size());
+  ct.load(*pContext,
+          reinterpret_cast<const seal::seal_byte*>(serializedCt.data()),
+          serializedCt.size());
   return ct;
 }
 

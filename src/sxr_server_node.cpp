@@ -45,20 +45,25 @@ void SXRServerNode::sendMessage() {
 void SXRServerNode::handleKeyExchange(const std::shared_ptr<seal_x_ros::srv::KeyExchange::Request> request,
                                       std::shared_ptr<seal_x_ros::srv::KeyExchange::Response> response) {
   mScale = request->scale;
-  
+
   mParms = deserializeToParms(request->serialized_parms);
   mpContext = std::make_shared<seal::SEALContext>(mParms);
 
-  mpPublicKey = std::make_shared<seal::PublicKey>(deserializeToPk(request->serialized_pk, mpContext.get()));
-  mpRelinKeys = std::make_shared<seal::RelinKeys>(deserializeToRlk(request->serialized_rlk, mpContext.get()));
-  mpGaloisKeys = std::make_shared<seal::GaloisKeys>(deserializeToGalk(request->serialized_galk, mpContext.get()));
+  mpPublicKey = std::make_shared<seal::PublicKey>(
+    deserializeToPk(request->serialized_pk, mpContext.get()));
+  mpRelinKeys = std::make_shared<seal::RelinKeys>(
+    deserializeToRlk(request->serialized_rlk, mpContext.get()));
+  mpGaloisKeys = std::make_shared<seal::GaloisKeys>(
+    deserializeToGalk(request->serialized_galk, mpContext.get()));
 
   mpEncoder = std::make_unique<seal::CKKSEncoder>(*mpContext.get());
-  mpEncryptor = std::make_unique<seal::Encryptor>(*mpContext.get(), *mpPublicKey.get());
+  mpEncryptor = std::make_unique<seal::Encryptor>(*mpContext.get(),
+                                                  *mpPublicKey.get());
   mpEvaluator = std::make_unique<seal::Evaluator>(*mpContext.get());
 
   encryptor.init(mpEncoder.get(), mpEncryptor.get(), mScale);
-  evaluator.init(mpEncoder.get(), mpEncryptor.get(), mpEvaluator.get(), mpRelinKeys.get(), mpGaloisKeys.get(), mScale);
+  evaluator.init(mpEncoder.get(), mpEncryptor.get(), mpEvaluator.get(),
+                 mpRelinKeys.get(), mpGaloisKeys.get(), mScale);
 
   RCLCPP_INFO(this->get_logger(), "Received SEAL parameters");
 
@@ -66,10 +71,11 @@ void SXRServerNode::handleKeyExchange(const std::shared_ptr<seal_x_ros::srv::Key
 }
 
 void SXRServerNode::handleOperationRequest(const std::shared_ptr<seal_x_ros::srv::OperationRequest::Request> request,
-  std::shared_ptr<seal_x_ros::srv::OperationRequest::Response> response) {
+                                           std::shared_ptr<seal_x_ros::srv::OperationRequest::Response> response) {
   RCLCPP_DEBUG(this->get_logger(), "Received ciphertext");
 
-  seal::Ciphertext requestCiphertext = deserializeToCt(request->serialized_ct, mpContext.get());
+  seal::Ciphertext requestCiphertext = deserializeToCt(request->serialized_ct,
+                                                       mpContext.get());
 
   if (evaluator.isInit()) {
     SXRCiphertext message(requestCiphertext);

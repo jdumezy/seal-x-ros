@@ -3,7 +3,8 @@
 
 #include "seal_x_ros/sxr_decryptor.hpp"
 
-SXRDecryptor::SXRDecryptor(seal::SEALContext* pContext, seal::Decryptor* pDecryptor,
+SXRDecryptor::SXRDecryptor(seal::SEALContext* pContext,
+                           seal::Decryptor* pDecryptor,
                            seal::CKKSEncoder* pEncoder) {
   init(pContext, pDecryptor, pEncoder);
 }
@@ -14,7 +15,8 @@ SXRDecryptor::SXRDecryptor() {
   mpEncoder = NULL;
 }
 
-void SXRDecryptor::init(seal::SEALContext* pContext, seal::Decryptor* pDecryptor,
+void SXRDecryptor::init(seal::SEALContext* pContext,
+                        seal::Decryptor* pDecryptor,
                         seal::CKKSEncoder* pEncoder) {
   mpContext = pContext;
   mpDecryptor = pDecryptor;

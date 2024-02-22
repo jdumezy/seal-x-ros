@@ -3,10 +3,14 @@
 
 #include "seal_x_ros/sxr_evaluator.hpp"
 
-SXREvaluator::SXREvaluator(seal::CKKSEncoder* pEncoder, seal::Encryptor* pEncryptor,
-                           seal::Evaluator* pEvaluator, seal::RelinKeys* pRelinKeys,
-                           seal::GaloisKeys* pGaloisKeys, double scale) {
-  init(pEncoder, pEncryptor, pEvaluator, pRelinKeys, pGaloisKeys, scale);
+SXREvaluator::SXREvaluator(seal::CKKSEncoder* pEncoder,
+                           seal::Encryptor* pEncryptor,
+                           seal::Evaluator* pEvaluator,
+                           seal::RelinKeys* pRelinKeys,
+                           seal::GaloisKeys* pGaloisKeys,
+                           double scale) {
+  init(pEncoder, pEncryptor, pEvaluator,
+       pRelinKeys, pGaloisKeys, scale);
 }
 
 SXREvaluator::SXREvaluator() {
@@ -18,9 +22,12 @@ SXREvaluator::SXREvaluator() {
   mScale = 0.0;
 }
 
-void SXREvaluator::init(seal::CKKSEncoder* pEncoder, seal::Encryptor* pEncryptor,
-                        seal::Evaluator* pEvaluator, seal::RelinKeys* pRelinKeys,
-                        seal::GaloisKeys* pGaloisKeys, double scale) {
+void SXREvaluator::init(seal::CKKSEncoder* pEncoder,
+                        seal::Encryptor* pEncryptor,
+                        seal::Evaluator* pEvaluator,
+                        seal::RelinKeys* pRelinKeys,
+                        seal::GaloisKeys* pGaloisKeys,
+                        double scale) {
   mpEncoder = pEncoder;
   mpEncryptor = pEncryptor;
   mpEvaluator = pEvaluator;
@@ -33,23 +40,45 @@ bool SXREvaluator::isInit() {
   return (mpEvaluator != NULL);
 }
 
-SXRCiphertext SXREvaluator::add(SXRCiphertext sxrctA, SXRCiphertext sxrctB) {
+SXRCiphertext SXREvaluator::add(SXRCiphertext sxrctA,
+                                SXRCiphertext sxrctB) {
   int depth = matchDepth(sxrctA, sxrctB);
   seal::Ciphertext resultCiphertext;
-  mpEvaluator->add(sxrctA.getCiphertext(), sxrctB.getCiphertext(), resultCiphertext);
+  mpEvaluator->add(sxrctA.getCiphertext(),
+                   sxrctB.getCiphertext(),
+                   resultCiphertext);
   SXRCiphertext result(resultCiphertext);
   result.setDepth(depth);
   return result;
 }
 
-SXRCiphertext SXREvaluator::multiply(SXRCiphertext sxrctA, SXRCiphertext sxrctB) {
+SXRCiphertext SXREvaluator::multiply(SXRCiphertext sxrctA,
+                                     SXRCiphertext sxrctB) {
   int depth = matchDepth(sxrctA, sxrctB);
   seal::Ciphertext resultCiphertext;
-  mpEvaluator->multiply(sxrctA.getCiphertext(), sxrctB.getCiphertext(), resultCiphertext);
+  mpEvaluator->multiply(sxrctA.getCiphertext(),
+                        sxrctB.getCiphertext(),
+                        resultCiphertext);
   mpEvaluator->relinearize_inplace(resultCiphertext, *mpRelinKeys);
   mpEvaluator->rescale_to_next_inplace(resultCiphertext);
   SXRCiphertext result(resultCiphertext);
   result.setDepth(depth + 1);
+  return result;
+}
+
+SXRCiphertext SXREvaluator::multiplyFloat(SXRCiphertext sxrct,
+                                          float scalar) {
+  seal::Plaintext plaintextScalar;
+  mpEncoder->encode(scalar, mScale, plaintextScalar);
+
+  seal::Ciphertext resultCiphertext;
+  mpEvaluator->multiply_plain(sxrct.getCiphertext(),
+                              plaintextScalar,
+                              resultCiphertext);
+  mpEvaluator->relinearize_inplace(resultCiphertext, *mpRelinKeys);
+  mpEvaluator->rescale_to_next_inplace(resultCiphertext);
+  SXRCiphertext result(resultCiphertext);
+  result.setDepth(sxrct.getDepth() + 1);
   return result;
 }
 
@@ -63,11 +92,23 @@ SXRCiphertext SXREvaluator::square(SXRCiphertext sxrct) {
   return result;
 }
 
+SXRCiphertext SXREvaluator::rotateVector(SXRCiphertext sxrct, int steps) {
+  seal::Ciphertext resultCiphertext;
+  mpEvaluator->rotate_vector(sxrct.getCiphertext(),
+                             steps,
+                             *mpGaloisKeys,
+                             resultCiphertext);
+  SXRCiphertext result(resultCiphertext);
+  result.setDepth(sxrct.getDepth());
+  return(result);
+}
+
 int SXREvaluator::matchDepth(SXRCiphertext& sxrctA, SXRCiphertext& sxrctB) {
   int minDepth = std::min(sxrctA.getDepth(), sxrctB.getDepth());
   int maxDepth = std::max(sxrctA.getDepth(), sxrctB.getDepth());
   int depthDiff = maxDepth - minDepth;
-  seal::Ciphertext newCiphertext = (sxrctA.getDepth() == minDepth) ? sxrctA.getCiphertext() : sxrctB.getCiphertext();
+  seal::Ciphertext newCiphertext =
+    (sxrctA.getDepth() == minDepth) ? sxrctA.getCiphertext() : sxrctB.getCiphertext();
 
   if (depthDiff != 0) {
     float oneFloat = 1.0f;

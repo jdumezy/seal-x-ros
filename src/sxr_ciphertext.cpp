@@ -5,7 +5,7 @@
 
 SXRCiphertext::SXRCiphertext(seal::Ciphertext ciphertext)
   : mCiphertext(ciphertext) {
-  mDepth = 0;  //TODO(jdumezy) replace by automatic depth calculation
+  mDepth = 0;  // TODO(jdumezy) replace by automatic depth calculation
 }
 
 seal::Ciphertext SXRCiphertext::getCiphertext() {
