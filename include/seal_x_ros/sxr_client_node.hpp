@@ -8,6 +8,9 @@
 #include <memory>
 #include <cstdint>
 #include <functional>
+#include <atomic>
+#include <mutex>
+#include <condition_variable>
 
 #include "rclcpp/rclcpp.hpp"
 #include "std_msgs/msg/byte_multi_array.hpp"
@@ -81,6 +84,9 @@ class SXRClientNode : public rclcpp::Node {
    * @param callback The callback function to execute with the decrypted result.
    */
   void sendCiphertext(std::vector<float> message,
+                      std::function<void(const std::vector<float>&)> callback);
+
+  void sendBigCiphertext(std::vector<float> message,
                       std::function<void(const std::vector<float>&)> callback);
 
   /**

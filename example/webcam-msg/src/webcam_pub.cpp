@@ -9,7 +9,7 @@ PublisherNode::PublisherNode() : Node("data_pub") {
   publisher_ = this->create_publisher<std_msgs::msg::ByteMultiArray>(
     "sxr_input", 10);
   timer_ = this->create_wall_timer(
-    std::chrono::seconds(1),
+    std::chrono::seconds(2),
     std::bind(&PublisherNode::publish_message, this));
 }
 

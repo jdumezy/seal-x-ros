@@ -41,6 +41,26 @@ int calculateDepth(double ciphertextScale, double scale,
   return -1;
 }
 
+std::vector<std::vector<float>> splitMessage(const std::vector<float>& message,
+                                             size_t chunkSize) {
+  chunkSize -= (chunkSize % 3);  // working with rgb images
+  std::vector<std::vector<float>> chunks;
+  for (size_t i = 0; i < message.size(); i += chunkSize) {
+    std::vector<float> chunk(message.begin() + i,
+                             message.begin() + std::min(i + chunkSize, message.size()));
+    chunks.push_back(chunk);
+  }
+  return chunks;
+}
+
+std::vector<float> glueMessage(const std::vector<std::vector<float>>& messageArray) {
+  std::vector<float> message;
+  for (const std::vector<float>& msg : messageArray) {
+    message.insert(message.end(), msg.begin(), msg.end());
+  }
+  return message;
+}
+
 std::vector<float> byteArrayToFloatArray(const std::vector<uint8_t>& byteArray) {
   std::vector<float> floatArray;
   size_t len = byteArray.size() / sizeof(float);

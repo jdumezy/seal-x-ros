@@ -80,7 +80,7 @@ void SXRServerNode::handleOperationRequest(const std::shared_ptr<seal_x_ros::srv
   if (evaluator.isInit()) {
     SXRCiphertext message(requestCiphertext);
 
-    SXRCiphertext result = evaluator.square(message);
+    SXRCiphertext result = gray_scale(message, &evaluator);
 
     RCLCPP_INFO(this->get_logger(), "Sending processed ciphertext");
     response->success = true;
