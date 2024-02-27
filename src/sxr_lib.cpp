@@ -148,3 +148,17 @@ seal::Ciphertext deserializeToCt(std::vector<uint8_t> serializedCt,
   return ct;
 }
 
+Semaphore::Semaphore(int count = 0) : count_(count) {}
+
+void Semaphore::release() {
+  std::unique_lock<std::mutex> lock(mutex_);
+  ++count_;
+  cv_.notify_one();
+}
+
+void Semaphore::acquire() {
+  std::unique_lock<std::mutex> lock(mutex_);
+  cv_.wait(lock, [this] { return count_ > 0; });
+  --count_;
+}
+

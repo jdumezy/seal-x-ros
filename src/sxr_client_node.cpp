@@ -134,44 +134,59 @@ void SXRClientNode::sendCiphertext(std::vector<float> message,
 
 void SXRClientNode::sendBigCiphertext(std::vector<float> message,
                                       std::function<void(const std::vector<float>&)> callback) {
-
   auto chunks = splitMessage(message, mParmsAndKeys.getMaxLen());
   
   auto encryptedChunks = std::make_shared<std::vector<std::vector<uint8_t>>>();
   encryptedChunks->resize(chunks.size());
-  RCLCPP_INFO(this->get_logger(), "Number of chunks: %zu", chunks.size());
+  RCLCPP_DEBUG(this->get_logger(), "Number of chunks: %zu", chunks.size());
 
   auto results = std::make_shared<std::vector<std::vector<float>>>();
   results->resize(chunks.size());
 
   auto remaining = std::make_shared<std::atomic<size_t>>(chunks.size());
+  auto sem = std::make_shared<Semaphore>(10);
 
   for (size_t i = 0; i < chunks.size(); ++i) {
     (*encryptedChunks)[i] = encryptor.encryptFloatArray(chunks[i]);
+    size_t chunkSize = chunks[i].size();
 
     auto request = std::make_shared<seal_x_ros::srv::OperationRequest::Request>();
     request->serialized_ct = (*encryptedChunks)[i];
 
-    RCLCPP_DEBUG(this->get_logger(), "Sending ciphertext chunk %zu", i);
+    RCLCPP_DEBUG(this->get_logger(), "Preparing to send ciphertext chunk %zu", i);
 
-    operation_request_client->async_send_request(request,
-      [this, i, results, remaining, callback](rclcpp::Client<seal_x_ros::srv::OperationRequest>::SharedFuture futureResponse) {
-        auto response = futureResponse.get();
-        if (response->success) {
-          RCLCPP_DEBUG(this->get_logger(), "Ciphertext chunk %zu received", i);
-          (*results)[i] = decryptor.decryptFloatArray(response->serialized_ct_res);
-        } else {
-          RCLCPP_ERROR(this->get_logger(), "Failed to send ciphertext chunk %zu", i);
-          (*results)[i] = std::vector<float>();
-        }
+    auto task = [this, i, request, results, remaining, sem, callback, encryptedChunks, chunkSize]() {
+      sem->acquire();
+      RCLCPP_DEBUG(this->get_logger(), "\tSemaphore acquired, sending ciphertext chunk %zu", i);
+      
+      auto futureResponse = operation_request_client->async_send_request(request);
+      
+      if (futureResponse.wait_for(std::chrono::seconds(1)) == std::future_status::timeout) {
+          RCLCPP_ERROR(this->get_logger(), "Timeout waiting for response for chunk %zu", i);
+          (*results)[i] = std::vector<float>(chunkSize, 0.0f);
+      } else {
+          auto response = futureResponse.get();
+          if (response->success) {
+              RCLCPP_DEBUG(this->get_logger(), "Ciphertext chunk %zu received", i);
+              (*results)[i] = decryptor.decryptFloatArray(response->serialized_ct_res);
+          } else {
+              RCLCPP_ERROR(this->get_logger(), "Failed to send ciphertext chunk %zu", i);
+              (*results)[i] = std::vector<float>(chunkSize, 0.0f);
+          }
+      }
 
-        size_t remainingCount = remaining->fetch_sub(1) - 1;
-        if (remainingCount == 0) {
+      sem->release();
+      RCLCPP_DEBUG(this->get_logger(), "\tSemaphore released");
+
+      size_t remainingCount = remaining->fetch_sub(1) - 1;
+      if (remainingCount == 0) {
           auto finalResult = glueMessage(*results);
-          RCLCPP_INFO(this->get_logger(), "Chunks reassembled");
+          RCLCPP_DEBUG(this->get_logger(), "Chunks reassembled");
           callback(finalResult);
-        }
-    });
+      }
+    };
+    
+    std::thread(task).detach();
   }
 }
 

@@ -8,6 +8,8 @@
 #include <memory>
 #include <cstdint>
 #include <stdexcept>
+#include <mutex>
+#include <condition_variable>
 
 #include "seal/seal.h"
 
@@ -188,6 +190,19 @@ std::vector<uint8_t> serializeSealObject(const T& obj) {
   obj.save(reinterpret_cast<seal::seal_byte*>(serializedObject.data()), size, seal::compr_mode_type::zstd);
   return serializedObject;
 }
+
+class Semaphore {
+ public:
+  Semaphore(int count);
+
+  void release();
+  void acquire();
+
+ private:
+  std::mutex mutex_;
+  std::condition_variable cv_;
+  int count_;
+};
 
 #endif  // INCLUDE_SEAL_X_ROS_SXR_LIB_HPP_
 

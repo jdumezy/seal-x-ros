@@ -8,8 +8,8 @@
 #include <vector>
 #include <stdexcept>
 
-#define WIDTH 200
-#define HEIGHT 200
+#define WIDTH 320
+#define HEIGHT 240
 
 std::vector<float> byteArrayToFloatArray(const std::vector<uint8_t>& byteArray);
 std::vector<uint8_t> floatArrayToByteArray(const std::vector<float>& floatArray);
