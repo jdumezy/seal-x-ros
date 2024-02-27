@@ -80,30 +80,21 @@ void SXRClientNode::messageCallback(const std_msgs::msg::ByteMultiArray::SharedP
   std::vector<float> message = byteArrayToFloatArray(msg->data);
   size_t originalSize = message.size();
 
+  auto processAndPublishResult = [this, originalSize](const std::vector<float>& result) {
+    std::vector<float> trimmedResult = result;
+    if (trimmedResult.size() > originalSize) {
+      trimmedResult.resize(originalSize);
+    }
+    auto result_msg = std_msgs::msg::ByteMultiArray();
+    result_msg.data = floatArrayToByteArray(trimmedResult);
+    publisher->publish(result_msg);
+    RCLCPP_INFO(this->get_logger(), "Received processed ciphertext");
+  };
+
   if (originalSize < mParmsAndKeys.getMaxLen()) {
-    sendCiphertext(message, [this, originalSize]
-                   (const std::vector<float>& result) {
-      std::vector<float> trimmedResult = result;
-      if (trimmedResult.size() > originalSize) {
-        trimmedResult.resize(originalSize);
-      }
-      auto result_msg = std_msgs::msg::ByteMultiArray();
-      result_msg.data = floatArrayToByteArray(trimmedResult);
-      publisher->publish(result_msg);
-      RCLCPP_INFO(this->get_logger(), "Received processed ciphertext");
-    });
+    sendCiphertext(message, processAndPublishResult);
   } else {
-    sendBigCiphertext(message, [this, originalSize]  //TODO(jdumezy) clean for DRY
-                   (const std::vector<float>& result) {
-      std::vector<float> trimmedResult = result;
-      if (trimmedResult.size() > originalSize) {
-        trimmedResult.resize(originalSize);
-      }
-      auto result_msg = std_msgs::msg::ByteMultiArray();
-      result_msg.data = floatArrayToByteArray(trimmedResult);
-      publisher->publish(result_msg);
-      RCLCPP_INFO(this->get_logger(), "Received processed ciphertext");
-    });
+    sendBigCiphertext(message, processAndPublishResult);
   }
 }
 
