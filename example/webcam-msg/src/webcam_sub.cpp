@@ -14,8 +14,8 @@ void SubscriberNode::message_callback(
   const std_msgs::msg::ByteMultiArray::SharedPtr msg) {
   std::vector<float> floatArray = byteArrayToFloatArray(msg->data);
 
-  int width = 640;
-  int height = 480;
+  int width = WIDTH;
+  int height = HEIGHT;
 
   displayFloatArray(floatArray, width, height, "Output stream");
 

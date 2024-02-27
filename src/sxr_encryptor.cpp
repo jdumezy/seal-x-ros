@@ -43,7 +43,7 @@ std::vector<uint8_t> SXREncryptor::encryptFloat(float inputFloat) {
 std::vector<uint8_t> SXREncryptor::encryptFloatArray(const std::vector<float>& inputFloatArray) {
   std::vector<double> doubleArray = floatArrayToDoubleArray(inputFloatArray);
   size_t slotCount = mpEncoder->slot_count();
-  if (doubleArray.size() > slotCount / 2) {
+  if (doubleArray.size() > slotCount) {
     throw std::runtime_error("Input array is too large for CKKS slots");
   }
   seal::Plaintext encodedPlaintext;

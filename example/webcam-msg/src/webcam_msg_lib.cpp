@@ -64,6 +64,10 @@ std::tuple<std::vector<float>, int, int> acquireWebcam() {
   
   cv::Mat image;
   cap >> image;
+
+  cv::Mat resizedImage;
+  cv::Size newSize(WIDTH, HEIGHT); // New size: 100x100 pixels
+  cv::resize(image, resizedImage, newSize);
   
   if (image.empty()) {
     throw std::invalid_argument("Empty frame");
@@ -71,7 +75,7 @@ std::tuple<std::vector<float>, int, int> acquireWebcam() {
   
   cap.release();
   
-  return std::make_tuple(imageToFloatArray(image), image.cols, image.rows);
+  return std::make_tuple(imageToFloatArray(resizedImage), resizedImage.cols, resizedImage.rows);
 }
 
 std::vector<float> transformVector(const std::vector<float>& input) {

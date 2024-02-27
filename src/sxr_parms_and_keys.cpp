@@ -10,9 +10,9 @@ ParmsAndKeysManager::ParmsAndKeysManager() {
 
 void ParmsAndKeysManager::createParms() {
   seal::EncryptionParameters parms(seal::scheme_type::ckks);
-  size_t poly_modulus_degree = 16384;
-  parms.set_poly_modulus_degree(poly_modulus_degree);
-  parms.set_coeff_modulus(seal::CoeffModulus::Create(poly_modulus_degree, { 60, 40, 40, 40, 40, 60 }));
+  m_poly_modulus_degree = 16384;
+  parms.set_poly_modulus_degree(m_poly_modulus_degree);
+  parms.set_coeff_modulus(seal::CoeffModulus::Create(m_poly_modulus_degree, { 60, 40, 40, 40, 40, 60 }));
   mScale = std::pow(2.0, 40);
 
   mSerializedParms = serializeSealObject(parms);
@@ -67,3 +67,6 @@ std::vector<uint8_t> ParmsAndKeysManager::getSerializedGalk() const {
   return mSerializedGalk;
 }
 
+size_t ParmsAndKeysManager::getMaxLen() const {
+  return m_poly_modulus_degree / 2;
+}

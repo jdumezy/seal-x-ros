@@ -8,6 +8,8 @@
 #include <memory>
 #include <cstdint>
 #include <stdexcept>
+#include <mutex>
+#include <condition_variable>
 
 #include "seal/seal.h"
 
@@ -38,6 +40,30 @@ double calculateScale(int depth, double scale, std::vector<double> primeArray);
  * @return The calculated depth of encryption.
  */
 int calculateDepth(double ciphertextScale, double scale, std::vector<double> primeArray);
+
+/**
+ * @brief Splits a message into manageable size messages.
+ * 
+ * This function splits a float vector message into smaller float vectors that can
+ * later be encoded using the CKKS encoder, given the size limit associated with
+ * the CKKS parameters.
+ * 
+ * @param message The message to split.
+ * @param chunkSize The maximum size aloowed.
+ * @return std::vector<std::vector<float>> the splitted message.
+ */
+std::vector<std::vector<float>> splitMessage(const std::vector<float>& message,
+                                             size_t chunkSize);
+
+/**
+ * @brief Reassemble a message array into a single messages.
+ * 
+ * This function reassembles a float vector vector message into a single float vector.
+ * 
+ * @param messageArray The message array to be combined.
+ * @return std::vector<float> the reassembled message.
+ */
+std::vector<float> glueMessage(const std::vector<std::vector<float>>& messageArray);
 
 /**
  * @brief Converts a byte array to a float array.
@@ -164,6 +190,19 @@ std::vector<uint8_t> serializeSealObject(const T& obj) {
   obj.save(reinterpret_cast<seal::seal_byte*>(serializedObject.data()), size, seal::compr_mode_type::zstd);
   return serializedObject;
 }
+
+class Semaphore {
+ public:
+  Semaphore(int count);
+
+  void release();
+  void acquire();
+
+ private:
+  std::mutex mutex_;
+  std::condition_variable cv_;
+  int count_;
+};
 
 #endif  // INCLUDE_SEAL_X_ROS_SXR_LIB_HPP_
 

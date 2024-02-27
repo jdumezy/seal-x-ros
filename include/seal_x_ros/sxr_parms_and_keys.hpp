@@ -122,6 +122,15 @@ class ParmsAndKeysManager {
    */
   std::vector<uint8_t> getSerializedGalk() const;
 
+  /**
+   * @brief Get len of longest possible vector.
+   * 
+   * Returns the length of the longest possible vector. Needed to split a message accordingly. 
+   * 
+   * @return size_t maximum number of elements of a vector.
+   */
+  size_t getMaxLen() const;
+
  private:
   /**
    * @brief Creates the encryption parameters.
@@ -139,6 +148,7 @@ class ParmsAndKeysManager {
    */
   void createKeys();
 
+  size_t m_poly_modulus_degree;  ///< Poly moudulus degree
   double mScale;  ///< Scale factor for encoding.
   std::shared_ptr<seal::SEALContext> mpContext;  ///< Shared pointer to the SEAL context.
 
